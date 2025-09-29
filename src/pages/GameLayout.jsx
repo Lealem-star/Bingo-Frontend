@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useGameWebSocket } from '../lib/ws/useGameWebSocket';
 import { useAuth } from '../lib/auth/AuthProvider';
 
@@ -8,6 +8,7 @@ export default function GameLayout({
     playersCount = 0,
     prizePool = 0,
     gameId,
+    onNavigate,
 }) {
     const { sessionId } = useAuth();
     const { connected, gameState } = useGameWebSocket(gameId, sessionId);
@@ -17,6 +18,17 @@ export default function GameLayout({
     const currentPrizePool = gameState.prizePool || prizePool;
     const calledNumbers = gameState.calledNumbers || [];
     const currentNumber = gameState.currentNumber;
+
+    // Determine if we're in watch mode (no selected cartella)
+    const isWatchMode = !selectedCartela;
+
+    // Auto-transition back to CartelaSelection when registration starts
+    useEffect(() => {
+        if (isWatchMode && gameState.phase === 'registration') {
+            console.log('Registration started, navigating back to CartelaSelection');
+            onNavigate?.('cartela-selection');
+        }
+    }, [isWatchMode, gameState.phase, onNavigate]);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900 relative overflow-hidden">
@@ -83,8 +95,8 @@ export default function GameLayout({
                                         <button
                                             key={n}
                                             className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCalled
-                                                    ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
-                                                    : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
+                                                ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
+                                                : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
                                         >
                                             {n}
@@ -101,8 +113,8 @@ export default function GameLayout({
                                         <button
                                             key={n}
                                             className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCalled
-                                                    ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
-                                                    : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
+                                                ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
+                                                : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
                                         >
                                             {n}
@@ -119,8 +131,8 @@ export default function GameLayout({
                                         <button
                                             key={n}
                                             className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCalled
-                                                    ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
-                                                    : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
+                                                ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
+                                                : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
                                         >
                                             {n}
@@ -137,8 +149,8 @@ export default function GameLayout({
                                         <button
                                             key={n}
                                             className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCalled
-                                                    ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
-                                                    : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
+                                                ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
+                                                : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
                                         >
                                             {n}
@@ -155,8 +167,8 @@ export default function GameLayout({
                                         <button
                                             key={n}
                                             className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCalled
-                                                    ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
-                                                    : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
+                                                ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
+                                                : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
                                         >
                                             {n}
@@ -204,36 +216,35 @@ export default function GameLayout({
                         {/* Right Bottom Card - Enhanced User's Cartella */}
                         <div className="relative rounded-2xl p-3 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-2xl shadow-black/30 overflow-hidden border border-white/10">
                             <div className="shimmer-overlay"></div>
-                            {isWatchingOnly ? (
-                                /* Enhanced Watching Only Mode */
+                            {isWatchMode ? (
+                                /* Watching Only Mode - Matching the image design */
                                 <div className="rounded-xl p-4 text-center bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-white/10">
                                     <div className="text-white font-bold text-lg mb-3 flex items-center justify-center gap-2">
                                         <span>👀</span>
                                         <span>Watching Only</span>
                                     </div>
                                     <div className="text-white/80 text-sm mb-4 space-y-2">
-                                        {walletBalance < stake ? (
-                                            <>
-                                                <div className="bg-red-500/20 border border-red-500/30 rounded-lg p-3">
-                                                    <div className="mb-1 font-semibold text-red-300">💰 Insufficient Balance</div>
-                                                    <div className="text-red-200">Please deposit to your wallet first.</div>
-                                                </div>
-                                            </>
-                                        ) : gamePhase === 'finished' ? (
-                                            <>
-                                                <div className="bg-orange-500/20 border border-orange-500/30 rounded-lg p-3">
-                                                    <div className="mb-1 font-semibold text-orange-300">🏁 Game Finished</div>
-                                                    <div className="text-orange-200">Please wait for the next round to begin.</div>
-                                                </div>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <div className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-3">
-                                                    <div className="mb-1 font-semibold text-blue-300">⏳ Round Started</div>
-                                                    <div className="text-blue-200">Please wait here until a new round begins.</div>
-                                                </div>
-                                            </>
-                                        )}
+                                        <div className="text-white/90 text-sm leading-relaxed">
+                                            {gameState.phase === 'running' ? (
+                                                <>
+                                                    <div className="mb-2">ይህ የዛሬ የጨዋታ ማጠናቀቅ ተጀመረ።</div>
+                                                    <div className="mb-2">አዲስ የጨዋታ ማጠናቀቅ እዚህ ይጀምራል።</div>
+                                                    <div className="mb-2">ተጠብቅ።</div>
+                                                </>
+                                            ) : gameState.phase === 'announce' ? (
+                                                <>
+                                                    <div className="mb-2">የጨዋታ ማጠናቀቅ ተጠናቋል።</div>
+                                                    <div className="mb-2">አዲስ የጨዋታ ማጠናቀቅ እዚህ ይጀምራል።</div>
+                                                    <div className="mb-2">ተጠብቅ።</div>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <div className="mb-2">የጨዋታ ምዝገባ ተከፍቷል።</div>
+                                                    <div className="mb-2">አዲስ የጨዋታ ማጠናቀቅ እዚህ ይጀምራል።</div>
+                                                    <div className="mb-2">ተጠብቅ።</div>
+                                                </>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             ) : (
@@ -275,24 +286,24 @@ export default function GameLayout({
                 {/* Enhanced Bottom Action Buttons */}
                 <div className="flex justify-between p-3 mt-4 gap-3">
                     <button
-                        onClick={() => { }}
-                        className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-3 rounded-xl font-bold flex-1 text-sm hover:from-red-600 hover:to-red-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 border border-red-400/30"
+                        onClick={() => onNavigate?.('game')}
+                        className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-3 rounded-xl font-bold flex-1 text-sm hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 border border-orange-400/30"
                     >
-                        🚪 Leave
+                        Leave
                     </button>
                     <button
-                        onClick={onRefresh}
-                        className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-4 py-3 rounded-xl font-bold flex-1 flex items-center justify-center gap-2 text-sm hover:from-amber-600 hover:to-orange-600 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 border border-amber-400/30"
+                        onClick={() => window.location.reload()}
+                        className="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-3 rounded-xl font-bold flex-1 flex items-center justify-center gap-2 text-sm hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 border border-red-500/30"
                     >
                         <span className="animate-spin">↻</span>
                         <span>Refresh</span>
                     </button>
                     <button
                         onClick={() => { }}
-                        disabled={isWatchingOnly}
-                        className={`px-4 py-3 rounded-xl font-bold flex-1 text-sm transition-all duration-200 ${isWatchingOnly
-                            ? 'bg-gradient-to-r from-gray-500 to-gray-600 text-gray-300 cursor-not-allowed border border-gray-400/30'
-                            : 'bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white hover:from-yellow-500 hover:via-orange-600 hover:to-red-600 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 border border-yellow-400/30'
+                        disabled={isWatchMode}
+                        className={`px-4 py-3 rounded-xl font-bold flex-1 text-sm transition-all duration-200 ${isWatchMode
+                                ? 'bg-gradient-to-r from-gray-500 to-gray-600 text-gray-300 cursor-not-allowed border border-gray-400/30 opacity-50'
+                                : 'bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white hover:from-yellow-500 hover:via-orange-600 hover:to-red-600 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 border border-yellow-400/30'
                             }`}
                     >
                         🎉 BINGO

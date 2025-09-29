@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import CartellaCard from '../components/CartellaCard';
 import BottomNav from '../components/BottomNav';
 import { apiFetch } from '../lib/api/client';
 import { useAuth } from '../lib/auth/AuthProvider';
@@ -11,14 +10,13 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected 
     const { showError, showSuccess, showWarning } = useToast();
     const [cards, setCards] = useState([]);
     const [selectedCardNumber, setSelectedCardNumber] = useState(null);
-    const [selectedCard, setSelectedCard] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [wallet, setWallet] = useState({ main: 0, play: 0, coins: 0 });
     const [walletLoading, setWalletLoading] = useState(true);
 
     // WebSocket integration
-    const { connected, gameState, selectCartella, startRegistration } = useCartellaWebSocket(stake, sessionId);
+    const { connected, gameState, selectCartella } = useCartellaWebSocket(stake, sessionId);
 
     // Debug authentication
     useEffect(() => {
@@ -108,14 +106,18 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected 
 
     // Handle game state changes
     useEffect(() => {
-        if (gameState.phase === 'running' && gameState.gameId) {
-            // Game has started, navigate to game layout
-            console.log('Game started, navigating to game layout');
+        // If we're not in registration phase, navigate to GameLayout (watch mode)
+        if (gameState.phase !== 'registration' && gameState.gameId) {
+            console.log('Game is ongoing, navigating to GameLayout for watch mode');
+            onCartelaSelected?.(null); // Pass null to indicate watch mode
+        } else if (gameState.phase === 'running' && gameState.gameId && selectedCardNumber) {
+            // Game has started with our selection, navigate to game layout
+            console.log('Game started with our cartella, navigating to game layout');
             onCartelaSelected?.(selectedCardNumber);
         }
     }, [gameState.phase, gameState.gameId, selectedCardNumber, onCartelaSelected]);
 
-    // Fetch specific card when selected
+    // Handle card selection - automatically confirm without separate confirmation step
     const handleCardSelect = async (cardNumber) => {
         // Check if player has sufficient balance first
         if (wallet.play < stake) {
@@ -130,45 +132,22 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected 
         }
 
         try {
-            // Fetch card data for preview
-            const response = await apiFetch(`/api/cartellas/${cardNumber}`);
-            if (response.success) {
+            // Send selection via WebSocket immediately (no confirmation needed)
+            const success = selectCartella(cardNumber);
+
+            if (success) {
+                showSuccess(`Cartella #${cardNumber} selected! Waiting for game to start...`);
                 setSelectedCardNumber(cardNumber);
-                setSelectedCard(response.card);
+                // The WebSocket will handle the rest
             } else {
-                showError('Failed to load cartella. Please try again.');
-            }
-        } catch (err) {
-            console.error('Error fetching card:', err);
-            showError('Failed to load cartella. Please try again.');
-        }
-    };
-
-    // Handle card confirmation via WebSocket
-    const handleConfirmSelection = async () => {
-        if (selectedCardNumber && selectedCard) {
-            try {
-                // Check if player has sufficient balance
-                if (wallet.play < stake) {
-                    showError('Insufficient wallet balance. Please top up your wallet.');
-                    return;
-                }
-
-                // Send selection via WebSocket
-                const success = selectCartella(selectedCardNumber);
-
-                if (success) {
-                    showSuccess(`Cartella #${selectedCardNumber} selected! Waiting for game to start...`);
-                    // The WebSocket will handle the rest
-                } else {
-                    showError('Failed to select cartella. Please try again.');
-                }
-            } catch (err) {
-                console.error('Error selecting cartella:', err);
                 showError('Failed to select cartella. Please try again.');
             }
+        } catch (err) {
+            console.error('Error selecting cartella:', err);
+            showError('Failed to select cartella. Please try again.');
         }
     };
+
 
     // Refresh wallet data
     const refreshWallet = async () => {
@@ -239,10 +218,10 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected 
                                 {gameState.countdown}s
                             </div>
                             <div className="timer-status">
-                                {gameState.phase === 'waiting' && 'Waiting for players...'}
                                 {gameState.phase === 'registration' && `Registration open... (${gameState.playersCount} players)`}
                                 {gameState.phase === 'starting' && `Starting game... (${gameState.playersCount} players)`}
                                 {gameState.phase === 'running' && 'Game in progress!'}
+                                {gameState.phase === 'announce' && 'Game finished!'}
                             </div>
                             <div className="connection-status">
                                 {connected ? '🟢 Connected' : '🔴 Disconnected'}
@@ -296,10 +275,10 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected 
                                 {gameState.countdown}s
                             </div>
                             <div className="timer-status">
-                                {gameState.phase === 'waiting' && 'Waiting for players...'}
                                 {gameState.phase === 'registration' && `Registration open... (${gameState.playersCount} players)`}
                                 {gameState.phase === 'starting' && `Starting game... (${gameState.playersCount} players)`}
                                 {gameState.phase === 'running' && 'Game in progress!'}
+                                {gameState.phase === 'announce' && 'Game finished!'}
                             </div>
                             <div className="prize-pool">
                                 Prize Pool: ETB {gameState.prizePool || 0}
@@ -419,7 +398,6 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected 
             </header>
 
             <main className="p-4">
-
                 {/* Number Selection Grid */}
                 <div className="cartela-numbers-grid">
                     {Array.from({ length: cards.length }, (_, i) => i + 1).map((cartelaNumber) => {
@@ -456,34 +434,6 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected 
                     })}
                 </div>
 
-                {/* Selected Cartela Preview */}
-                <div className="cartela-preview-section">
-                    {selectedCard ? (
-                        <CartellaCard
-                            id={selectedCardNumber}
-                            card={selectedCard}
-                            called={[]}
-                            selectedNumber={selectedCardNumber}
-                            isPreview={true}
-                        />
-                    ) : (
-                        <div className="text-center text-gray-400 py-8">
-                            Select a card number to preview
-                        </div>
-                    )}
-                </div>
-
-                {/* Confirm Selection Button */}
-                {selectedCardNumber && selectedCard && (
-                    <div className="mt-4 text-center">
-                        <button
-                            onClick={handleConfirmSelection}
-                            className="px-6 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors"
-                        >
-                            Confirm Selection - Card #{selectedCardNumber}
-                        </button>
-                    </div>
-                )}
 
                 {/* Recent Selections Display */}
                 {gameState.playersCount > 0 && (

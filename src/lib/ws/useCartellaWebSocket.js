@@ -4,7 +4,7 @@ export function useCartellaWebSocket(stake, sessionId) {
     const wsRef = useRef(null);
     const [connected, setConnected] = useState(false);
     const [gameState, setGameState] = useState({
-        phase: 'waiting',
+        phase: 'registration',
         gameId: null,
         playersCount: 0,
         countdown: 15,
@@ -144,7 +144,7 @@ export function useCartellaWebSocket(stake, sessionId) {
                         case 'game_cancelled':
                             setGameState(prev => ({
                                 ...prev,
-                                phase: 'waiting',
+                                phase: 'registration',
                                 gameId: null,
                                 playersCount: 0,
                                 yourSelection: null
@@ -247,33 +247,12 @@ export function useCartellaWebSocket(stake, sessionId) {
         return true;
     }, [connected, send]);
 
-    const startRegistration = useCallback(() => {
-        if (!connected) {
-            console.error('WebSocket not connected');
-            return false;
-        }
-
-        console.log('Starting registration manually...');
-        send('start_registration', {});
-        return true;
-    }, [connected, send]);
-
-    // Auto-start registration when WebSocket connects
-    useEffect(() => {
-        if (connected && gameState.phase === 'waiting') {
-            console.log('WebSocket connected, starting registration...');
-            setTimeout(() => {
-                startRegistration();
-            }, 1000); // Small delay to ensure connection is stable
-        }
-    }, [connected, gameState.phase, startRegistration]);
 
     return {
         connected,
         gameState,
         lastEvent,
         selectCartella,
-        startRegistration,
         send
     };
 }

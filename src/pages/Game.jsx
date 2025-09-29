@@ -3,8 +3,9 @@ import BottomNav from '../components/BottomNav';
 import { useAuth } from '../lib/auth/AuthProvider';
 import lbLogo from '../assets/lb.png';
 import StatsPanel from '../components/StatsPanel';
+import GameLayout from './GameLayout';
 
-export default function Game({ onNavigate, onStakeSelected, selectedStake }) {
+export default function Game({ onNavigate, onStakeSelected, selectedStake, selectedCartela }) {
     const adminPost = null;
     const joinStake = (s) => {
         onStakeSelected?.(s);
@@ -95,7 +96,18 @@ export default function Game({ onNavigate, onStakeSelected, selectedStake }) {
 
 
 
-    // If stake exists, App will navigate to selection; keep screen minimal here
+    // If we have a selectedCartela or we're in watch mode (selectedCartela is null but stake exists), render GameLayout
+    if (selectedStake) {
+        return (
+            <GameLayout
+                stake={selectedStake}
+                selectedCartela={selectedCartela}
+                onNavigate={onNavigate}
+            />
+        );
+    }
+
+    // If no stake selected, show initial screen
     return null;
 
 
