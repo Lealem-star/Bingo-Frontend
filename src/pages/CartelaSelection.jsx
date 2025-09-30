@@ -5,7 +5,7 @@ import { useAuth } from '../lib/auth/AuthProvider';
 import { useToast } from '../contexts/ToastContext';
 import { useCartellaWebSocket } from '../lib/ws/useCartellaWebSocket';
 
-export default function CartelaSelection({ onNavigate, stake, onCartelaSelected }) {
+export default function CartelaSelection({ onNavigate, stake, onCartelaSelected, onGameIdUpdate }) {
     const { sessionId } = useAuth();
     const { showError, showSuccess, showWarning } = useToast();
     const [cards, setCards] = useState([]);
@@ -27,6 +27,14 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected 
             connected: connected
         });
     }, [sessionId, stake, connected]);
+
+    // Update gameId in parent component when it changes
+    useEffect(() => {
+        if (gameState.gameId) {
+            console.log('CartelaSelection - GameId updated:', gameState.gameId);
+            onGameIdUpdate?.(gameState.gameId);
+        }
+    }, [gameState.gameId, onGameIdUpdate]);
 
     // Fetch wallet data
     useEffect(() => {

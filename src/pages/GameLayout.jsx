@@ -11,6 +11,9 @@ export default function GameLayout({
     onNavigate,
 }) {
     const { sessionId } = useAuth();
+
+    console.log('GameLayout - Props received:', { stake, selectedCartela, gameId, sessionId: sessionId ? 'Present' : 'Missing' });
+
     const { connected, gameState } = useGameWebSocket(gameId, sessionId);
 
     // Use WebSocket data if available, otherwise fall back to props
@@ -29,6 +32,26 @@ export default function GameLayout({
             onNavigate?.('cartela-selection');
         }
     }, [isWatchMode, gameState.phase, onNavigate]);
+
+    // If no gameId is available, show a loading state or redirect to cartela selection
+    if (!gameId) {
+        console.log('GameLayout - No gameId available, redirecting to cartela selection');
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900 flex items-center justify-center">
+                <div className="text-center text-white">
+                    <div className="text-2xl mb-4">🎮</div>
+                    <div className="text-lg mb-2">No active game found</div>
+                    <div className="text-sm text-gray-300 mb-4">Please select a cartella to join a game</div>
+                    <button
+                        onClick={() => onNavigate?.('cartela-selection')}
+                        className="px-6 py-3 bg-pink-600 text-white rounded-lg font-semibold hover:bg-pink-700 transition-colors"
+                    >
+                        Select Cartella
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900 relative overflow-hidden">
@@ -302,8 +325,8 @@ export default function GameLayout({
                         onClick={() => { }}
                         disabled={isWatchMode}
                         className={`px-4 py-3 rounded-xl font-bold flex-1 text-sm transition-all duration-200 ${isWatchMode
-                                ? 'bg-gradient-to-r from-gray-500 to-gray-600 text-gray-300 cursor-not-allowed border border-gray-400/30 opacity-50'
-                                : 'bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white hover:from-yellow-500 hover:via-orange-600 hover:to-red-600 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 border border-yellow-400/30'
+                            ? 'bg-gradient-to-r from-gray-500 to-gray-600 text-gray-300 cursor-not-allowed border border-gray-400/30 opacity-50'
+                            : 'bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white hover:from-yellow-500 hover:via-orange-600 hover:to-red-600 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 border border-yellow-400/30'
                             }`}
                     >
                         🎉 BINGO

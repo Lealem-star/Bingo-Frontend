@@ -14,6 +14,7 @@ function App() {
   const [currentPage, setCurrentPage] = useState('game');
   const [selectedStake, setSelectedStake] = useState(null);
   const [selectedCartela, setSelectedCartela] = useState(null);
+  const [currentGameId, setCurrentGameId] = useState(null);
   const [isAdminApp, setIsAdminApp] = useState(false);
 
   // Handle query parameter routing for admin panel
@@ -61,10 +62,20 @@ function App() {
     setCurrentPage('game');
   };
 
+  const handleGameIdUpdate = (gameId) => {
+    setCurrentGameId(gameId);
+  };
+
   const handleNavigate = (page) => {
-    if (page === 'game' && currentPage === 'cartela-selection') {
-      // When navigating back to game from cartela selection, clear the stake
-      setSelectedStake(null);
+    console.log('Navigating from', currentPage, 'to', page, 'with stake:', selectedStake, 'cartela:', selectedCartela);
+
+    if (page === 'game') {
+      // Only clear stake if we're coming from cartela-selection page (back button)
+      if (currentPage === 'cartela-selection') {
+        setSelectedStake(null);
+        setSelectedCartela(null);
+      }
+      // Otherwise, preserve the current state when navigating from other pages
     }
     setCurrentPage(page);
   };
@@ -73,9 +84,9 @@ function App() {
     console.log('Current page:', currentPage, 'Selected stake:', selectedStake);
     switch (currentPage) {
       case 'game':
-        return <Game onNavigate={handleNavigate} onStakeSelected={handleStakeSelected} selectedCartela={selectedCartela} selectedStake={selectedStake} />;
+        return <Game onNavigate={handleNavigate} onStakeSelected={handleStakeSelected} selectedCartela={selectedCartela} selectedStake={selectedStake} currentGameId={currentGameId} />;
       case 'cartela-selection':
-        return <CartelaSelection onNavigate={handleNavigate} stake={selectedStake} onCartelaSelected={handleCartelaSelected} />;
+        return <CartelaSelection onNavigate={handleNavigate} stake={selectedStake} onCartelaSelected={handleCartelaSelected} onGameIdUpdate={handleGameIdUpdate} />;
       case 'admin':
         return <AdminLayout onNavigate={handleNavigate} />;
       case 'rules':
