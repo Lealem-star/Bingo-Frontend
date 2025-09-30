@@ -406,6 +406,19 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
             </header>
 
             <main className="p-4">
+                {/* Debug Panel for Mobile */}
+                <div className="mb-4 p-3 bg-gray-800/50 rounded-lg border border-gray-600">
+                    <div className="text-xs text-gray-300 space-y-1">
+                        <div>🔧 Debug Info:</div>
+                        <div>Stake: {stake || 'null'}</div>
+                        <div>Session: {sessionId ? 'Present' : 'Missing'}</div>
+                        <div>WS: {connected ? '🟢 Connected' : '🔴 Disconnected'}</div>
+                        <div>Phase: {gameState.phase}</div>
+                        <div>Players: {gameState.playersCount}</div>
+                        <div>Countdown: {gameState.countdown}s</div>
+                    </div>
+                </div>
+
                 {/* Number Selection Grid */}
                 <div className="cartela-numbers-grid">
                     {Array.from({ length: cards.length }, (_, i) => i + 1).map((cartelaNumber) => {
