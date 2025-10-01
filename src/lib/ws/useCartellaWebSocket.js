@@ -7,7 +7,7 @@ export function useCartellaWebSocket(stake, sessionId) {
         phase: 'registration',
         gameId: null,
         playersCount: 0,
-        countdown: 15,
+        countdown: 60,
         takenCards: [],
         prizePool: 0,
         yourSelection: null,
@@ -68,15 +68,22 @@ export function useCartellaWebSocket(stake, sessionId) {
                     // Handle different event types
                     switch (event.type) {
                         case 'snapshot':
-                            setGameState(prev => ({
-                                ...prev,
-                                phase: event.payload.phase,
-                                gameId: event.payload.gameId,
-                                playersCount: event.payload.playersCount,
-                                takenCards: event.payload.takenCards || [],
-                                yourSelection: event.payload.yourSelection,
-                                prizePool: event.payload.prizePool || 0
-                            }));
+                            setGameState(prev => {
+                                const phase = event.payload.phase;
+                                const registrationEndTime = (phase === 'registration') ? (event.payload.nextStartAt || null) : null;
+                                const remainingSeconds = registrationEndTime ? Math.max(0, Math.ceil((registrationEndTime - Date.now()) / 1000)) : prev.countdown;
+                                return ({
+                                    ...prev,
+                                    phase,
+                                    gameId: event.payload.gameId,
+                                    playersCount: event.payload.playersCount,
+                                    takenCards: event.payload.takenCards || [],
+                                    yourSelection: event.payload.yourSelection,
+                                    prizePool: event.payload.prizePool || 0,
+                                    registrationEndTime,
+                                    countdown: (phase === 'registration') ? remainingSeconds : prev.countdown
+                                });
+                            });
                             break;
 
                         case 'registration_open':
@@ -214,7 +221,7 @@ export function useCartellaWebSocket(stake, sessionId) {
                 if (prev.phase === 'registration') {
                     // Calculate countdown based on registration end time
                     const now = Date.now();
-                    const endTime = prev.registrationEndTime || (now + 15000);
+                    const endTime = prev.registrationEndTime || (now + 60000);
                     const remaining = Math.max(0, Math.ceil((endTime - now) / 1000));
 
                     if (remaining === 0) {
