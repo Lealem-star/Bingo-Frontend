@@ -88,6 +88,10 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
                 console.log('Fetching cartellas from /api/cartellas...');
                 setLoading(true);
 
+                // Try direct fetch first to test the endpoint
+                const directResponse = await fetch('/api/cartellas');
+                console.log('Direct fetch response status:', directResponse.status);
+
                 const response = await apiFetch('/api/cartellas');
                 console.log('Cartellas API response:', response);
                 if (response.success) {

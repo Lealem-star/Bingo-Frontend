@@ -120,9 +120,7 @@ export function AuthProvider({ children }) {
                 isFalsy: !initData
             });
 
-            // Check for development mode or fallback authentication
-            const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname.includes('127.0.0.1');
-            const hasTestParam = hashParams.get('test') === 'true' || searchParams.get('test') === 'true';
+            // No bypasses - require proper Telegram authentication
 
             if (!initData) {
                 console.error('No Telegram initData available - this should only happen when not accessed through Telegram');
@@ -136,38 +134,8 @@ export function AuthProvider({ children }) {
                     urlHash: window.location.hash,
                     urlSearch: window.location.search,
                     referrer: document.referrer,
-                    userAgent: navigator.userAgent,
-                    isDevelopment,
-                    hasTestParam
+                    userAgent: navigator.userAgent
                 });
-
-                // Allow fallback authentication in development mode
-                if (isDevelopment || hasTestParam) {
-                    console.log('Development mode detected - using fallback authentication');
-                    try {
-                        // Create a test user for development
-                        const testUser = {
-                            id: '1001',
-                            telegramId: '1001',
-                            firstName: 'Test',
-                            lastName: 'User',
-                            phone: '+1234567890',
-                            isRegistered: true
-                        };
-
-                        // Create a test JWT token
-                        const testToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMDAxIiwiaWF0IjoxNzU3NjU5ODc5LCJleHAiOjE3NTgyNjQ2Nzl9.SNBFvRK-0YpXkQMi0aDRNex4J3A0jzoYrPW6Jk5Vwy0';
-
-                        setSessionId(testToken);
-                        localStorage.setItem('sessionId', testToken);
-                        setUser(testUser);
-                        localStorage.setItem('user', JSON.stringify(testUser));
-                        setIsLoading(false);
-                        return;
-                    } catch (e) {
-                        console.error('Fallback authentication failed:', e);
-                    }
-                }
 
                 // No hash bypasses - require proper Telegram WebApp initData
                 // No test sessions - require real Telegram authentication
