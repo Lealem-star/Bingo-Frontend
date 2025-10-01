@@ -31,10 +31,14 @@ async function reauthenticateAndGetSession() {
     return null;
 }
 
-export async function apiFetch(path, { method = 'GET', body, sessionId, headers = {}, timeoutMs = 10000 } = {}) {
-    const apiBase = import.meta.env.VITE_API_URL ||
+export function getApiBase() {
+    return import.meta.env.VITE_API_URL ||
         (window.location.hostname === 'localhost' ? 'http://localhost:3001' :
             'https://bingo-back-2evw.onrender.com');
+}
+
+export async function apiFetch(path, { method = 'GET', body, sessionId, headers = {}, timeoutMs = 10000 } = {}) {
+    const apiBase = getApiBase();
     const doRequest = async (sid) => {
         const requestHeaders = { ...headers };
 

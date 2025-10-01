@@ -1,12 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import BottomNav from '../components/BottomNav';
 import { useAuth } from '../lib/auth/AuthProvider';
 import lbLogo from '../assets/lb.png';
 import StatsPanel from '../components/StatsPanel';
 import GameLayout from './GameLayout';
+import { apiFetch, getApiBase } from '../lib/api/client';
 
 export default function Game({ onNavigate, onStakeSelected, selectedStake, selectedCartela, currentGameId }) {
-    const adminPost = null;
+    const [adminPost, setAdminPost] = useState(null);
+    const apiBase = getApiBase();
+
+    useEffect(() => {
+        let isMounted = true;
+        const loadAdminPost = async () => {
+            try {
+                const data = await apiFetch('/admin/posts', { method: 'GET', timeoutMs: 20000 });
+                const posts = Array.isArray(data?.posts) ? data.posts : [];
+                const active = posts.find(p => p?.active === true) || null;
+                if (active) {
+                    // Prefix relative upload path with API base
+                    const url = active.url?.startsWith('http') ? active.url : `${apiBase}${active.url}`;
+                    if (isMounted) setAdminPost({ ...active, url });
+                } else {
+                    if (isMounted) setAdminPost(null);
+                }
+            } catch (e) {
+                console.error('Failed to load admin post:', e);
+                if (isMounted) setAdminPost(null);
+            }
+        };
+        loadAdminPost();
+        const t = setInterval(loadAdminPost, 30000);
+        return () => { isMounted = false; clearInterval(t); };
+    }, [apiBase]);
     const joinStake = (s) => {
         onStakeSelected?.(s);
     };
