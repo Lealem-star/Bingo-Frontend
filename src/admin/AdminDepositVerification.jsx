@@ -7,6 +7,8 @@ export default function AdminDepositVerification() {
     const [stats, setStats] = useState(null);
     const [selectedVerification, setSelectedVerification] = useState(null);
     const [actionLoading, setActionLoading] = useState(false);
+    const [statusFilter, setStatusFilter] = useState('all');
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         fetchVerifications();
@@ -98,6 +100,18 @@ export default function AdminDepositVerification() {
         return 'text-red-500';
     };
 
+    const filteredVerifications = verifications.filter(v => {
+        const matchesStatus = statusFilter === 'all' ? true : v.status === statusFilter;
+        const q = searchQuery.trim().toLowerCase();
+        const matchesQuery = q.length === 0 ? true : (
+            (v.userId?.firstName || '').toLowerCase().includes(q) ||
+            (v.userId?.lastName || '').toLowerCase().includes(q) ||
+            (v.userId?.phone || '').toLowerCase().includes(q) ||
+            String(v.amount || '').includes(q)
+        );
+        return matchesStatus && matchesQuery;
+    });
+
     if (loading) {
         return (
             <div className="p-6">
@@ -116,131 +130,121 @@ export default function AdminDepositVerification() {
     return (
         <div className="p-6">
             <div className="mb-6">
-                <h1 className="text-2xl font-bold text-gray-900 mb-4">Deposit Verifications</h1>
+                <div className="flex items-end justify-between flex-wrap gap-4 mb-4">
+                    <div>
+                        <h1 className="text-2xl font-extrabold text-gray-900">Deposit Verifications</h1>
+                        <p className="text-sm text-gray-500">Review and approve deposits matched from SMS.</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <input
+                            value={searchQuery}
+                            onChange={e => setSearchQuery(e.target.value)}
+                            placeholder="Search name, phone, amount"
+                            className="h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                        <select
+                            value={statusFilter}
+                            onChange={e => setStatusFilter(e.target.value)}
+                            className="h-10 px-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        >
+                            <option value="all">All</option>
+                            <option value="pending_review">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                </div>
 
-                {/* Stats Cards */}
                 {stats && (
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                        <div className="bg-white p-4 rounded-lg shadow">
-                            <h3 className="text-sm font-medium text-gray-500">Total SMS</h3>
-                            <p className="text-2xl font-bold text-blue-600">{stats.sms?.total || 0}</p>
+                        <div className="relative overflow-hidden rounded-xl p-4 bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow">
+                            <div className="text-xs opacity-80">Total SMS</div>
+                            <div className="text-3xl font-extrabold">{stats.sms?.total || 0}</div>
+                            <div className="absolute -right-4 -bottom-4 text-7xl opacity-20">✉</div>
                         </div>
-                        <div className="bg-white p-4 rounded-lg shadow">
-                            <h3 className="text-sm font-medium text-gray-500">Matched SMS</h3>
-                            <p className="text-2xl font-bold text-green-600">{stats.sms?.matched || 0}</p>
+                        <div className="relative overflow-hidden rounded-xl p-4 bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow">
+                            <div className="text-xs opacity-80">Matched SMS</div>
+                            <div className="text-3xl font-extrabold">{stats.sms?.matched || 0}</div>
+                            <div className="absolute -right-4 -bottom-4 text-7xl opacity-20">✓</div>
                         </div>
-                        <div className="bg-white p-4 rounded-lg shadow">
-                            <h3 className="text-sm font-medium text-gray-500">Match Rate</h3>
-                            <p className="text-2xl font-bold text-purple-600">
-                                {stats.sms?.matchRate?.toFixed(1) || 0}%
-                            </p>
+                        <div className="relative overflow-hidden rounded-xl p-4 bg-gradient-to-br from-purple-500 to-fuchsia-600 text-white shadow">
+                            <div className="text-xs opacity-80">Match Rate</div>
+                            <div className="text-3xl font-extrabold">{stats.sms?.matchRate?.toFixed(1) || 0}%</div>
+                            <div className="absolute -right-4 -bottom-4 text-7xl opacity-20">%</div>
                         </div>
-                        <div className="bg-white p-4 rounded-lg shadow">
-                            <h3 className="text-sm font-medium text-gray-500">Pending Reviews</h3>
-                            <p className="text-2xl font-bold text-yellow-600">
-                                {verifications.filter(v => v.status === 'pending_review').length}
-                            </p>
+                        <div className="relative overflow-hidden rounded-xl p-4 bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow">
+                            <div className="text-xs opacity-80">Pending Reviews</div>
+                            <div className="text-3xl font-extrabold">{verifications.filter(v => v.status === 'pending_review').length}</div>
+                            <div className="absolute -right-4 -bottom-4 text-7xl opacity-20">⌛</div>
                         </div>
                     </div>
                 )}
             </div>
 
             {/* Verifications List */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-200">
-                    <h2 className="text-lg font-medium text-gray-900">Verification Requests</h2>
-                </div>
-
-                <div className="divide-y divide-gray-200">
-                    {verifications.map((verification) => (
-                        <div key={verification._id} className="p-6 hover:bg-gray-50">
-                            <div className="flex items-center justify-between">
-                                <div className="flex-1">
-                                    <div className="flex items-center space-x-4">
-                                        <div>
-                                            <h3 className="text-sm font-medium text-gray-900">
-                                                {verification.userId?.firstName} {verification.userId?.lastName}
-                                            </h3>
-                                            <p className="text-sm text-gray-500">
-                                                {verification.userId?.phone} • {verification.userId?.telegramId}
-                                            </p>
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-lg font-bold text-green-600">
-                                                ETB {verification.amount?.toFixed(2)}
-                                            </p>
-                                            <p className={`text-sm font-medium ${getConfidenceColor(verification.matchResult?.confidence)}`}>
-                                                {verification.matchResult?.confidence?.toFixed(1)}% confidence
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {/* Match Details */}
-                                    <div className="mt-3 flex space-x-4">
-                                        <div className="flex items-center space-x-2">
-                                            <span className="text-xs text-gray-500">Amount:</span>
-                                            <span className={`text-xs font-medium ${verification.matchResult?.matches?.amountMatch ? 'text-green-600' : 'text-red-600'}`}>
-                                                {verification.matchResult?.matches?.amountMatch ? '✓' : '✗'}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                            <span className="text-xs text-gray-500">Reference:</span>
-                                            <span className={`text-xs font-medium ${verification.matchResult?.matches?.referenceMatch ? 'text-green-600' : 'text-red-600'}`}>
-                                                {verification.matchResult?.matches?.referenceMatch ? '✓' : '✗'}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                            <span className="text-xs text-gray-500">Time:</span>
-                                            <span className={`text-xs font-medium ${verification.matchResult?.matches?.timeMatch ? 'text-green-600' : 'text-red-600'}`}>
-                                                {verification.matchResult?.matches?.timeMatch ? '✓' : '✗'}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center space-x-2">
-                                            <span className="text-xs text-gray-500">Method:</span>
-                                            <span className={`text-xs font-medium ${verification.matchResult?.matches?.paymentMethodMatch ? 'text-green-600' : 'text-red-600'}`}>
-                                                {verification.matchResult?.matches?.paymentMethodMatch ? '✓' : '✗'}
-                                            </span>
-                                        </div>
-                                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {filteredVerifications.map((verification) => (
+                    <div key={verification._id} className="rounded-xl bg-white shadow hover:shadow-md transition-shadow p-5">
+                        <div className="flex items-start justify-between gap-3">
+                            <div>
+                                <div className="text-sm font-semibold text-gray-900">
+                                    {verification.userId?.firstName} {verification.userId?.lastName}
                                 </div>
-
-                                <div className="flex items-center space-x-3">
-                                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(verification.status)} bg-gray-100`}>
-                                        {verification.status?.replace('_', ' ')}
-                                    </span>
-
-                                    {verification.status === 'pending_review' && (
-                                        <div className="flex space-x-2">
-                                            <button
-                                                onClick={() => setSelectedVerification(verification)}
-                                                className="px-3 py-1 text-xs bg-blue-600 text-white rounded hover:bg-blue-700"
-                                            >
-                                                View Details
-                                            </button>
-                                            <button
-                                                onClick={() => handleApprove(verification._id)}
-                                                disabled={actionLoading}
-                                                className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
-                                            >
-                                                Approve
-                                            </button>
-                                            <button
-                                                onClick={() => {
-                                                    const reason = prompt('Rejection reason:');
-                                                    if (reason) handleReject(verification._id, reason);
-                                                }}
-                                                disabled={actionLoading}
-                                                className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50"
-                                            >
-                                                Reject
-                                            </button>
-                                        </div>
-                                    )}
+                                <div className="text-xs text-gray-500">
+                                    {verification.userId?.phone} • {verification.userId?.telegramId}
                                 </div>
                             </div>
+                            <span className={`px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(verification.status)} bg-gray-100 capitalize`}>
+                                {verification.status?.replace('_', ' ')}
+                            </span>
                         </div>
-                    ))}
-                </div>
+
+                        <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div className="sm:col-span-2">
+                                <div className="grid grid-cols-4 gap-2 text-center">
+                                    <div className={`rounded-lg py-2 text-xs font-medium ${verification.matchResult?.matches?.amountMatch ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>Amount</div>
+                                    <div className={`rounded-lg py-2 text-xs font-medium ${verification.matchResult?.matches?.referenceMatch ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>Reference</div>
+                                    <div className={`rounded-lg py-2 text-xs font-medium ${verification.matchResult?.matches?.timeMatch ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>Time</div>
+                                    <div className={`rounded-lg py-2 text-xs font-medium ${verification.matchResult?.matches?.paymentMethodMatch ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>Method</div>
+                                </div>
+                            </div>
+                            <div className="sm:col-span-1 flex flex-col items-end gap-2">
+                                <div className="text-right">
+                                    <div className="text-xs text-gray-500">Amount</div>
+                                    <div className="text-xl font-extrabold text-green-600">ETB {verification.amount?.toFixed(2)}</div>
+                                    <div className={`text-xs font-semibold ${getConfidenceColor(verification.matchResult?.confidence)}`}>{verification.matchResult?.confidence?.toFixed(1)}% confidence</div>
+                                </div>
+                                {verification.status === 'pending_review' ? (
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            onClick={() => handleApprove(verification._id)}
+                                            disabled={actionLoading}
+                                            className="px-3 py-2 text-xs bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+                                        >
+                                            Approve
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                const reason = prompt('Rejection reason:');
+                                                if (reason) handleReject(verification._id, reason);
+                                            }}
+                                            disabled={actionLoading}
+                                            className="px-3 py-2 text-xs bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                                        >
+                                            Reject
+                                        </button>
+                                        <button
+                                            onClick={() => setSelectedVerification(verification)}
+                                            className="px-3 py-2 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                        >
+                                            Details
+                                        </button>
+                                    </div>
+                                ) : null}
+                            </div>
+                        </div>
+                    </div>
+                ))}
             </div>
 
             {/* Verification Details Modal */}
