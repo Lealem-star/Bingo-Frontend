@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Authentication - Love Bingo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .test-link {
+            display: block;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            padding: 15px 20px;
+            margin: 10px 0;
+            border-radius: 10px;
+            text-align: center;
+            transition: background 0.3s;
+        }
+
+        .test-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .info {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        .success {
+            background: rgba(0, 255, 0, 0.2);
+        }
+
+        .error {
+            background: rgba(255, 0, 0, 0.2);
+        }
+
+        .warning {
+            background: rgba(255, 255, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🧪 Love Bingo - Test Authentication</h1>
+
+        <div class="info">
+            <h3>🔧 Development Mode Testing</h3>
+            <p>This page helps you test the authentication fixes without Telegram WebApp.</p>
+            <p><strong>Note:</strong> The app will automatically detect development mode and use fallback
+                authentication.</p>
+        </div>
+
+        <div id="status" class="status warning">
+            <strong>Status:</strong> Checking environment...
+        </div>
+
+        <h3>🚀 Test Links</h3>
+        <a href="/?test=true" class="test-link">
+            🏠 Test Main App (with ?test=true)
+        </a>
+
+        <a href="/#test=true" class="test-link">
+            🏠 Test Main App (with #test=true)
+        </a>
+
+        <a href="/?test=true&stake=10" class="test-link">
+            🎮 Test with Stake 10
+        </a>
+
+        <a href="/?test=true&stake=50" class="test-link">
+            🎮 Test with Stake 50
+        </a>
+
+        <div class="info">
+            <h3>🐛 Debug Information</h3>
+            <div id="debug-info">
+                <p><strong>Current URL:</strong> <span id="current-url"></span></p>
+                <p><strong>User Agent:</strong> <span id="user-agent"></span></p>
+                <p><strong>Telegram WebApp:</strong> <span id="telegram-status"></span></p>
+                <p><strong>InitData:</strong> <span id="initdata-status"></span></p>
+            </div>
+        </div>
+
+        <div class="info">
+            <h3>📋 What Was Fixed</h3>
+            <ul>
+                <li>✅ Fixed cartellas API URL (was using wrong base URL)</li>
+                <li>✅ Added fallback authentication for development mode</li>
+                <li>✅ Fixed WebSocket token validation</li>
+                <li>✅ Added better error handling for missing initData</li>
+                <li>✅ Added test token support in backend</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Update debug information
+        document.getElementById('current-url').textContent = window.location.href;
+        document.getElementById('user-agent').textContent = navigator.userAgent;
+
+        const hasTelegram = !!window.Telegram;
+        const hasWebApp = !!window.Telegram?.WebApp;
+        const hasInitData = !!window.Telegram?.WebApp?.initData;
+
+        document.getElementById('telegram-status').textContent = hasTelegram ? 'Available' : 'Not Available';
+        document.getElementById('initdata-status').textContent = hasInitData ? 'Present' : 'Not Present';
+
+        // Update status
+        const statusEl = document.getElementById('status');
+        if (hasInitData) {
+            statusEl.className = 'status success';
+            statusEl.innerHTML = '<strong>Status:</strong> ✅ Telegram WebApp detected with initData - normal authentication will be used';
+        } else if (window.location.hostname === 'localhost' || window.location.hostname.includes('127.0.0.1') ||
+            window.location.search.includes('test=true') || window.location.hash.includes('test=true')) {
+            statusEl.className = 'status warning';
+            statusEl.innerHTML = '<strong>Status:</strong> ⚠️ Development mode detected - fallback authentication will be used';
+        } else {
+            statusEl.className = 'status error';
+            statusEl.innerHTML = '<strong>Status:</strong> ❌ No Telegram WebApp detected - authentication will fail';
+        }
+    </script>
+</body>
+
+</html>
