@@ -114,9 +114,13 @@ export function useCartellaWebSocket(stake, sessionId) {
                                 const phase = event.payload.phase;
                                 const registrationEndTime = (phase === 'registration') ? (event.payload.nextStartAt || null) : null;
                                 const remainingSeconds = registrationEndTime ? Math.max(0, Math.ceil((registrationEndTime - Date.now()) / 1000)) : prev.countdown;
+
+                                // Don't override phase if game is already running
+                                const finalPhase = (prev.phase === 'running') ? prev.phase : phase;
+
                                 return ({
                                     ...prev,
-                                    phase,
+                                    phase: finalPhase,
                                     gameId: event.payload.gameId,
                                     playersCount: event.payload.playersCount,
                                     takenCards: event.payload.takenCards || [],

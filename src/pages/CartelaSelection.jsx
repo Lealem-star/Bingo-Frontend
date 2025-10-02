@@ -114,14 +114,27 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
 
     // Handle game state changes
     useEffect(() => {
-        // If we're not in registration phase, navigate to GameLayout (watch mode)
-        if (gameState.phase !== 'registration' && gameState.gameId) {
-            console.log('Game is ongoing, navigating to GameLayout for watch mode');
-            onCartelaSelected?.(null); // Pass null to indicate watch mode
-        } else if (gameState.phase === 'running' && gameState.gameId && selectedCardNumber) {
-            // Game has started with our selection, navigate to game layout
+        console.log('Game state changed:', {
+            phase: gameState.phase,
+            gameId: gameState.gameId,
+            selectedCardNumber,
+            hasSelectedCard: !!selectedCardNumber
+        });
+
+        // If game is running and we have a selected card, navigate to game layout
+        if (gameState.phase === 'running' && gameState.gameId && selectedCardNumber) {
             console.log('Game started with our cartella, navigating to game layout');
             onCartelaSelected?.(selectedCardNumber);
+        }
+        // If game is running but we don't have a selected card, navigate to watch mode
+        else if (gameState.phase === 'running' && gameState.gameId && !selectedCardNumber) {
+            console.log('Game is ongoing, navigating to GameLayout for watch mode');
+            onCartelaSelected?.(null);
+        }
+        // If game is in starting phase and we have a selected card, prepare for navigation
+        else if (gameState.phase === 'starting' && gameState.gameId && selectedCardNumber) {
+            console.log('Game is starting with our cartella, preparing for navigation');
+            // Don't navigate yet, wait for 'running' phase
         }
     }, [gameState.phase, gameState.gameId, selectedCardNumber, onCartelaSelected]);
 
