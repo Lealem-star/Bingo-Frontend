@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useGameWebSocket } from '../lib/ws/useGameWebSocket';
 import { useAuth } from '../lib/auth/AuthProvider';
 
@@ -11,10 +11,31 @@ export default function GameLayout({
     onNavigate,
 }) {
     const { sessionId } = useAuth();
+    const [showTimeout, setShowTimeout] = useState(false);
 
-    console.log('GameLayout - Props received:', { stake, selectedCartela, gameId, sessionId: sessionId ? 'Present' : 'Missing' });
+    console.log('GameLayout - Props received:', {
+        stake,
+        selectedCartela,
+        gameId,
+        sessionId: sessionId ? 'Present' : 'Missing',
+        playersCount,
+        prizePool
+    });
 
     const { connected, gameState } = useGameWebSocket(gameId, sessionId);
+
+    // Timeout mechanism for when gameId is not available
+    useEffect(() => {
+        if (!gameId) {
+            const timeout = setTimeout(() => {
+                setShowTimeout(true);
+            }, 5000); // 5 second timeout
+
+            return () => clearTimeout(timeout);
+        } else {
+            setShowTimeout(false);
+        }
+    }, [gameId]);
 
     // Use WebSocket data if available, otherwise fall back to props
     const currentPlayersCount = gameState.playersCount || playersCount;
@@ -35,19 +56,25 @@ export default function GameLayout({
 
     // If no gameId is available, show a loading state or redirect to cartela selection
     if (!gameId) {
-        console.log('GameLayout - No gameId available, redirecting to cartela selection');
+        console.log('GameLayout - No gameId available, showing loading state');
         return (
             <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900 flex items-center justify-center">
                 <div className="text-center text-white">
                     <div className="text-2xl mb-4">🎮</div>
-                    <div className="text-lg mb-2">No active game found</div>
-                    <div className="text-sm text-gray-300 mb-4">Please select a cartella to join a game</div>
-                    <button
-                        onClick={() => onNavigate?.('cartela-selection')}
-                        className="px-6 py-3 bg-pink-600 text-white rounded-lg font-semibold hover:bg-pink-700 transition-colors"
-                    >
-                        Select Cartella
-                    </button>
+                    <div className="text-lg mb-2">Loading game...</div>
+                    <div className="text-sm text-gray-300 mb-4">Please wait while we prepare your game</div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+                    {showTimeout && (
+                        <div className="mt-4">
+                            <div className="text-sm text-yellow-300 mb-2">Taking longer than expected?</div>
+                            <button
+                                onClick={() => onNavigate?.('cartela-selection')}
+                                className="px-6 py-3 bg-pink-600 text-white rounded-lg font-semibold hover:bg-pink-700 transition-colors"
+                            >
+                                Back to Cartella Selection
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         );

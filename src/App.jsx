@@ -54,6 +54,7 @@ function App() {
   };
 
   const handleCartelaSelected = (cartela) => {
+    console.log('handleCartelaSelected called:', { cartela, currentGameId, selectedStake });
     setSelectedCartela(cartela);
     if (cartela === null) {
       // If cartela is null, also clear the stake to go back to stake selection

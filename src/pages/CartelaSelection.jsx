@@ -123,7 +123,13 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
 
         // If game is running and we have a selected card, navigate to game layout
         if (gameState.phase === 'running' && gameState.gameId && selectedCardNumber) {
-            console.log('Game started with our cartella, navigating to game layout');
+            console.log('Game started with our cartella, navigating to game layout', {
+                gameId: gameState.gameId,
+                selectedCardNumber,
+                phase: gameState.phase
+            });
+            // Ensure gameId is updated in parent before navigation
+            onGameIdUpdate?.(gameState.gameId);
             onCartelaSelected?.(selectedCardNumber);
         }
         // If game is running but we don't have a selected card, navigate to watch mode
