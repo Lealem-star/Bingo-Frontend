@@ -90,7 +90,7 @@ export function useUnifiedWebSocket(stake, sessionId) {
             ws.onmessage = (e) => {
                 try {
                     const event = JSON.parse(e.data);
-                    console.log('Unified WebSocket event:', event.type, event.payload);
+                    console.log('Unified WebSocket event received:', event.type, event.payload);
                     setLastEvent(event);
 
                     // Handle different event types
@@ -142,6 +142,7 @@ export function useUnifiedWebSocket(stake, sessionId) {
                             break;
 
                         case 'game_started':
+                            console.log('Game started event received:', event.payload);
                             setGameState(prev => ({
                                 ...prev,
                                 phase: 'running',

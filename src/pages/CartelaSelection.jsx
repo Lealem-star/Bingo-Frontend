@@ -130,6 +130,7 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
             });
             // Ensure gameId is updated in parent before navigation
             onGameIdUpdate?.(gameState.gameId);
+            console.log('Calling onCartelaSelected with:', selectedCardNumber);
             onCartelaSelected?.(selectedCardNumber);
         }
         // If game is running but we don't have a selected card, navigate to watch mode
