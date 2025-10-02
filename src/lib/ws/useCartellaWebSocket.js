@@ -18,12 +18,24 @@ export function useCartellaWebSocket(stake, sessionId) {
     const send = useCallback((type, payload) => {
         const ws = wsRef.current;
         const message = JSON.stringify({ type, payload });
-        console.log('WebSocket send:', { type, payload, connected, readyState: ws?.readyState });
+        console.log('WebSocket send attempt:', {
+            type,
+            payload,
+            connected,
+            readyState: ws?.readyState,
+            wsExists: !!ws
+        });
 
         if (ws && ws.readyState === WebSocket.OPEN) {
             ws.send(message);
+            console.log('Message sent successfully:', { type, payload });
         } else {
-            console.warn('WebSocket not ready, message not sent:', { type, payload });
+            console.error('WebSocket not ready, message not sent:', {
+                type,
+                payload,
+                readyState: ws?.readyState,
+                connected
+            });
         }
     }, [connected]);
 
@@ -50,11 +62,12 @@ export function useCartellaWebSocket(stake, sessionId) {
             wsRef.current = ws;
 
             ws.onopen = () => {
-                console.log('Cartella WebSocket connected');
+                console.log('Cartella WebSocket connected successfully');
                 setConnected(true);
                 retry = 0;
 
                 // Join the room for this stake
+                console.log('Joining room with stake:', stake);
                 send('join_room', { stake });
             };
 
@@ -252,14 +265,22 @@ export function useCartellaWebSocket(stake, sessionId) {
     }, [gameState.phase, gameState.registrationEndTime]);
 
     const selectCartella = useCallback((cardNumber) => {
+        console.log('selectCartella called:', { cardNumber, connected, gamePhase: gameState.phase });
+
         if (!connected) {
-            console.error('WebSocket not connected');
+            console.error('WebSocket not connected - cannot select cartella');
             return false;
         }
 
+        if (gameState.phase !== 'registration') {
+            console.error('Game not in registration phase:', gameState.phase);
+            return false;
+        }
+
+        console.log('Sending select_card message:', { cardNumber });
         send('select_card', { cardNumber });
         return true;
-    }, [connected, send]);
+    }, [connected, send, gameState.phase]);
 
 
     return {
