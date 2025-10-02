@@ -21,23 +21,28 @@ export function useCartellaWebSocket(stake, sessionId) {
         console.log('WebSocket send attempt:', {
             type,
             payload,
-            connected,
             readyState: ws?.readyState,
             wsExists: !!ws
         });
 
         if (ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(message);
-            console.log('Message sent successfully:', { type, payload });
+            try {
+                ws.send(message);
+                console.log('Message sent successfully:', { type, payload });
+                return true;
+            } catch (error) {
+                console.error('Error sending message:', error);
+                return false;
+            }
         } else {
-            console.error('WebSocket not ready, message not sent:', {
+            console.warn('WebSocket not ready, message not sent:', {
                 type,
                 payload,
-                readyState: ws?.readyState,
-                connected
+                readyState: ws?.readyState
             });
+            return false;
         }
-    }, [connected]);
+    }, []); // No dependencies - this prevents re-creation
 
     useEffect(() => {
         if (!stake || !sessionId) {
@@ -49,13 +54,23 @@ export function useCartellaWebSocket(stake, sessionId) {
         let retry = 0;
         let heartbeat = null;
         let connecting = false;
+        let hasJoinedRoom = false;
 
         const connect = () => {
-            if (connecting) {
-                console.log('Connection already in progress, skipping...');
+            if (connecting || stopped) {
+                console.log('Connection already in progress or stopped, skipping...');
                 return;
             }
+
+            // Close existing connection if any
+            if (wsRef.current) {
+                wsRef.current.close();
+                wsRef.current = null;
+            }
+
             connecting = true;
+            hasJoinedRoom = false;
+
             const wsBase = import.meta.env.VITE_WS_URL ||
                 (window.location.hostname === 'localhost' ? 'ws://localhost:3001' :
                     'wss://bingo-back-2evw.onrender.com');
@@ -74,12 +89,15 @@ export function useCartellaWebSocket(stake, sessionId) {
                 connecting = false;
 
                 // Join the room for this stake - but only once per connection
-                console.log('Joining room with stake:', stake);
-                setTimeout(() => {
-                    if (ws.readyState === WebSocket.OPEN) {
-                        send('join_room', { stake });
-                    }
-                }, 100); // Small delay to ensure connection is stable
+                if (!hasJoinedRoom) {
+                    console.log('Joining room with stake:', stake);
+                    hasJoinedRoom = true;
+                    setTimeout(() => {
+                        if (ws.readyState === WebSocket.OPEN && !stopped) {
+                            ws.send(JSON.stringify({ type: 'join_room', payload: { stake } }));
+                        }
+                    }, 100); // Small delay to ensure connection is stable
+                }
             };
 
             ws.onmessage = (e) => {
@@ -195,6 +213,8 @@ export function useCartellaWebSocket(stake, sessionId) {
                 console.log('- 1011: Server error');
                 setConnected(false);
                 connecting = false;
+                hasJoinedRoom = false;
+
                 if (heartbeat) {
                     clearInterval(heartbeat);
                     heartbeat = null;
@@ -203,17 +223,22 @@ export function useCartellaWebSocket(stake, sessionId) {
                 // If token is invalid (1008), don't retry - user needs to refresh
                 if (event.code === 1008) {
                     console.error('WebSocket authentication failed - token may be expired. Please refresh the page.');
-                    // Don't retry on authentication failures
+                    stopped = true; // Stop all retries
                     return;
                 }
 
-                if (!stopped && retry < 5) { // Limit retries to prevent infinite loop
-                    const delay = Math.min(1000 * 2 ** retry, 10000);
+                // Only retry if not stopped and within retry limit
+                if (!stopped && retry < 3) { // Reduced retries to prevent spam
+                    const delay = Math.min(1000 * Math.pow(2, retry), 5000); // Max 5 second delay
                     retry += 1;
-                    console.log(`Retrying WebSocket connection in ${delay}ms (attempt ${retry})`);
-                    setTimeout(connect, delay);
-                } else if (retry >= 5) {
-                    console.error('Max WebSocket retry attempts reached. Please refresh the page.');
+                    console.log(`Retrying WebSocket connection in ${delay}ms (attempt ${retry}/3)`);
+                    setTimeout(() => {
+                        if (!stopped) {
+                            connect();
+                        }
+                    }, delay);
+                } else if (retry >= 3) {
+                    console.error('Max WebSocket retry attempts reached. Connection will not be retried.');
                 }
             };
 
@@ -239,13 +264,18 @@ export function useCartellaWebSocket(stake, sessionId) {
 
         return () => {
             stopped = true;
-            wsRef.current?.close();
+            connecting = false;
+            hasJoinedRoom = false;
+            if (wsRef.current) {
+                wsRef.current.close();
+                wsRef.current = null;
+            }
             if (heartbeat) {
                 clearInterval(heartbeat);
                 heartbeat = null;
             }
         };
-    }, [stake, sessionId, send]);
+    }, [stake, sessionId]); // Removed 'send' from dependencies - this was the main cause of the loop
 
     // Countdown effect - decrement every second when in registration phase
     useEffect(() => {
@@ -280,9 +310,14 @@ export function useCartellaWebSocket(stake, sessionId) {
     }, [gameState.phase, gameState.registrationEndTime]);
 
     const selectCartella = useCallback((cardNumber) => {
-        console.log('selectCartella called:', { cardNumber, connected, gamePhase: gameState.phase });
+        console.log('selectCartella called:', {
+            cardNumber,
+            connected,
+            gamePhase: gameState.phase,
+            wsReady: wsRef.current?.readyState === WebSocket.OPEN
+        });
 
-        if (!connected) {
+        if (!connected || wsRef.current?.readyState !== WebSocket.OPEN) {
             console.error('WebSocket not connected - cannot select cartella');
             return false;
         }
@@ -293,9 +328,9 @@ export function useCartellaWebSocket(stake, sessionId) {
         }
 
         console.log('Sending select_card message:', { cardNumber });
-        send('select_card', { cardNumber });
-        return true;
-    }, [connected, send, gameState.phase]);
+        const success = send('select_card', { cardNumber });
+        return success;
+    }, [connected, gameState.phase, send]);
 
 
     return {
