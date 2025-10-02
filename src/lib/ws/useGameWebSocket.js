@@ -39,7 +39,7 @@ export function useGameWebSocket(gameId, sessionId) {
             const wsBase = import.meta.env.VITE_WS_URL ||
                 (window.location.hostname === 'localhost' ? 'ws://localhost:3001' :
                     'wss://bingo-back-2evw.onrender.com');
-            const wsUrl = `${wsBase}/ws?token=${sessionId}`;
+            const wsUrl = `${wsBase}/ws?token=${sessionId}&gameId=${gameId}`;
             console.log('Connecting to Game WebSocket:', wsUrl);
 
             const ws = new WebSocket(wsUrl);
@@ -50,9 +50,8 @@ export function useGameWebSocket(gameId, sessionId) {
                 setConnected(true);
                 retry = 0;
 
-                // Join the game room - we need to determine the stake from the gameId or use a default
-                // For now, we'll use a default stake and let the backend handle it
-                send('join_room', { stake: 10 }); // Default stake, backend will handle the rest
+                // Join the game room
+                send('join_game', { gameId });
             };
 
             ws.onmessage = (e) => {

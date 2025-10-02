@@ -3,7 +3,7 @@ import BottomNav from '../components/BottomNav';
 import { apiFetch } from '../lib/api/client';
 import { useAuth } from '../lib/auth/AuthProvider';
 import { useToast } from '../contexts/ToastContext';
-import { useCartellaWebSocket } from '../lib/ws/useCartellaWebSocket';
+import { useUnifiedWebSocket } from '../lib/ws/useUnifiedWebSocket';
 
 export default function CartelaSelection({ onNavigate, stake, onCartelaSelected, onGameIdUpdate }) {
     const { sessionId } = useAuth();
@@ -16,7 +16,7 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
     const [walletLoading, setWalletLoading] = useState(true);
 
     // WebSocket integration
-    const { connected, gameState, selectCartella } = useCartellaWebSocket(stake, sessionId);
+    const { connected, gameState, selectCartella } = useUnifiedWebSocket(stake, sessionId);
 
     // Debug authentication
     useEffect(() => {
