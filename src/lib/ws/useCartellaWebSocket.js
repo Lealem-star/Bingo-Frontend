@@ -48,8 +48,14 @@ export function useCartellaWebSocket(stake, sessionId) {
         let stopped = false;
         let retry = 0;
         let heartbeat = null;
+        let connecting = false;
 
         const connect = () => {
+            if (connecting) {
+                console.log('Connection already in progress, skipping...');
+                return;
+            }
+            connecting = true;
             const wsBase = import.meta.env.VITE_WS_URL ||
                 (window.location.hostname === 'localhost' ? 'ws://localhost:3001' :
                     'wss://bingo-back-2evw.onrender.com');
@@ -65,10 +71,15 @@ export function useCartellaWebSocket(stake, sessionId) {
                 console.log('Cartella WebSocket connected successfully');
                 setConnected(true);
                 retry = 0;
+                connecting = false;
 
-                // Join the room for this stake
+                // Join the room for this stake - but only once per connection
                 console.log('Joining room with stake:', stake);
-                send('join_room', { stake });
+                setTimeout(() => {
+                    if (ws.readyState === WebSocket.OPEN) {
+                        send('join_room', { stake });
+                    }
+                }, 100); // Small delay to ensure connection is stable
             };
 
             ws.onmessage = (e) => {
@@ -183,6 +194,7 @@ export function useCartellaWebSocket(stake, sessionId) {
                 console.log('- 1008: Policy violation (invalid token)');
                 console.log('- 1011: Server error');
                 setConnected(false);
+                connecting = false;
                 if (heartbeat) {
                     clearInterval(heartbeat);
                     heartbeat = null;
@@ -195,11 +207,13 @@ export function useCartellaWebSocket(stake, sessionId) {
                     return;
                 }
 
-                if (!stopped) {
+                if (!stopped && retry < 5) { // Limit retries to prevent infinite loop
                     const delay = Math.min(1000 * 2 ** retry, 10000);
                     retry += 1;
                     console.log(`Retrying WebSocket connection in ${delay}ms (attempt ${retry})`);
                     setTimeout(connect, delay);
+                } else if (retry >= 5) {
+                    console.error('Max WebSocket retry attempts reached. Please refresh the page.');
                 }
             };
 
@@ -208,6 +222,7 @@ export function useCartellaWebSocket(stake, sessionId) {
                 console.error('WebSocket URL:', wsUrl);
                 console.error('WebSocket readyState:', ws.readyState);
                 setConnected(false);
+                connecting = false;
             };
 
             // Start heartbeat keepalive every 20s
