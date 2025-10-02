@@ -16,6 +16,18 @@ async function verifyTelegram(initData) {
     return res.json();
 }
 
+// Check if JWT token is expired
+function isTokenExpired(token) {
+    if (!token) return true;
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        const now = Math.floor(Date.now() / 1000);
+        return payload.exp < now;
+    } catch {
+        return true;
+    }
+}
+
 async function fetchProfileWithSession(sessionId) {
     if (!sessionId) return null;
     try {
@@ -44,6 +56,7 @@ export function AuthProvider({ children }) {
                     searchParamsEarly.get('tgWebAppData');
 
                 if (initDataEarly) {
+                    console.log('Fresh Telegram initData detected, refreshing session...');
                     const out = await verifyTelegram(initDataEarly);
                     // If switching accounts, replace cached session/user entirely
                     const prevUser = (() => { try { return JSON.parse(localStorage.getItem('user')); } catch { return null; } })();
@@ -53,6 +66,7 @@ export function AuthProvider({ children }) {
                     }
                     setSessionId(out.sessionId);
                     localStorage.setItem('sessionId', out.sessionId);
+                    console.log('New session created:', { sessionId: out.sessionId ? 'SET' : 'MISSING' });
 
                     let mergedUser = out.user;
                     try {
@@ -66,22 +80,54 @@ export function AuthProvider({ children }) {
                     setIsLoading(false);
                     return; // short-circuit: we've just established fresh session from Telegram
                 }
-            } catch { /* fall back to existing session flow */ }
+            } catch (error) {
+                console.error('Failed to refresh session with Telegram initData:', error);
+                // Clear potentially expired session
+                localStorage.removeItem('sessionId');
+                localStorage.removeItem('user');
+                setSessionId(null);
+                setUser(null);
+            }
 
             if (sessionId && user) {
-                // Try to hydrate missing fields (phone/isRegistered) in background
-                try {
-                    if (!user.phone || user.isRegistered === false) {
+                // First check if token is expired locally (faster than API call)
+                if (isTokenExpired(sessionId)) {
+                    console.log('Token is expired, clearing session...');
+                    localStorage.removeItem('sessionId');
+                    localStorage.removeItem('user');
+                    setSessionId(null);
+                    setUser(null);
+                } else {
+                    // Token appears valid, verify with server
+                    try {
+                        console.log('Validating existing session...');
                         const prof = await fetchProfileWithSession(sessionId);
                         if (prof?.user) {
-                            const merged = { ...user, ...{ firstName: prof.user.firstName, lastName: prof.user.lastName, phone: prof.user.phone, isRegistered: prof.user.isRegistered } };
-                            setUser(merged);
-                            localStorage.setItem('user', JSON.stringify(merged));
+                            // Session is valid, update user data if needed
+                            if (!user.phone || user.isRegistered === false) {
+                                const merged = { ...user, ...{ firstName: prof.user.firstName, lastName: prof.user.lastName, phone: prof.user.phone, isRegistered: prof.user.isRegistered } };
+                                setUser(merged);
+                                localStorage.setItem('user', JSON.stringify(merged));
+                            }
+                            setIsLoading(false);
+                            return;
+                        } else {
+                            // Session is invalid/expired, clear it
+                            console.log('Existing session is invalid, clearing...');
+                            localStorage.removeItem('sessionId');
+                            localStorage.removeItem('user');
+                            setSessionId(null);
+                            setUser(null);
                         }
+                    } catch (error) {
+                        console.error('Session validation failed:', error);
+                        // Clear expired/invalid session
+                        localStorage.removeItem('sessionId');
+                        localStorage.removeItem('user');
+                        setSessionId(null);
+                        setUser(null);
                     }
-                } catch { }
-                setIsLoading(false);
-                return;
+                }
             }
             // Wait a bit for Telegram WebApp to initialize
             await new Promise(resolve => setTimeout(resolve, 1000));

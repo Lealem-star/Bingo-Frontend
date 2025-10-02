@@ -175,6 +175,13 @@ export function useCartellaWebSocket(stake, sessionId) {
                     heartbeat = null;
                 }
 
+                // If token is invalid (1008), don't retry - user needs to refresh
+                if (event.code === 1008) {
+                    console.error('WebSocket authentication failed - token may be expired. Please refresh the page.');
+                    // Don't retry on authentication failures
+                    return;
+                }
+
                 if (!stopped) {
                     const delay = Math.min(1000 * 2 ** retry, 10000);
                     retry += 1;
