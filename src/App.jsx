@@ -8,6 +8,7 @@ import Wallet from './pages/Wallet';
 import Profile from './pages/Profile';
 import { AuthProvider } from './lib/auth/AuthProvider.jsx';
 import { ToastProvider } from './contexts/ToastContext.jsx';
+import { WebSocketProvider } from './contexts/WebSocketContext.jsx';
 import AdminLayout from './admin/AdminLayout.jsx';
 
 function App() {
@@ -107,9 +108,11 @@ function App() {
   return (
     <AuthProvider>
       <ToastProvider>
-        <div className="App">
-          {renderPage()}
-        </div>
+        <WebSocketProvider>
+          <div className="App">
+            {renderPage()}
+          </div>
+        </WebSocketProvider>
       </ToastProvider>
     </AuthProvider>
   );

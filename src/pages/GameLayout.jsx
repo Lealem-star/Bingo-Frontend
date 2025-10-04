@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useUnifiedWebSocket } from '../lib/ws/useUnifiedWebSocket';
+import { useWebSocket } from '../contexts/WebSocketContext';
 import { useAuth } from '../lib/auth/AuthProvider';
 
 export default function GameLayout({
@@ -22,7 +22,7 @@ export default function GameLayout({
         prizePool
     });
 
-    const { connected, gameState, claimBingo } = useUnifiedWebSocket(stake, sessionId);
+    const { connected, gameState, claimBingo } = useWebSocket();
 
     console.log('GameLayout - WebSocket state:', {
         connected,
