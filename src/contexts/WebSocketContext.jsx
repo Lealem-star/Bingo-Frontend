@@ -54,14 +54,14 @@ export function WebSocketProvider({ children }) {
         }
 
         // If already connected to the same stake, don't reconnect
-        if (connected && currentStake === stake) {
+        if (connected && currentStake === stake && wsRef.current?.readyState === WebSocket.OPEN) {
             console.log('Already connected to stake:', stake);
             return;
         }
 
-        // Close existing connection if different stake
-        if (wsRef.current && currentStake !== stake) {
-            console.log('Closing existing connection for different stake');
+        // Close existing connection if different stake or if not open
+        if (wsRef.current && (currentStake !== stake || wsRef.current.readyState !== WebSocket.OPEN)) {
+            console.log('Closing existing connection for different stake or closed state');
             wsRef.current.close();
             wsRef.current = null;
             setConnected(false);
@@ -99,7 +99,7 @@ export function WebSocketProvider({ children }) {
             wsRef.current = ws;
 
             ws.onopen = () => {
-                console.log('WebSocket connected');
+                console.log('WebSocket connected successfully');
                 setConnected(true);
                 connecting = false;
                 retry = 0;
@@ -211,7 +211,7 @@ export function WebSocketProvider({ children }) {
             };
 
             ws.onclose = (event) => {
-                console.log('WebSocket closed:', event.code, event.reason);
+                console.log('WebSocket closed:', { code: event.code, reason: event.reason, wasClean: event.wasClean });
                 setConnected(false);
                 if (heartbeat) {
                     clearInterval(heartbeat);
@@ -228,6 +228,7 @@ export function WebSocketProvider({ children }) {
             ws.onerror = (error) => {
                 console.error('WebSocket error:', error);
                 connecting = false;
+                setConnected(false);
             };
         };
 
@@ -258,6 +259,20 @@ export function WebSocketProvider({ children }) {
     const claimBingo = useCallback(() => {
         return send('bingo_claim', {});
     }, [send]);
+
+    // Debug connection state
+    useEffect(() => {
+        console.log('WebSocket Context State:', {
+            connected,
+            currentStake,
+            readyState: wsRef.current?.readyState,
+            gameState: {
+                phase: gameState.phase,
+                gameId: gameState.gameId,
+                playersCount: gameState.playersCount
+            }
+        });
+    }, [connected, currentStake, gameState.phase, gameState.gameId, gameState.playersCount]);
 
     const value = {
         connected,

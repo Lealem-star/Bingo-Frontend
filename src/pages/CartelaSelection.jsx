@@ -24,7 +24,7 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
             console.log('CartelaSelection - Connecting to WebSocket for stake:', stake);
             connectToStake(stake);
         }
-    }, [stake, sessionId, connectToStake]);
+    }, [stake, sessionId]); // Remove connectToStake from dependencies to prevent re-connection loops
 
     // Debug authentication
     useEffect(() => {
