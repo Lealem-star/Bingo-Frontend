@@ -149,8 +149,10 @@ export function useUnifiedWebSocket(stake, sessionId) {
                                 gameId: event.payload.gameId,
                                 playersCount: event.payload.playersCount,
                                 prizePool: event.payload.prizePool,
-                                calledNumbers: [],
-                                currentNumber: null
+                                calledNumbers: event.payload.calledNumbers || [],
+                                currentNumber: null,
+                                yourCard: event.payload.card,
+                                yourCardNumber: event.payload.cardNumber
                             }));
                             break;
 

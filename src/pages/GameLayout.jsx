@@ -22,17 +22,19 @@ export default function GameLayout({
         prizePool
     });
 
+    const { connected, gameState, claimBingo } = useUnifiedWebSocket(stake, sessionId);
+
     console.log('GameLayout - WebSocket state:', {
         connected,
         gameState: {
             phase: gameState.phase,
             gameId: gameState.gameId,
             playersCount: gameState.playersCount,
-            prizePool: gameState.prizePool
+            prizePool: gameState.prizePool,
+            yourCard: gameState.yourCard,
+            yourCardNumber: gameState.yourCardNumber
         }
     });
-
-    const { connected, gameState, claimBingo } = useUnifiedWebSocket(stake, sessionId);
 
     // Timeout mechanism for when gameId is not available
     useEffect(() => {
@@ -53,9 +55,18 @@ export default function GameLayout({
     const calledNumbers = gameState.calledNumbers || [];
     const currentNumber = gameState.currentNumber;
     const currentGameId = gameState.gameId || gameId;
+    const yourBingoCard = gameState.yourCard;
+    const yourCardNumber = gameState.yourCardNumber || selectedCartela;
 
-    // Determine if we're in watch mode (no selected cartella)
-    const isWatchMode = !selectedCartela;
+    // Determine if we're in watch mode (no selected cartella and no bingo card from WebSocket)
+    const isWatchMode = !selectedCartela && !yourBingoCard;
+
+    console.log('GameLayout - Bingo card data:', {
+        yourBingoCard: yourBingoCard ? 'Present' : 'Missing',
+        yourCardNumber,
+        selectedCartela,
+        isWatchMode
+    });
 
     // Auto-transition back to CartelaSelection when registration starts
     useEffect(() => {
@@ -86,6 +97,21 @@ export default function GameLayout({
                             </button>
                         </div>
                     )}
+                </div>
+            </div>
+        );
+    }
+
+    // If we're connected but don't have gameId yet, wait a bit longer for the snapshot
+    if (!currentGameId && connected && gameState.phase === 'waiting') {
+        console.log('GameLayout - Connected but waiting for game state...');
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900 flex items-center justify-center">
+                <div className="text-center text-white">
+                    <div className="text-2xl mb-4">🎮</div>
+                    <div className="text-lg mb-2">Loading game state...</div>
+                    <div className="text-sm text-gray-300 mb-4">Please wait while we load the current game</div>
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
                 </div>
             </div>
         );
@@ -181,8 +207,8 @@ export default function GameLayout({
                                                 <div
                                                     key={number}
                                                     className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${isCalled
-                                                            ? 'bg-green-500 text-white'
-                                                            : 'bg-white/20 text-white/70'
+                                                        ? 'bg-green-500 text-white'
+                                                        : 'bg-white/20 text-white/70'
                                                         }`}
                                                 >
                                                     {number}
@@ -196,10 +222,10 @@ export default function GameLayout({
                     </div>
 
                     {/* Your Cartella */}
-                    {!isWatchMode && selectedCartela && (
+                    {!isWatchMode && (selectedCartela || yourCardNumber) && (
                         <div className="bg-gradient-to-r from-green-500/20 to-blue-500/20 backdrop-blur-sm rounded-2xl p-4 mb-6">
                             <div className="text-center text-white font-bold text-lg mb-4">
-                                Your Cartella #{selectedCartela}
+                                Your Cartella #{yourCardNumber}
                             </div>
                             <div className="grid grid-cols-5 gap-2">
                                 {['B', 'I', 'N', 'G', 'O'].map((letter, colIndex) => (
@@ -213,8 +239,8 @@ export default function GameLayout({
                                                     <div
                                                         key={number}
                                                         className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${isCalled
-                                                                ? 'bg-green-500 text-white'
-                                                                : 'bg-white/20 text-white/70'
+                                                            ? 'bg-green-500 text-white'
+                                                            : 'bg-white/20 text-white/70'
                                                             }`}
                                                     >
                                                         {number}
@@ -509,7 +535,7 @@ export default function GameLayout({
                                     {/* Enhanced Cartela Number Display */}
                                     <div className="text-center mt-3">
                                         <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white text-sm font-bold px-4 py-2 rounded-full inline-block shadow-lg border border-amber-400/30">
-                                            🎫 Cartela #{selectedCartela || 47}
+                                            🎫 Cartela #{yourCardNumber || selectedCartela || 47}
                                         </div>
                                     </div>
                                 </>
