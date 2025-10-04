@@ -8,8 +8,7 @@ export default defineConfig({
     host: true,
     allowedHosts: [
       'localhost',
-      '127.0.0.1',
-      'dieretic-semilunate-ouida.ngrok-free.dev'
+      '127.0.0.1'
     ]
   },
   define: {
