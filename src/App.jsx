@@ -54,20 +54,13 @@ function App() {
   };
 
   const handleCartelaSelected = (cartela) => {
-    console.log('🎯 App.jsx - handleCartelaSelected called:', {
-      cartela,
-      currentGameId,
-      selectedStake,
-      currentPage
-    });
+    console.log('handleCartelaSelected called:', { cartela, currentGameId, selectedStake });
     setSelectedCartela(cartela);
     if (cartela === null) {
       // If cartela is null, also clear the stake to go back to stake selection
       setSelectedStake(null);
     }
-    console.log('🎯 App.jsx - Setting currentPage to game');
     setCurrentPage('game');
-    console.log('🎯 App.jsx - Navigation completed');
   };
 
   const handleGameIdUpdate = (gameId) => {
@@ -89,18 +82,11 @@ function App() {
   };
 
   const renderPage = () => {
-    console.log('🎯 App.jsx - renderPage called:', {
-      currentPage,
-      selectedStake,
-      selectedCartela,
-      currentGameId
-    });
+    console.log('Current page:', currentPage, 'Selected stake:', selectedStake);
     switch (currentPage) {
       case 'game':
-        console.log('🎯 App.jsx - Rendering Game component');
         return <Game onNavigate={handleNavigate} onStakeSelected={handleStakeSelected} selectedCartela={selectedCartela} selectedStake={selectedStake} currentGameId={currentGameId} />;
       case 'cartela-selection':
-        console.log('🎯 App.jsx - Rendering CartelaSelection component');
         return <CartelaSelection onNavigate={handleNavigate} stake={selectedStake} onCartelaSelected={handleCartelaSelected} onGameIdUpdate={handleGameIdUpdate} />;
       case 'admin':
         return <AdminLayout onNavigate={handleNavigate} />;

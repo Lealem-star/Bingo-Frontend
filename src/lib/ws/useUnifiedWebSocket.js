@@ -57,37 +57,12 @@ export function useUnifiedWebSocket(stake, sessionId) {
                 return;
             }
 
-            // Mobile/Telegram WebApp specific delay
-            const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            const isTelegramWebApp = !!window?.Telegram?.WebApp;
-
-            if (isMobile || isTelegramWebApp) {
-                console.log('🔌 Mobile/Telegram WebApp detected - adding connection delay');
-                setTimeout(() => {
-                    if (!stopped) {
-                        connectWebSocket();
-                    }
-                }, 500);
-                return;
-            }
-
-            connectWebSocket();
-        };
-
-        const connectWebSocket = () => {
             connecting = true;
             const wsBase = import.meta.env.VITE_WS_URL ||
                 (window.location.hostname === 'localhost' ? 'ws://localhost:3001' :
                     'wss://bingo-back-2evw.onrender.com');
             const wsUrl = `${wsBase}/ws?token=${sessionId}&stake=${stake}`;
-            console.log('🔌 Connecting to Unified WebSocket:', wsUrl);
-            console.log('🔌 Environment check:', {
-                hostname: window.location.hostname,
-                viteWsUrl: import.meta.env.VITE_WS_URL,
-                wsBase,
-                sessionId: sessionId ? 'Present' : 'Missing',
-                stake
-            });
+            console.log('Connecting to Unified WebSocket:', wsUrl);
 
             // Close existing connection if any
             if (wsRef.current) {
@@ -99,34 +74,16 @@ export function useUnifiedWebSocket(stake, sessionId) {
             wsRef.current = ws;
 
             ws.onopen = () => {
-                console.log('🔌 Unified WebSocket connected successfully');
-                console.log('🔌 Mobile/Telegram WebApp check:', {
-                    isMobile: /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
-                    isTelegramWebApp: !!window?.Telegram?.WebApp,
-                    userAgent: navigator.userAgent,
-                    platform: window?.Telegram?.WebApp?.platform
-                });
+                console.log('Unified WebSocket connected');
                 setConnected(true);
                 connecting = false;
                 retry = 0;
 
-                // Mobile/Telegram WebApp specific: Add small delay before joining room
-                const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                const isTelegramWebApp = !!window?.Telegram?.WebApp;
-
-                const joinRoom = () => {
-                    if (!hasJoinedRoom) {
-                        console.log('🔌 Sending join_room message:', { stake });
-                        ws.send(JSON.stringify({ type: 'join_room', payload: { stake } }));
-                        hasJoinedRoom = true;
-                    }
-                };
-
-                if (isMobile || isTelegramWebApp) {
-                    console.log('🔌 Mobile/Telegram WebApp - delaying room join');
-                    setTimeout(joinRoom, 200);
-                } else {
-                    joinRoom();
+                // Join the room immediately
+                if (!hasJoinedRoom) {
+                    console.log('Sending join_room message:', { stake });
+                    ws.send(JSON.stringify({ type: 'join_room', payload: { stake } }));
+                    hasJoinedRoom = true;
                 }
             };
 
@@ -134,7 +91,6 @@ export function useUnifiedWebSocket(stake, sessionId) {
                 try {
                     const event = JSON.parse(e.data);
                     console.log('Unified WebSocket event received:', event.type, event.payload);
-                    console.log('Full WebSocket message:', JSON.stringify(event, null, 2));
                     setLastEvent(event);
 
                     // Handle different event types
@@ -186,12 +142,7 @@ export function useUnifiedWebSocket(stake, sessionId) {
                             break;
 
                         case 'game_started':
-                            console.log('🎮 GAME STARTED EVENT RECEIVED:', event.payload);
-                            console.log('🎮 Card data:', {
-                                hasCard: !!event.payload.card,
-                                cardNumber: event.payload.cardNumber,
-                                cardPreview: event.payload.card ? event.payload.card.slice(0, 2) : 'No card'
-                            });
+                            console.log('Game started event received:', event.payload);
                             setGameState(prev => ({
                                 ...prev,
                                 phase: 'running',
@@ -203,7 +154,6 @@ export function useUnifiedWebSocket(stake, sessionId) {
                                 yourCard: event.payload.card,
                                 yourCardNumber: event.payload.cardNumber
                             }));
-                            console.log('🎮 Game state updated to running phase');
                             break;
 
                         case 'number_called':
@@ -290,13 +240,7 @@ export function useUnifiedWebSocket(stake, sessionId) {
             };
 
             ws.onclose = (event) => {
-                console.log('🔌 Unified WebSocket closed:', event.code, event.reason);
-                console.log('🔌 WebSocket close details:', {
-                    code: event.code,
-                    reason: event.reason,
-                    wasClean: event.wasClean,
-                    url: wsUrl
-                });
+                console.log('Unified WebSocket closed:', event.code, event.reason);
                 setConnected(false);
                 connecting = false;
                 hasJoinedRoom = false;
@@ -329,12 +273,7 @@ export function useUnifiedWebSocket(stake, sessionId) {
             };
 
             ws.onerror = (error) => {
-                console.error('🔌 Unified WebSocket error:', error);
-                console.error('🔌 WebSocket error details:', {
-                    readyState: ws.readyState,
-                    url: wsUrl,
-                    error: error
-                });
+                console.error('Unified WebSocket error:', error);
                 connecting = false;
             };
 
