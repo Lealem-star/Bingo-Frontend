@@ -62,7 +62,14 @@ export function useUnifiedWebSocket(stake, sessionId) {
                 (window.location.hostname === 'localhost' ? 'ws://localhost:3001' :
                     'wss://bingo-back-2evw.onrender.com');
             const wsUrl = `${wsBase}/ws?token=${sessionId}&stake=${stake}`;
-            console.log('Connecting to Unified WebSocket:', wsUrl);
+            console.log('🔌 Connecting to Unified WebSocket:', wsUrl);
+            console.log('🔌 Environment check:', {
+                hostname: window.location.hostname,
+                viteWsUrl: import.meta.env.VITE_WS_URL,
+                wsBase,
+                sessionId: sessionId ? 'Present' : 'Missing',
+                stake
+            });
 
             // Close existing connection if any
             if (wsRef.current) {
@@ -74,14 +81,14 @@ export function useUnifiedWebSocket(stake, sessionId) {
             wsRef.current = ws;
 
             ws.onopen = () => {
-                console.log('Unified WebSocket connected');
+                console.log('🔌 Unified WebSocket connected successfully');
                 setConnected(true);
                 connecting = false;
                 retry = 0;
 
                 // Join the room immediately
                 if (!hasJoinedRoom) {
-                    console.log('Sending join_room message:', { stake });
+                    console.log('🔌 Sending join_room message:', { stake });
                     ws.send(JSON.stringify({ type: 'join_room', payload: { stake } }));
                     hasJoinedRoom = true;
                 }
@@ -91,6 +98,7 @@ export function useUnifiedWebSocket(stake, sessionId) {
                 try {
                     const event = JSON.parse(e.data);
                     console.log('Unified WebSocket event received:', event.type, event.payload);
+                    console.log('Full WebSocket message:', JSON.stringify(event, null, 2));
                     setLastEvent(event);
 
                     // Handle different event types
@@ -142,7 +150,12 @@ export function useUnifiedWebSocket(stake, sessionId) {
                             break;
 
                         case 'game_started':
-                            console.log('Game started event received:', event.payload);
+                            console.log('🎮 GAME STARTED EVENT RECEIVED:', event.payload);
+                            console.log('🎮 Card data:', {
+                                hasCard: !!event.payload.card,
+                                cardNumber: event.payload.cardNumber,
+                                cardPreview: event.payload.card ? event.payload.card.slice(0, 2) : 'No card'
+                            });
                             setGameState(prev => ({
                                 ...prev,
                                 phase: 'running',
@@ -154,6 +167,7 @@ export function useUnifiedWebSocket(stake, sessionId) {
                                 yourCard: event.payload.card,
                                 yourCardNumber: event.payload.cardNumber
                             }));
+                            console.log('🎮 Game state updated to running phase');
                             break;
 
                         case 'number_called':
@@ -240,7 +254,13 @@ export function useUnifiedWebSocket(stake, sessionId) {
             };
 
             ws.onclose = (event) => {
-                console.log('Unified WebSocket closed:', event.code, event.reason);
+                console.log('🔌 Unified WebSocket closed:', event.code, event.reason);
+                console.log('🔌 WebSocket close details:', {
+                    code: event.code,
+                    reason: event.reason,
+                    wasClean: event.wasClean,
+                    url: wsUrl
+                });
                 setConnected(false);
                 connecting = false;
                 hasJoinedRoom = false;
@@ -273,7 +293,12 @@ export function useUnifiedWebSocket(stake, sessionId) {
             };
 
             ws.onerror = (error) => {
-                console.error('Unified WebSocket error:', error);
+                console.error('🔌 Unified WebSocket error:', error);
+                console.error('🔌 WebSocket error details:', {
+                    readyState: ws.readyState,
+                    url: wsUrl,
+                    error: error
+                });
                 connecting = false;
             };
 

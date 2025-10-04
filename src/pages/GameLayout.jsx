@@ -65,8 +65,22 @@ export default function GameLayout({
         yourBingoCard: yourBingoCard ? 'Present' : 'Missing',
         yourCardNumber,
         selectedCartela,
-        isWatchMode
+        isWatchMode,
+        gamePhase: gameState.phase,
+        hasGameId: !!currentGameId
     });
+
+    // Debug: Log when game state changes
+    useEffect(() => {
+        console.log('🎮 GameLayout - Game state changed:', {
+            phase: gameState.phase,
+            gameId: gameState.gameId,
+            hasCard: !!gameState.yourCard,
+            cardNumber: gameState.yourCardNumber,
+            connected,
+            currentGameId
+        });
+    }, [gameState.phase, gameState.gameId, gameState.yourCard, gameState.yourCardNumber, connected, currentGameId]);
 
     // Auto-transition back to CartelaSelection when registration starts
     useEffect(() => {
@@ -112,6 +126,9 @@ export default function GameLayout({
                     <div className="text-lg mb-2">Loading game state...</div>
                     <div className="text-sm text-gray-300 mb-4">Please wait while we load the current game</div>
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+                    <div className="mt-4 text-xs text-gray-400">
+                        Debug: Connected={connected ? 'Yes' : 'No'}, Phase={gameState.phase}
+                    </div>
                 </div>
             </div>
         );
@@ -290,6 +307,17 @@ export default function GameLayout({
             </div>
         );
     }
+
+    console.log('🎮 GameLayout - Rendering main game interface:', {
+        currentGameId,
+        connected,
+        gamePhase: gameState.phase,
+        hasCard: !!yourBingoCard,
+        cardNumber: yourCardNumber,
+        isWatchMode,
+        playersCount: currentPlayersCount,
+        prizePool: currentPrizePool
+    });
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900 relative overflow-hidden">
