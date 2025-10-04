@@ -57,6 +57,24 @@ export function useUnifiedWebSocket(stake, sessionId) {
                 return;
             }
 
+            // Mobile/Telegram WebApp specific delay
+            const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isTelegramWebApp = !!window?.Telegram?.WebApp;
+
+            if (isMobile || isTelegramWebApp) {
+                console.log('🔌 Mobile/Telegram WebApp detected - adding connection delay');
+                setTimeout(() => {
+                    if (!stopped) {
+                        connectWebSocket();
+                    }
+                }, 500);
+                return;
+            }
+
+            connectWebSocket();
+        };
+
+        const connectWebSocket = () => {
             connecting = true;
             const wsBase = import.meta.env.VITE_WS_URL ||
                 (window.location.hostname === 'localhost' ? 'ws://localhost:3001' :
@@ -82,15 +100,33 @@ export function useUnifiedWebSocket(stake, sessionId) {
 
             ws.onopen = () => {
                 console.log('🔌 Unified WebSocket connected successfully');
+                console.log('🔌 Mobile/Telegram WebApp check:', {
+                    isMobile: /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+                    isTelegramWebApp: !!window?.Telegram?.WebApp,
+                    userAgent: navigator.userAgent,
+                    platform: window?.Telegram?.WebApp?.platform
+                });
                 setConnected(true);
                 connecting = false;
                 retry = 0;
 
-                // Join the room immediately
-                if (!hasJoinedRoom) {
-                    console.log('🔌 Sending join_room message:', { stake });
-                    ws.send(JSON.stringify({ type: 'join_room', payload: { stake } }));
-                    hasJoinedRoom = true;
+                // Mobile/Telegram WebApp specific: Add small delay before joining room
+                const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                const isTelegramWebApp = !!window?.Telegram?.WebApp;
+
+                const joinRoom = () => {
+                    if (!hasJoinedRoom) {
+                        console.log('🔌 Sending join_room message:', { stake });
+                        ws.send(JSON.stringify({ type: 'join_room', payload: { stake } }));
+                        hasJoinedRoom = true;
+                    }
+                };
+
+                if (isMobile || isTelegramWebApp) {
+                    console.log('🔌 Mobile/Telegram WebApp - delaying room join');
+                    setTimeout(joinRoom, 200);
+                } else {
+                    joinRoom();
                 }
             };
 

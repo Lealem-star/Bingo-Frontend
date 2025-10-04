@@ -18,6 +18,18 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
     // WebSocket integration
     const { connected, gameState, selectCartella } = useUnifiedWebSocket(stake, sessionId);
 
+    // Debug: Log WebSocket events
+    useEffect(() => {
+        console.log('🎯 CartelaSelection - WebSocket state update:', {
+            connected,
+            phase: gameState.phase,
+            gameId: gameState.gameId,
+            playersCount: gameState.playersCount,
+            hasCard: !!gameState.yourCard,
+            cardNumber: gameState.yourCardNumber
+        });
+    }, [connected, gameState.phase, gameState.gameId, gameState.playersCount, gameState.yourCard, gameState.yourCardNumber]);
+
     // Debug authentication
     useEffect(() => {
         console.log('CartelaSelection - Authentication Debug:', {
@@ -114,34 +126,73 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
 
     // Handle game state changes
     useEffect(() => {
-        console.log('Game state changed:', {
+        console.log('🎯 CartelaSelection - Game state changed:', {
             phase: gameState.phase,
             gameId: gameState.gameId,
             selectedCardNumber,
-            hasSelectedCard: !!selectedCardNumber
+            hasSelectedCard: !!selectedCardNumber,
+            connected,
+            playersCount: gameState.playersCount,
+            prizePool: gameState.prizePool
         });
 
         // If game is running and we have a selected card, navigate to game layout
         if (gameState.phase === 'running' && gameState.gameId && selectedCardNumber) {
-            console.log('Game started with our cartella, navigating to game layout', {
+            console.log('🎯 NAVIGATING TO GAME LAYOUT:', {
+                gameId: gameState.gameId,
+                selectedCardNumber,
+                phase: gameState.phase,
+                hasOnCartelaSelected: !!onCartelaSelected,
+                hasOnGameIdUpdate: !!onGameIdUpdate,
+                isMobile: /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+                isTelegramWebApp: !!window?.Telegram?.WebApp
+            });
+
+            // Mobile/Telegram WebApp specific: Add small delay before navigation
+            const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            const isTelegramWebApp = !!window?.Telegram?.WebApp;
+
+            const navigate = () => {
+                // Ensure gameId is updated in parent before navigation
+                onGameIdUpdate?.(gameState.gameId);
+                console.log('🎯 Calling onCartelaSelected with:', selectedCardNumber);
+                onCartelaSelected?.(selectedCardNumber);
+                console.log('🎯 Navigation call completed');
+            };
+
+            if (isMobile || isTelegramWebApp) {
+                console.log('🎯 Mobile/Telegram WebApp - delaying navigation');
+                setTimeout(navigate, 100);
+            } else {
+                navigate();
+            }
+        }
+        // If game is running but we don't have a selected card, navigate to watch mode
+        else if (gameState.phase === 'running' && gameState.gameId && !selectedCardNumber) {
+            console.log('🎯 NAVIGATING TO WATCH MODE:', {
                 gameId: gameState.gameId,
                 selectedCardNumber,
                 phase: gameState.phase
             });
-            // Ensure gameId is updated in parent before navigation
-            onGameIdUpdate?.(gameState.gameId);
-            console.log('Calling onCartelaSelected with:', selectedCardNumber);
-            onCartelaSelected?.(selectedCardNumber);
-        }
-        // If game is running but we don't have a selected card, navigate to watch mode
-        else if (gameState.phase === 'running' && gameState.gameId && !selectedCardNumber) {
-            console.log('Game is ongoing, navigating to GameLayout for watch mode');
             onCartelaSelected?.(null);
         }
         // If game is in starting phase and we have a selected card, prepare for navigation
         else if (gameState.phase === 'starting' && gameState.gameId && selectedCardNumber) {
-            console.log('Game is starting with our cartella, preparing for navigation');
+            console.log('🎯 GAME STARTING - Waiting for running phase:', {
+                gameId: gameState.gameId,
+                selectedCardNumber,
+                phase: gameState.phase
+            });
             // Don't navigate yet, wait for 'running' phase
+        }
+        // Debug: Log other states
+        else {
+            console.log('🎯 CartelaSelection - Other state:', {
+                phase: gameState.phase,
+                gameId: gameState.gameId,
+                selectedCardNumber,
+                condition: 'No navigation triggered'
+            });
         }
     }, [gameState.phase, gameState.gameId, selectedCardNumber, onCartelaSelected]);
 

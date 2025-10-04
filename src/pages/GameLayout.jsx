@@ -33,12 +33,14 @@ export default function GameLayout({
             prizePool: gameState.prizePool,
             yourCard: gameState.yourCard,
             yourCardNumber: gameState.yourCardNumber
-        }
+        },
+        isMobile: /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+        isTelegramWebApp: !!window?.Telegram?.WebApp
     });
 
     // Timeout mechanism for when gameId is not available
     useEffect(() => {
-        if (!currentGameId) {
+        if (!gameId) {
             const timeout = setTimeout(() => {
                 setShowTimeout(true);
             }, 5000); // 5 second timeout
@@ -47,12 +49,25 @@ export default function GameLayout({
         } else {
             setShowTimeout(false);
         }
-    }, [currentGameId]);
+    }, [gameId]);
 
     // Use real-time WebSocket data
     const currentPlayersCount = gameState.playersCount || playersCount;
     const currentPrizePool = gameState.prizePool || prizePool;
     const calledNumbers = gameState.calledNumbers || [];
+
+    // Mobile/Telegram WebApp specific: Add debug logging for state synchronization
+    useEffect(() => {
+        console.log('🎮 GameLayout - State synchronization check:', {
+            gameId,
+            gameStateGameId: gameState.gameId,
+            phase: gameState.phase,
+            hasCard: !!gameState.yourCard,
+            cardNumber: gameState.yourCardNumber,
+            isMobile: /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent),
+            isTelegramWebApp: !!window?.Telegram?.WebApp
+        });
+    }, [gameId, gameState.gameId, gameState.phase, gameState.yourCard, gameState.yourCardNumber]);
     const currentNumber = gameState.currentNumber;
     const currentGameId = gameState.gameId || gameId;
     const yourBingoCard = gameState.yourCard;
