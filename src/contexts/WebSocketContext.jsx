@@ -26,6 +26,7 @@ export function WebSocketProvider({ children }) {
     const [lastEvent, setLastEvent] = useState(null);
     const [currentStake, setCurrentStake] = useState(null);
     const [messageCount, setMessageCount] = useState(0);
+    const [pendingGameStart, setPendingGameStart] = useState(null);
 
     const send = useCallback((type, payload) => {
         const ws = wsRef.current;
@@ -168,6 +169,7 @@ export function WebSocketProvider({ children }) {
                                 yourCardNumber: event.payload.cardNumber,
                                 isWatchMode: false
                             }));
+                            setPendingGameStart(null); // Clear any pending game start
                             console.log('Game state updated after game_started');
                             break;
 
@@ -235,7 +237,17 @@ export function WebSocketProvider({ children }) {
                     const delay = Math.min(1000 * 2 ** retry, 10000);
                     retry += 1;
                     console.log(`Retrying connection in ${delay}ms (attempt ${retry})`);
-                    setTimeout(connect, delay);
+                    setTimeout(() => {
+                        // Reconnect and rejoin the room
+                        connect();
+                        // Rejoin the room after a short delay
+                        setTimeout(() => {
+                            if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+                                console.log('Rejoining room after reconnection');
+                                wsRef.current.send(JSON.stringify({ type: 'join_room', payload: { stake } }));
+                            }
+                        }, 1000);
+                    }, delay);
                 }
             };
 

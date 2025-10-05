@@ -179,6 +179,22 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
         }
     }, [selectedCardNumber, gameState.phase, gameState.gameId, onGameIdUpdate, onCartelaSelected]);
 
+    // Enhanced fallback: Detect when game should have started but we missed the message
+    useEffect(() => {
+        if (selectedCardNumber && gameState.phase === 'registration' && gameState.gameId) {
+            // If we have a selected card and we're still in registration phase,
+            // but the game should have started, trigger navigation
+            const timer = setTimeout(() => {
+                console.log('Enhanced fallback: Game should have started, forcing navigation');
+                // Force the game to running state and navigate
+                onGameIdUpdate?.(gameState.gameId);
+                onCartelaSelected?.(selectedCardNumber);
+            }, 5000); // Wait 5 seconds for the game to start
+
+            return () => clearTimeout(timer);
+        }
+    }, [selectedCardNumber, gameState.phase, gameState.gameId, onGameIdUpdate, onCartelaSelected]);
+
     // Handle card selection - automatically confirm without separate confirmation step
     const handleCardSelect = async (cardNumber) => {
         // Check if player has sufficient balance first
@@ -476,6 +492,18 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
                                 <div>Your Card: {gameState.yourCardNumber || 'None'}</div>
                                 <div>Last Event: {lastEvent?.type || 'None'}</div>
                                 <div>Messages: {messageCount}</div>
+                                {selectedCardNumber && gameState.gameId && (
+                                    <button
+                                        onClick={() => {
+                                            console.log('Manual navigation triggered');
+                                            onGameIdUpdate?.(gameState.gameId);
+                                            onCartelaSelected?.(selectedCardNumber);
+                                        }}
+                                        className="mt-2 px-2 py-1 bg-red-500 text-white text-xs rounded"
+                                    >
+                                        Force Navigate
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
