@@ -4,6 +4,8 @@ import Rules from './components/Rules';
 import Scores from './pages/Scores';
 import Wallet from './pages/Wallet';
 import Profile from './pages/Profile';
+import CartelaSelection from './pages/CartelaSelection.jsx';
+import GameLayout from './pages/GameLayout.jsx';
 import { AuthProvider } from './lib/auth/AuthProvider.jsx';
 import { ToastProvider } from './contexts/ToastContext.jsx';
 import { WebSocketProvider } from './contexts/WebSocketContext.jsx';
@@ -46,6 +48,7 @@ function App() {
 
   const handleStakeSelected = (stake) => {
     setSelectedStake(stake);
+    setCurrentPage('cartela-selection');
   };
 
 
@@ -68,8 +71,29 @@ function App() {
     switch (currentPage) {
       case 'game':
         return <Game onNavigate={handleNavigate} onStakeSelected={handleStakeSelected} selectedStake={selectedStake} />;
+      case 'cartela-selection':
+        return (
+          <CartelaSelection
+            onNavigate={handleNavigate}
+            stake={selectedStake}
+            onCartelaSelected={(cartelaNumber) => {
+              // When a cartella is selected (or null for watch mode), go to the live game layout
+              setSelectedCartela(cartelaNumber);
+              setCurrentPage('game-layout');
+            }}
+            onGameIdUpdate={(gameId) => setCurrentGameId(gameId)}
+          />
+        );
       case 'admin':
         return <AdminLayout onNavigate={handleNavigate} />;
+      case 'game-layout':
+        return (
+          <GameLayout
+            onNavigate={handleNavigate}
+            stake={selectedStake}
+            selectedCartela={selectedCartela}
+          />
+        );
       case 'rules':
         return <Rules onNavigate={handleNavigate} />;
       case 'scores':
