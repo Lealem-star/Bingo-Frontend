@@ -144,12 +144,11 @@ export default function Game({ onNavigate, onStakeSelected, selectedStake, selec
 
     // If we have a selectedCartela or we're in watch mode (selectedCartela is null but stake exists), render GameLayout
     if (selectedStake) {
-        console.log('Rendering GameLayout with stake:', selectedStake, 'cartela:', selectedCartela, 'gameId:', currentGameId);
+        console.log('Rendering GameLayout with stake:', selectedStake, 'cartela:', selectedCartela);
         return (
             <GameLayout
                 stake={selectedStake}
                 selectedCartela={selectedCartela}
-                gameId={currentGameId}
                 onNavigate={onNavigate}
             />
         );

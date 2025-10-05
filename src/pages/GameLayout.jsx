@@ -5,9 +5,6 @@ import { useAuth } from '../lib/auth/AuthProvider';
 export default function GameLayout({
     stake,
     selectedCartela,
-    playersCount = 0,
-    prizePool = 0,
-    gameId,
     onNavigate,
 }) {
     const { sessionId } = useAuth();
@@ -16,20 +13,17 @@ export default function GameLayout({
     console.log('GameLayout - Props received:', {
         stake,
         selectedCartela,
-        gameId,
-        sessionId: sessionId ? 'Present' : 'Missing',
-        playersCount,
-        prizePool
+        sessionId: sessionId ? 'Present' : 'Missing'
     });
 
     const { connected, gameState, claimBingo, wsReadyState, isConnecting } = useWebSocket();
 
-    // Use real-time WebSocket data
-    const currentPlayersCount = gameState.playersCount || playersCount;
-    const currentPrizePool = gameState.prizePool || prizePool;
+    // Use ONLY WebSocket data - no props fallbacks
+    const currentPlayersCount = gameState.playersCount || 0;
+    const currentPrizePool = gameState.prizePool || 0;
     const calledNumbers = gameState.calledNumbers || [];
     const currentNumber = gameState.currentNumber;
-    const currentGameId = gameState.gameId || gameId;
+    const currentGameId = gameState.gameId;
 
     console.log('GameLayout - WebSocket state:', {
         connected,
@@ -42,7 +36,7 @@ export default function GameLayout({
             yourCardNumber: gameState.yourCardNumber
         },
         currentGameId,
-        props: { gameId, selectedCartela, stake }
+        props: { selectedCartela, stake }
     });
 
     // Timeout mechanism for when gameId is not available
@@ -94,12 +88,13 @@ export default function GameLayout({
                         <div className="text-yellow-300 font-bold mb-1">🔧 Debug Info:</div>
                         <div className="text-white/80 space-y-1">
                             <div>Connected: {connected ? '✅' : '❌'}</div>
-                            <div>Game ID (props): {gameId || 'None'}</div>
-                            <div>Game ID (state): {gameState.gameId || 'None'}</div>
+                            <div>Game ID (WebSocket): {gameState.gameId || 'None'}</div>
                             <div>Current Game ID: {currentGameId || 'None'}</div>
                             <div>Selected Cartela: {selectedCartela || 'None'}</div>
                             <div>Stake: {stake || 'None'}</div>
                             <div>Game Phase: {gameState.phase || 'Unknown'}</div>
+                            <div>Players Count: {currentPlayersCount}</div>
+                            <div>Prize Pool: {currentPrizePool}</div>
                         </div>
                     </div>
 
