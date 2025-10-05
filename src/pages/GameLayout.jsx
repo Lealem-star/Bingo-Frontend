@@ -148,10 +148,10 @@ export default function GameLayout({
     // This handles the case where the game is starting but we haven't received the gameId yet
     if (!currentGameId) {
         console.log('GameLayout - No gameId available, showing game interface with fallback data');
-        // Use fallback data from props
-        const fallbackGameId = gameId || 'Loading...';
-        const fallbackPlayersCount = playersCount || 0;
-        const fallbackPrizePool = prizePool || 0;
+        // Use fallback data from websocket state
+        const fallbackGameId = gameState.gameId || 'Loading...';
+        const fallbackPlayersCount = currentPlayersCount || 0;
+        const fallbackPrizePool = currentPrizePool || 0;
 
         return (
             <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900 relative overflow-hidden">
