@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-// Removed Game and CartelaSelection imports as related routes are deleted
+import Game from './pages/Game';
 import Rules from './components/Rules';
 import Scores from './pages/Scores';
 import Wallet from './pages/Wallet';
@@ -44,10 +44,11 @@ function App() {
     };
   }, []);
 
+  const handleStakeSelected = (stake) => {
+    setSelectedStake(stake);
+  };
 
- 
 
- 
 
   const handleNavigate = (page) => {
     console.log('Navigating from', currentPage, 'to', page, 'with stake:', selectedStake, 'cartela:', selectedCartela);
@@ -64,8 +65,9 @@ function App() {
   };
 
   const renderPage = () => {
-    console.log('Current page:', currentPage, 'Selected stake:', selectedStake);
     switch (currentPage) {
+      case 'game':
+        return <Game onNavigate={handleNavigate} onStakeSelected={handleStakeSelected} selectedStake={selectedStake} />;
       case 'admin':
         return <AdminLayout onNavigate={handleNavigate} />;
       case 'rules':
@@ -78,15 +80,7 @@ function App() {
       case 'profile':
         return <Profile onNavigate={handleNavigate} />;
       default:
-        return (
-          <div className="flex min-h-screen items-center justify-center p-8 text-center">
-            <div>
-              <img src="/lb.png" alt="Love Bingo" className="mx-auto mb-6 h-24 w-24" />
-              <h1 className="text-2xl font-semibold">Welcome to Love Bingo</h1>
-              <p className="mt-2 text-gray-600">Use the menu to navigate.</p>
-            </div>
-          </div>
-        );
+        return <Game onNavigate={handleNavigate} onStakeSelected={handleStakeSelected} selectedStake={selectedStake} />;
     }
   };
 
