@@ -277,15 +277,7 @@ export function AuthProvider({ children }) {
                             3. The web app will open automatically
                         </p>
                     </div>
-                    {/* Debug info */}
-                    <div className="bg-black/50 rounded-lg p-4 mt-4 text-xs text-white">
-                        <p><strong>Debug Info:</strong></p>
-                        <p>sessionId: {sessionId ? 'present' : 'missing'}</p>
-                        <p>user: {user ? 'present' : 'missing'}</p>
-                        <p>isLoading: {isLoading ? 'true' : 'false'}</p>
-                        <p>Telegram WebApp: {window?.Telegram?.WebApp ? 'available' : 'missing'}</p>
-                        <p>initData: {window?.Telegram?.WebApp?.initData ? 'present' : 'missing'}</p>
-                    </div>
+                    {/* Removed debug info panel */}
                 </div>
             </div>
         );

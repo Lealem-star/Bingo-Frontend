@@ -57,10 +57,11 @@ function App() {
     console.log('Navigating from', currentPage, 'to', page, 'with stake:', selectedStake, 'cartela:', selectedCartela);
 
     if (page === 'game') {
-      // Only clear stake if we're coming from cartela-selection page (back button)
-      if (currentPage === 'cartela-selection') {
+      // Reset to initial game screen when coming back from selection or live game
+      if (currentPage === 'cartela-selection' || currentPage === 'game-layout') {
         setSelectedStake(null);
         setSelectedCartela(null);
+        setCurrentGameId(null);
       }
       // Otherwise, preserve the current state when navigating from other pages
     }

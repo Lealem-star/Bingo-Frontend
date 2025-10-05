@@ -150,9 +150,7 @@ export default function AdminLayout({ onNavigate }) {
                             <div className="w-2 h-2 bg-white/60 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                         </div>
 
-                        <div className="text-xs text-white/40 mt-4 p-2 bg-black/20 rounded">
-                            Debug: {window.Telegram?.WebApp?.initData ? 'Has initData' : 'No initData'}
-                        </div>
+                        {/* Removed debug hint */}
                     </div>
                 </div>
             </div>
@@ -168,15 +166,7 @@ export default function AdminLayout({ onNavigate }) {
                         <h2 className="text-xl font-bold mb-2">Access Denied</h2>
                         <p className="text-white/80 mb-6">You don't have admin privileges to access this panel.</p>
 
-                        {/* Debug Information */}
-                        <div className="text-xs text-white/60 mb-4 p-3 bg-black/20 rounded text-left">
-                            <div><strong>Debug Info:</strong></div>
-                            <div>Telegram WebApp: {window.Telegram?.WebApp ? 'Yes' : 'No'}</div>
-                            <div>InitData: {window.Telegram?.WebApp?.initData ? 'Yes' : 'No'}</div>
-                            <div>SessionId: {localStorage.getItem('sessionId') ? 'Yes' : 'No'}</div>
-                            <div>User Profile: {userProfile ? JSON.stringify(userProfile) : 'None'}</div>
-                            <div>URL: {window.location.href}</div>
-                        </div>
+                        {/* Removed debug information block */}
 
                         <button
                             onClick={() => onNavigate?.('game')}

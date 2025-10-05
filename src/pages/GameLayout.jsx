@@ -83,20 +83,7 @@ export default function GameLayout({
                     <div className="text-sm text-gray-300 mb-4">Please wait while we connect to the game</div>
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
 
-                    {/* Debug Panel */}
-                    <div className="mt-4 p-3 bg-black/30 rounded text-xs">
-                        <div className="text-yellow-300 font-bold mb-1">🔧 Debug Info:</div>
-                        <div className="text-white/80 space-y-1">
-                            <div>Connected: {connected ? '✅' : '❌'}</div>
-                            <div>Game ID (WebSocket): {gameState.gameId || 'None'}</div>
-                            <div>Current Game ID: {currentGameId || 'None'}</div>
-                            <div>Selected Cartela: {selectedCartela || 'None'}</div>
-                            <div>Stake: {stake || 'None'}</div>
-                            <div>Game Phase: {gameState.phase || 'Unknown'}</div>
-                            <div>Players Count: {currentPlayersCount}</div>
-                            <div>Prize Pool: {currentPrizePool}</div>
-                        </div>
-                    </div>
+                    {/* Removed debug panel */}
 
                     {showTimeout && (
                         <div className="mt-4">
@@ -342,23 +329,7 @@ export default function GameLayout({
                     </div>
                 </div>
 
-                {/* Debug Panel - Mobile Testing */}
-                <div className="mt-2 p-2 bg-black/30 rounded-lg text-xs">
-                    <div className="text-yellow-300 font-bold mb-1">🔧 Debug Info:</div>
-                    <div className="text-white/80 space-y-1">
-                        <div>Session: {sessionId ? '✅' : '❌'}</div>
-                        <div>Stake: {stake || 'None'}</div>
-                        <div>Connected: {connected ? '✅' : '❌'}</div>
-                        <div>WS State: {wsReadyState === 0 ? '🔄 Connecting' : wsReadyState === 1 ? '✅ Open' : wsReadyState === 2 ? '🔄 Closing' : '❌ Closed'}</div>
-                        <div>Game Phase: {gameState.phase || 'Unknown'}</div>
-                        <div>Game ID: {currentGameId || 'None'}</div>
-                        <div>Players: {currentPlayersCount || 0}</div>
-                        <div>Prize Pool: ETB {currentPrizePool || 0}</div>
-                        <div>Called Numbers: {calledNumbers.length}/75</div>
-                        <div>Your Card: {yourCardNumber || 'None'}</div>
-                        <div>Watch Mode: {isWatchMode ? 'Yes' : 'No'}</div>
-                    </div>
-                </div>
+                {/* Removed debug panel */}
 
                 {/* Current Number Display */}
                 {currentNumber && (

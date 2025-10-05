@@ -477,41 +477,7 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
                             )}
                         </div>
 
-                        {/* Debug Panel - Mobile Testing */}
-                        <div className="debug-panel mt-2 p-2 bg-black/20 rounded text-xs">
-                            <div className="text-yellow-300 font-bold mb-1">🔧 Debug Info:</div>
-                            <div className="text-white/80 space-y-1">
-                                <div>Session: {sessionId ? '✅' : '❌'}</div>
-                                <div>Stake: {stake || 'None'}</div>
-                                <div>Connected: {connected ? '✅' : '❌'}</div>
-                                <div>WS State: {wsReadyState === 0 ? '🔄 Connecting' : wsReadyState === 1 ? '✅ Open' : wsReadyState === 2 ? '🔄 Closing' : '❌ Closed'}</div>
-                                <div>Game Phase: {gameState.phase || 'Unknown'}</div>
-                                <div>Game ID: {gameState.gameId || 'None'}</div>
-                                <div>Players: {gameState.playersCount || 0}</div>
-                                <div>Prize Pool: ETB {gameState.prizePool || 0}</div>
-                                <div>Your Card: {gameState.yourCardNumber || 'None'}</div>
-                                <div>Last Event: {lastEvent?.type || 'None'}</div>
-                                <div>Messages: {messageCount}</div>
-                                {selectedCardNumber && gameState.gameId && (
-                                    <button
-                                        onClick={() => {
-                                            console.log('Manual navigation triggered', {
-                                                gameId: gameState.gameId,
-                                                selectedCardNumber,
-                                                gamePhase: gameState.phase,
-                                                hasOnGameIdUpdate: !!onGameIdUpdate,
-                                                hasOnCartelaSelected: !!onCartelaSelected
-                                            });
-                                            onGameIdUpdate?.(gameState.gameId);
-                                            onCartelaSelected?.(selectedCardNumber);
-                                        }}
-                                        className="mt-2 px-2 py-1 bg-red-500 text-white text-xs rounded"
-                                    >
-                                        Force Navigate
-                                    </button>
-                                )}
-                            </div>
-                        </div>
+                        {/* Removed debug panel */}
                     </div>
                 </div>
             </header>
