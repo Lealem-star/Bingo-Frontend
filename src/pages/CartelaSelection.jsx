@@ -16,7 +16,7 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
     const [walletLoading, setWalletLoading] = useState(true);
 
     // WebSocket integration
-    const { connected, gameState, selectCartella, connectToStake, wsReadyState, isConnecting } = useWebSocket();
+    const { connected, gameState, selectCartella, connectToStake, wsReadyState, isConnecting, lastEvent } = useWebSocket();
 
     // Connect to WebSocket when component mounts with stake
     useEffect(() => {
@@ -134,32 +134,37 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
             phase: gameState.phase,
             gameId: gameState.gameId,
             selectedCardNumber,
-            hasSelectedCard: !!selectedCardNumber
+            hasSelectedCard: !!selectedCardNumber,
+            yourCard: gameState.yourCard,
+            yourCardNumber: gameState.yourCardNumber,
+            isWatchMode: gameState.isWatchMode
         });
 
         // If game is running and we have a selected card, navigate to game layout
-        if (gameState.phase === 'running' && gameState.gameId && selectedCardNumber) {
+        if (gameState.phase === 'running' && gameState.gameId && (selectedCardNumber || gameState.yourCardNumber)) {
             console.log('Game started with our cartella, navigating to game layout', {
                 gameId: gameState.gameId,
                 selectedCardNumber,
-                phase: gameState.phase
+                yourCardNumber: gameState.yourCardNumber,
+                phase: gameState.phase,
+                hasCard: !!gameState.yourCard
             });
             // Ensure gameId is updated in parent before navigation
             onGameIdUpdate?.(gameState.gameId);
-            console.log('Calling onCartelaSelected with:', selectedCardNumber);
-            onCartelaSelected?.(selectedCardNumber);
+            console.log('Calling onCartelaSelected with:', selectedCardNumber || gameState.yourCardNumber);
+            onCartelaSelected?.(selectedCardNumber || gameState.yourCardNumber);
         }
         // If game is running but we don't have a selected card, navigate to watch mode
-        else if (gameState.phase === 'running' && gameState.gameId && !selectedCardNumber) {
+        else if (gameState.phase === 'running' && gameState.gameId && !selectedCardNumber && !gameState.yourCardNumber) {
             console.log('Game is ongoing, navigating to GameLayout for watch mode');
             onCartelaSelected?.(null);
         }
         // If game is in starting phase and we have a selected card, prepare for navigation
-        else if (gameState.phase === 'starting' && gameState.gameId && selectedCardNumber) {
+        else if (gameState.phase === 'starting' && gameState.gameId && (selectedCardNumber || gameState.yourCardNumber)) {
             console.log('Game is starting with our cartella, preparing for navigation');
             // Don't navigate yet, wait for 'running' phase
         }
-    }, [gameState.phase, gameState.gameId, selectedCardNumber, onCartelaSelected]);
+    }, [gameState.phase, gameState.gameId, gameState.yourCardNumber, gameState.yourCard, selectedCardNumber, onCartelaSelected]);
 
     // Handle card selection - automatically confirm without separate confirmation step
     const handleCardSelect = async (cardNumber) => {
@@ -455,6 +460,8 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
                                 <div>Game ID: {gameState.gameId || 'None'}</div>
                                 <div>Players: {gameState.playersCount || 0}</div>
                                 <div>Prize Pool: ETB {gameState.prizePool || 0}</div>
+                                <div>Your Card: {gameState.yourCardNumber || 'None'}</div>
+                                <div>Last Event: {lastEvent?.type || 'None'}</div>
                             </div>
                         </div>
                     </div>

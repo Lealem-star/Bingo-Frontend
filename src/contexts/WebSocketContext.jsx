@@ -118,6 +118,8 @@ export function WebSocketProvider({ children }) {
                 try {
                     const event = JSON.parse(e.data);
                     console.log('WebSocket message received:', event);
+                    console.log('WebSocket message type:', event.type);
+                    console.log('WebSocket message payload:', event.payload);
                     setLastEvent(event);
 
                     switch (event.type) {
