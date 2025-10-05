@@ -24,6 +24,13 @@ export default function GameLayout({
 
     const { connected, gameState, claimBingo, wsReadyState, isConnecting } = useWebSocket();
 
+    // Use real-time WebSocket data
+    const currentPlayersCount = gameState.playersCount || playersCount;
+    const currentPrizePool = gameState.prizePool || prizePool;
+    const calledNumbers = gameState.calledNumbers || [];
+    const currentNumber = gameState.currentNumber;
+    const currentGameId = gameState.gameId || gameId;
+
     console.log('GameLayout - WebSocket state:', {
         connected,
         gameState: {
@@ -33,7 +40,9 @@ export default function GameLayout({
             prizePool: gameState.prizePool,
             yourCard: gameState.yourCard,
             yourCardNumber: gameState.yourCardNumber
-        }
+        },
+        currentGameId,
+        props: { gameId, selectedCartela, stake }
     });
 
     // Timeout mechanism for when gameId is not available
@@ -48,13 +57,6 @@ export default function GameLayout({
             setShowTimeout(false);
         }
     }, [currentGameId]);
-
-    // Use real-time WebSocket data
-    const currentPlayersCount = gameState.playersCount || playersCount;
-    const currentPrizePool = gameState.prizePool || prizePool;
-    const calledNumbers = gameState.calledNumbers || [];
-    const currentNumber = gameState.currentNumber;
-    const currentGameId = gameState.gameId || gameId;
     const yourBingoCard = gameState.yourCard;
     const yourCardNumber = gameState.yourCardNumber || selectedCartela;
 
@@ -86,6 +88,21 @@ export default function GameLayout({
                     <div className="text-lg mb-2">Connecting to game...</div>
                     <div className="text-sm text-gray-300 mb-4">Please wait while we connect to the game</div>
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white mx-auto mb-4"></div>
+
+                    {/* Debug Panel */}
+                    <div className="mt-4 p-3 bg-black/30 rounded text-xs">
+                        <div className="text-yellow-300 font-bold mb-1">🔧 Debug Info:</div>
+                        <div className="text-white/80 space-y-1">
+                            <div>Connected: {connected ? '✅' : '❌'}</div>
+                            <div>Game ID (props): {gameId || 'None'}</div>
+                            <div>Game ID (state): {gameState.gameId || 'None'}</div>
+                            <div>Current Game ID: {currentGameId || 'None'}</div>
+                            <div>Selected Cartela: {selectedCartela || 'None'}</div>
+                            <div>Stake: {stake || 'None'}</div>
+                            <div>Game Phase: {gameState.phase || 'Unknown'}</div>
+                        </div>
+                    </div>
+
                     {showTimeout && (
                         <div className="mt-4">
                             <div className="text-sm text-yellow-300 mb-2">Taking longer than expected?</div>

@@ -495,7 +495,13 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
                                 {selectedCardNumber && gameState.gameId && (
                                     <button
                                         onClick={() => {
-                                            console.log('Manual navigation triggered');
+                                            console.log('Manual navigation triggered', {
+                                                gameId: gameState.gameId,
+                                                selectedCardNumber,
+                                                gamePhase: gameState.phase,
+                                                hasOnGameIdUpdate: !!onGameIdUpdate,
+                                                hasOnCartelaSelected: !!onCartelaSelected
+                                            });
                                             onGameIdUpdate?.(gameState.gameId);
                                             onCartelaSelected?.(selectedCardNumber);
                                         }}
