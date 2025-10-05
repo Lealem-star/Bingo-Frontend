@@ -59,9 +59,9 @@ export function WebSocketProvider({ children }) {
             return;
         }
 
-        // Close existing connection if different stake or if not open
-        if (wsRef.current && (currentStake !== stake || wsRef.current.readyState !== WebSocket.OPEN)) {
-            console.log('Closing existing connection for different stake or closed state');
+        // Close existing connection
+        if (wsRef.current) {
+            console.log('Closing existing connection');
             wsRef.current.close();
             wsRef.current = null;
             setConnected(false);
@@ -89,17 +89,12 @@ export function WebSocketProvider({ children }) {
             const wsUrl = `${wsBase}/ws?token=${sessionId}&stake=${stake}`;
             console.log('Connecting to WebSocket:', wsUrl);
 
-            // Close existing connection if any
-            if (wsRef.current) {
-                wsRef.current.close();
-                wsRef.current = null;
-            }
-
             const ws = new WebSocket(wsUrl);
             wsRef.current = ws;
 
             ws.onopen = () => {
-                console.log('WebSocket connected successfully');
+                console.log('WebSocket connected successfully to stake:', stake);
+                console.log('WebSocket readyState:', ws.readyState);
                 setConnected(true);
                 connecting = false;
                 retry = 0;
@@ -242,6 +237,16 @@ export function WebSocketProvider({ children }) {
         };
     }, [sessionId, connected, currentStake]);
 
+    // Debug connection state
+    useEffect(() => {
+        console.log('WebSocket state changed:', {
+            connected,
+            currentStake,
+            readyState: wsRef.current?.readyState,
+            OPEN: WebSocket.OPEN
+        });
+    }, [connected, currentStake]);
+
     // Disconnect when component unmounts or sessionId changes
     useEffect(() => {
         return () => {
@@ -282,7 +287,10 @@ export function WebSocketProvider({ children }) {
         connectToStake,
         selectCartella,
         claimBingo,
-        send
+        send,
+        // Debug info
+        wsReadyState: wsRef.current?.readyState,
+        isConnecting: wsRef.current?.readyState === WebSocket.CONNECTING
     };
 
     return (

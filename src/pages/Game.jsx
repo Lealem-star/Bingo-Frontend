@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import BottomNav from '../components/BottomNav';
 import { useAuth } from '../lib/auth/AuthProvider';
+import { useWebSocket } from '../contexts/WebSocketContext';
 import lbLogo from '../assets/lb.png';
 import StatsPanel from '../components/StatsPanel';
 import GameLayout from './GameLayout';
@@ -9,6 +10,8 @@ import { apiFetch, getApiBase } from '../lib/api/client';
 export default function Game({ onNavigate, onStakeSelected, selectedStake, selectedCartela, currentGameId }) {
     const [adminPost, setAdminPost] = useState(null);
     const apiBase = getApiBase();
+    const { sessionId } = useAuth();
+    const { connected, gameState, wsReadyState } = useWebSocket();
 
     useEffect(() => {
         let isMounted = true;
@@ -110,6 +113,23 @@ export default function Game({ onNavigate, onStakeSelected, selectedStake, selec
                     )}
 
                     <StatsPanel />
+
+                    {/* Debug Panel - Mobile Testing */}
+                    <div className="mx-auto max-w-md w-full px-2">
+                        <div className="p-2 bg-black/30 rounded-lg text-xs">
+                            <div className="text-yellow-300 font-bold mb-1">🔧 Debug Info:</div>
+                            <div className="text-white/80 space-y-1">
+                                <div>Session: {sessionId ? '✅' : '❌'}</div>
+                                <div>Stake: {selectedStake || 'None'}</div>
+                                <div>Connected: {connected ? '✅' : '❌'}</div>
+                                <div>WS State: {wsReadyState === 0 ? '🔄 Connecting' : wsReadyState === 1 ? '✅ Open' : wsReadyState === 2 ? '🔄 Closing' : '❌ Closed'}</div>
+                                <div>Game Phase: {gameState.phase || 'Unknown'}</div>
+                                <div>Game ID: {gameState.gameId || 'None'}</div>
+                                <div>Players: {gameState.playersCount || 0}</div>
+                                <div>Prize Pool: ETB {gameState.prizePool || 0}</div>
+                            </div>
+                        </div>
+                    </div>
                 </main>
 
                 <BottomNav current="game" onNavigate={onNavigate} />

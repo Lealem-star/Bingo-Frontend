@@ -16,7 +16,7 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
     const [walletLoading, setWalletLoading] = useState(true);
 
     // WebSocket integration
-    const { connected, gameState, selectCartella, connectToStake } = useWebSocket();
+    const { connected, gameState, selectCartella, connectToStake, wsReadyState, isConnecting } = useWebSocket();
 
     // Connect to WebSocket when component mounts with stake
     useEffect(() => {
@@ -32,9 +32,17 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
             sessionId: sessionId ? 'Present' : 'Missing',
             sessionIdLength: sessionId?.length || 0,
             stake: stake,
-            connected: connected
+            connected: connected,
+            wsReadyState: wsReadyState,
+            isConnecting: isConnecting,
+            readyStateNames: {
+                0: 'CONNECTING',
+                1: 'OPEN',
+                2: 'CLOSING',
+                3: 'CLOSED'
+            }
         });
-    }, [sessionId, stake, connected]);
+    }, [sessionId, stake, connected, wsReadyState, isConnecting]);
 
     // Update gameId in parent component when it changes
     useEffect(() => {
@@ -428,6 +436,26 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
                         </div>
                         <div className="connection-status">
                             {connected ? '🟢 Connected' : '🔴 Disconnected'}
+                            {wsReadyState !== undefined && (
+                                <div className="text-xs text-gray-400">
+                                    WS: {wsReadyState === 0 ? 'Connecting' : wsReadyState === 1 ? 'Open' : wsReadyState === 2 ? 'Closing' : 'Closed'}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Debug Panel - Mobile Testing */}
+                        <div className="debug-panel mt-2 p-2 bg-black/20 rounded text-xs">
+                            <div className="text-yellow-300 font-bold mb-1">🔧 Debug Info:</div>
+                            <div className="text-white/80 space-y-1">
+                                <div>Session: {sessionId ? '✅' : '❌'}</div>
+                                <div>Stake: {stake || 'None'}</div>
+                                <div>Connected: {connected ? '✅' : '❌'}</div>
+                                <div>WS State: {wsReadyState === 0 ? '🔄 Connecting' : wsReadyState === 1 ? '✅ Open' : wsReadyState === 2 ? '🔄 Closing' : '❌ Closed'}</div>
+                                <div>Game Phase: {gameState.phase || 'Unknown'}</div>
+                                <div>Game ID: {gameState.gameId || 'None'}</div>
+                                <div>Players: {gameState.playersCount || 0}</div>
+                                <div>Prize Pool: ETB {gameState.prizePool || 0}</div>
+                            </div>
                         </div>
                     </div>
                 </div>

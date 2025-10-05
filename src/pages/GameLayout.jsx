@@ -22,7 +22,7 @@ export default function GameLayout({
         prizePool
     });
 
-    const { connected, gameState, claimBingo } = useWebSocket();
+    const { connected, gameState, claimBingo, wsReadyState, isConnecting } = useWebSocket();
 
     console.log('GameLayout - WebSocket state:', {
         connected,
@@ -327,6 +327,24 @@ export default function GameLayout({
                         <div className="wallet-value text-sm font-bold text-purple-300">
                             {connected ? '🟢' : '🔴'}
                         </div>
+                    </div>
+                </div>
+
+                {/* Debug Panel - Mobile Testing */}
+                <div className="mt-2 p-2 bg-black/30 rounded-lg text-xs">
+                    <div className="text-yellow-300 font-bold mb-1">🔧 Debug Info:</div>
+                    <div className="text-white/80 space-y-1">
+                        <div>Session: {sessionId ? '✅' : '❌'}</div>
+                        <div>Stake: {stake || 'None'}</div>
+                        <div>Connected: {connected ? '✅' : '❌'}</div>
+                        <div>WS State: {wsReadyState === 0 ? '🔄 Connecting' : wsReadyState === 1 ? '✅ Open' : wsReadyState === 2 ? '🔄 Closing' : '❌ Closed'}</div>
+                        <div>Game Phase: {gameState.phase || 'Unknown'}</div>
+                        <div>Game ID: {currentGameId || 'None'}</div>
+                        <div>Players: {currentPlayersCount || 0}</div>
+                        <div>Prize Pool: ETB {currentPrizePool || 0}</div>
+                        <div>Called Numbers: {calledNumbers.length}/75</div>
+                        <div>Your Card: {yourCardNumber || 'None'}</div>
+                        <div>Watch Mode: {isWatchMode ? 'Yes' : 'No'}</div>
                     </div>
                 </div>
 
