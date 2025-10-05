@@ -25,6 +25,7 @@ export function WebSocketProvider({ children }) {
     });
     const [lastEvent, setLastEvent] = useState(null);
     const [currentStake, setCurrentStake] = useState(null);
+    const [messageCount, setMessageCount] = useState(0);
 
     const send = useCallback((type, payload) => {
         const ws = wsRef.current;
@@ -109,6 +110,7 @@ export function WebSocketProvider({ children }) {
                 // Start heartbeat
                 heartbeat = setInterval(() => {
                     if (ws.readyState === WebSocket.OPEN) {
+                        console.log('Sending ping...');
                         ws.send(JSON.stringify({ type: 'ping' }));
                     }
                 }, 20000);
@@ -116,6 +118,8 @@ export function WebSocketProvider({ children }) {
 
             ws.onmessage = (e) => {
                 try {
+                    setMessageCount(prev => prev + 1);
+                    console.log('Raw WebSocket message received:', e.data);
                     const event = JSON.parse(e.data);
                     console.log('WebSocket message received:', event);
                     console.log('WebSocket message type:', event.type);
@@ -305,7 +309,8 @@ export function WebSocketProvider({ children }) {
         send,
         // Debug info
         wsReadyState: wsRef.current?.readyState,
-        isConnecting: wsRef.current?.readyState === WebSocket.CONNECTING
+        isConnecting: wsRef.current?.readyState === WebSocket.CONNECTING,
+        messageCount
     };
 
     return (

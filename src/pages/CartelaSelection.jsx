@@ -16,7 +16,7 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
     const [walletLoading, setWalletLoading] = useState(true);
 
     // WebSocket integration
-    const { connected, gameState, selectCartella, connectToStake, wsReadyState, isConnecting, lastEvent } = useWebSocket();
+    const { connected, gameState, selectCartella, connectToStake, wsReadyState, isConnecting, lastEvent, messageCount } = useWebSocket();
 
     // Connect to WebSocket when component mounts with stake
     useEffect(() => {
@@ -475,6 +475,7 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
                                 <div>Prize Pool: ETB {gameState.prizePool || 0}</div>
                                 <div>Your Card: {gameState.yourCardNumber || 'None'}</div>
                                 <div>Last Event: {lastEvent?.type || 'None'}</div>
+                                <div>Messages: {messageCount}</div>
                             </div>
                         </div>
                     </div>
