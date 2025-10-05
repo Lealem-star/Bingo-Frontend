@@ -16,7 +16,7 @@ export default function GameLayout({
         sessionId: sessionId ? 'Present' : 'Missing'
     });
 
-    const { connected, gameState, claimBingo, wsReadyState, isConnecting } = useWebSocket();
+    const { connected, gameState, wsReadyState } = useWebSocket();
 
     // Use ONLY WebSocket data - no props fallbacks
     const currentPlayersCount = gameState.playersCount || 0;
@@ -491,9 +491,9 @@ export default function GameLayout({
                             {/* Reference Design Current Number Display */}
                             <div className="text-center mb-2">
                                 <div className="mx-auto w-full flex items-center justify-center">
-                                    {currentCalledNumber ? (
+                                    {currentNumber ? (
                                         <div className="w-48 h-48 rounded-full bg-white border-8 border-yellow-400 flex items-center justify-center shadow-2xl">
-                                            <div className="text-purple-900 font-extrabold text-3xl">{currentCalledNumber}</div>
+                                            <div className="text-purple-900 font-extrabold text-3xl">{currentNumber}</div>
                                         </div>
                                     ) : (
                                         <div className="w-48 h-48 rounded-full bg-white/20 border-8 border-white/30 flex items-center justify-center">
