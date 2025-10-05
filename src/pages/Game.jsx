@@ -4,7 +4,6 @@ import { useAuth } from '../lib/auth/AuthProvider';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import lbLogo from '../assets/lb.png';
 import StatsPanel from '../components/StatsPanel';
-import GameLayout from './GameLayout';
 import { apiFetch, getApiBase } from '../lib/api/client';
 
 export default function Game({ onNavigate, onStakeSelected, selectedStake, selectedCartela, currentGameId }) {
@@ -113,23 +112,6 @@ export default function Game({ onNavigate, onStakeSelected, selectedStake, selec
                     )}
 
                     <StatsPanel />
-
-                    {/* Debug Panel - Mobile Testing */}
-                    <div className="mx-auto max-w-md w-full px-2">
-                        <div className="p-2 bg-black/30 rounded-lg text-xs">
-                            <div className="text-yellow-300 font-bold mb-1">🔧 Debug Info:</div>
-                            <div className="text-white/80 space-y-1">
-                                <div>Session: {sessionId ? '✅' : '❌'}</div>
-                                <div>Stake: {selectedStake || 'None'}</div>
-                                <div>Connected: {connected ? '✅' : '❌'}</div>
-                                <div>WS State: {wsReadyState === 0 ? '🔄 Connecting' : wsReadyState === 1 ? '✅ Open' : wsReadyState === 2 ? '🔄 Closing' : '❌ Closed'}</div>
-                                <div>Game Phase: {gameState.phase || 'Unknown'}</div>
-                                <div>Game ID: {gameState.gameId || 'None'}</div>
-                                <div>Players: {gameState.playersCount || 0}</div>
-                                <div>Prize Pool: ETB {gameState.prizePool || 0}</div>
-                            </div>
-                        </div>
-                    </div>
                 </main>
 
                 <BottomNav current="game" onNavigate={onNavigate} />
@@ -142,19 +124,7 @@ export default function Game({ onNavigate, onStakeSelected, selectedStake, selec
 
 
 
-    // If we have a selectedCartela or we're in watch mode (selectedCartela is null but stake exists), render GameLayout
-    if (selectedStake) {
-        console.log('Rendering GameLayout with stake:', selectedStake, 'cartela:', selectedCartela);
-        return (
-            <GameLayout
-                stake={selectedStake}
-                selectedCartela={selectedCartela}
-                onNavigate={onNavigate}
-            />
-        );
-    }
-
-    // If no stake selected, show initial screen
+    // Fallback: if a stake exists, App will route to cartela-selection or game-layout
     return null;
 
 

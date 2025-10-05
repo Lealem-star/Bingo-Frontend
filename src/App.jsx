@@ -6,6 +6,7 @@ import Scores from './pages/Scores';
 import History from './pages/History';
 import Wallet from './pages/Wallet';
 import Profile from './pages/Profile';
+import GameLayout from './pages/GameLayout';
 import { AuthProvider } from './lib/auth/AuthProvider.jsx';
 import { ToastProvider } from './contexts/ToastContext.jsx';
 import { WebSocketProvider } from './contexts/WebSocketContext.jsx';
@@ -57,11 +58,8 @@ function App() {
   const handleCartelaSelected = (cartela) => {
     console.log('handleCartelaSelected called:', { cartela, currentGameId, selectedStake });
     setSelectedCartela(cartela);
-    if (cartela === null) {
-      // If cartela is null, also clear the stake to go back to stake selection
-      setSelectedStake(null);
-    }
-    setCurrentPage('game');
+    // Navigate to game layout; preserve stake even if cartela is null (watch mode)
+    setCurrentPage('game-layout');
   };
 
   const handleGameIdUpdate = (gameId) => {
@@ -72,8 +70,8 @@ function App() {
     console.log('Navigating from', currentPage, 'to', page, 'with stake:', selectedStake, 'cartela:', selectedCartela);
 
     if (page === 'game') {
-      // Only clear stake if we're coming from cartela-selection page (back button)
-      if (currentPage === 'cartela-selection') {
+      // Clear stake when leaving selection or game layout back to stake selection
+      if (currentPage === 'cartela-selection' || currentPage === 'game-layout') {
         setSelectedStake(null);
         setSelectedCartela(null);
       }
@@ -89,6 +87,8 @@ function App() {
         return <Game onNavigate={handleNavigate} onStakeSelected={handleStakeSelected} selectedCartela={selectedCartela} selectedStake={selectedStake} currentGameId={currentGameId} />;
       case 'cartela-selection':
         return <CartelaSelection onNavigate={handleNavigate} stake={selectedStake} onCartelaSelected={handleCartelaSelected} onGameIdUpdate={handleGameIdUpdate} />;
+      case 'game-layout':
+        return <GameLayout stake={selectedStake} selectedCartela={selectedCartela} onNavigate={handleNavigate} />;
       case 'admin':
         return <AdminLayout onNavigate={handleNavigate} />;
       case 'rules':
