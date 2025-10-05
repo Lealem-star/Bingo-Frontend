@@ -577,7 +577,7 @@ export default function GameLayout({
                 {/* Enhanced Bottom Action Buttons */}
                 <div className="flex justify-between p-3 mt-4 gap-3">
                     <button
-                        onClick={() => onNavigate?.('cartela-selection')}
+                        onClick={() => onNavigate?.('game')}
                         className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-3 rounded-xl font-bold flex-1 text-sm hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 border border-orange-400/30"
                     >
                         Leave

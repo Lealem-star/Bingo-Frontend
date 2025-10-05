@@ -6,11 +6,11 @@ import lbLogo from '../assets/lb.png';
 import StatsPanel from '../components/StatsPanel';
 import { apiFetch, getApiBase } from '../lib/api/client';
 
-export default function Game({ onNavigate, onStakeSelected, selectedStake, selectedCartela, currentGameId }) {
+export default function Game({ onNavigate, onStakeSelected, selectedStake }) {
     const [adminPost, setAdminPost] = useState(null);
     const apiBase = getApiBase();
     const { sessionId } = useAuth();
-    const { connected, gameState, wsReadyState } = useWebSocket();
+    useWebSocket();
 
     useEffect(() => {
         let isMounted = true;
@@ -124,7 +124,7 @@ export default function Game({ onNavigate, onStakeSelected, selectedStake, selec
 
 
 
-    // Fallback: if a stake exists, App will route to cartela-selection or game-layout
+    // If no stake selected, show initial screen
     return null;
 
 
