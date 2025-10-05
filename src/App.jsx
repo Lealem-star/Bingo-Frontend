@@ -6,7 +6,9 @@ import Scores from './pages/Scores';
 import History from './pages/History';
 import Wallet from './pages/Wallet';
 import Profile from './pages/Profile';
-import { useWebSocket } from './contexts/WebSocketContext.jsx';
+import { AuthProvider } from './lib/auth/AuthProvider.jsx';
+import { ToastProvider } from './contexts/ToastContext.jsx';
+import { WebSocketProvider } from './contexts/WebSocketContext.jsx';
 import AdminLayout from './admin/AdminLayout.jsx';
 
 function App() {
@@ -15,33 +17,6 @@ function App() {
   const [selectedCartela, setSelectedCartela] = useState(null);
   const [currentGameId, setCurrentGameId] = useState(null);
   const [isAdminApp, setIsAdminApp] = useState(false);
-
-  // Backend-driven navigation via WebSocket events
-  const { lastEvent, gameState } = useWebSocket?.() || {};
-
-  // React to backend navigation hints
-  useEffect(() => {
-    if (!lastEvent || !lastEvent.type) return;
-    const { type, payload } = lastEvent;
-
-    if (type === 'selection_confirmed') {
-      if (payload?.cardNumber) setSelectedCartela(payload.cardNumber);
-      if (payload?.gameId) setCurrentGameId(payload.gameId);
-      setCurrentPage('game');
-    }
-
-    if (type === 'game_started') {
-      if (payload?.cardNumber) setSelectedCartela(payload.cardNumber);
-      if (payload?.gameId) setCurrentGameId(payload.gameId);
-      setCurrentPage('game');
-    }
-
-    if (type === 'navigate') {
-      if (payload?.page) setCurrentPage(payload.page);
-      if (payload?.yourCardNumber != null) setSelectedCartela(payload.yourCardNumber);
-      if (payload?.gameId) setCurrentGameId(payload.gameId);
-    }
-  }, [lastEvent]);
 
   // Handle query parameter routing for admin panel
   useEffect(() => {
@@ -131,9 +106,15 @@ function App() {
   };
 
   return (
-    <div className="App">
-      {renderPage()}
-    </div>
+    <AuthProvider>
+      <ToastProvider>
+        <WebSocketProvider>
+          <div className="App">
+            {renderPage()}
+          </div>
+        </WebSocketProvider>
+      </ToastProvider>
+    </AuthProvider>
   );
 }
 
