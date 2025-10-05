@@ -6,9 +6,6 @@ import Scores from './pages/Scores';
 import History from './pages/History';
 import Wallet from './pages/Wallet';
 import Profile from './pages/Profile';
-import { AuthProvider } from './lib/auth/AuthProvider.jsx';
-import { ToastProvider } from './contexts/ToastContext.jsx';
-import { WebSocketProvider } from './contexts/WebSocketContext.jsx';
 import { useWebSocket } from './contexts/WebSocketContext.jsx';
 import AdminLayout from './admin/AdminLayout.jsx';
 
@@ -134,15 +131,9 @@ function App() {
   };
 
   return (
-    <AuthProvider>
-      <ToastProvider>
-        <WebSocketProvider>
-          <div className="App">
-            {renderPage()}
-          </div>
-        </WebSocketProvider>
-      </ToastProvider>
-    </AuthProvider>
+    <div className="App">
+      {renderPage()}
+    </div>
   );
 }
 
