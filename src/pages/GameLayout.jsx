@@ -148,10 +148,10 @@ export default function GameLayout({
     // This handles the case where the game is starting but we haven't received the gameId yet
     if (!currentGameId) {
         console.log('GameLayout - No gameId available, showing game interface with fallback data');
-        // Use fallback data from current derived state
-        const fallbackGameId = currentGameId || 'Loading...';
-        const fallbackPlayersCount = currentPlayersCount || 0;
-        const fallbackPrizePool = currentPrizePool || 0;
+        // Use fallback data from props
+        const fallbackGameId = gameId || 'Loading...';
+        const fallbackPlayersCount = playersCount || 0;
+        const fallbackPrizePool = prizePool || 0;
 
         return (
             <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-purple-900 relative overflow-hidden">
@@ -491,9 +491,9 @@ export default function GameLayout({
                             {/* Reference Design Current Number Display */}
                             <div className="text-center mb-2">
                                 <div className="mx-auto w-full flex items-center justify-center">
-                                    {currentNumber ? (
+                                    {currentCalledNumber ? (
                                         <div className="w-48 h-48 rounded-full bg-white border-8 border-yellow-400 flex items-center justify-center shadow-2xl">
-                                            <div className="text-purple-900 font-extrabold text-3xl">{currentNumber}</div>
+                                            <div className="text-purple-900 font-extrabold text-3xl">{currentCalledNumber}</div>
                                         </div>
                                     ) : (
                                         <div className="w-48 h-48 rounded-full bg-white/20 border-8 border-white/30 flex items-center justify-center">

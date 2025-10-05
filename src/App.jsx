@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Game from './pages/Game';
-import CartelaSelection from './pages/CartelaSelection';
+// Removed Game and CartelaSelection imports as related routes are deleted
 import Rules from './components/Rules';
 import Scores from './pages/Scores';
-import History from './pages/History';
 import Wallet from './pages/Wallet';
 import Profile from './pages/Profile';
 import { AuthProvider } from './lib/auth/AuthProvider.jsx';
@@ -16,7 +14,7 @@ function App() {
   const [selectedStake, setSelectedStake] = useState(null);
   const [selectedCartela, setSelectedCartela] = useState(null);
   const [currentGameId, setCurrentGameId] = useState(null);
-  const [isAdminApp, setIsAdminApp] = useState(false);
+
 
   // Handle query parameter routing for admin panel
   useEffect(() => {
@@ -47,26 +45,9 @@ function App() {
   }, []);
 
 
-  const handleStakeSelected = (stake) => {
-    console.log('Stake selected:', stake);
-    setSelectedStake(stake);
-    setCurrentPage('cartela-selection');
-    console.log('Navigating to cartela-selection');
-  };
+ 
 
-  const handleCartelaSelected = (cartela) => {
-    console.log('handleCartelaSelected called:', { cartela, currentGameId, selectedStake });
-    setSelectedCartela(cartela);
-    if (cartela === null) {
-      // If cartela is null, also clear the stake to go back to stake selection
-      setSelectedStake(null);
-    }
-    setCurrentPage('game');
-  };
-
-  const handleGameIdUpdate = (gameId) => {
-    setCurrentGameId(gameId);
-  };
+ 
 
   const handleNavigate = (page) => {
     console.log('Navigating from', currentPage, 'to', page, 'with stake:', selectedStake, 'cartela:', selectedCartela);
@@ -85,10 +66,6 @@ function App() {
   const renderPage = () => {
     console.log('Current page:', currentPage, 'Selected stake:', selectedStake);
     switch (currentPage) {
-      case 'game':
-        return <Game onNavigate={handleNavigate} onStakeSelected={handleStakeSelected} selectedCartela={selectedCartela} selectedStake={selectedStake} currentGameId={currentGameId} />;
-      case 'cartela-selection':
-        return <CartelaSelection onNavigate={handleNavigate} stake={selectedStake} onCartelaSelected={handleCartelaSelected} onGameIdUpdate={handleGameIdUpdate} />;
       case 'admin':
         return <AdminLayout onNavigate={handleNavigate} />;
       case 'rules':
@@ -101,7 +78,15 @@ function App() {
       case 'profile':
         return <Profile onNavigate={handleNavigate} />;
       default:
-        return <Game onNavigate={handleNavigate} onStakeSelected={handleStakeSelected} selectedCartela={selectedCartela} selectedStake={selectedStake} />;
+        return (
+          <div className="flex min-h-screen items-center justify-center p-8 text-center">
+            <div>
+              <img src="/lb.png" alt="Love Bingo" className="mx-auto mb-6 h-24 w-24" />
+              <h1 className="text-2xl font-semibold">Welcome to Love Bingo</h1>
+              <p className="mt-2 text-gray-600">Use the menu to navigate.</p>
+            </div>
+          </div>
+        );
     }
   };
 
