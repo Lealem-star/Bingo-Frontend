@@ -120,6 +120,17 @@ export function WebSocketProvider({ children }) {
                     console.log('WebSocket message received:', event);
                     console.log('WebSocket message type:', event.type);
                     console.log('WebSocket message payload:', event.payload);
+
+                    // Special logging for game_started messages
+                    if (event.type === 'game_started') {
+                        console.log('🎮 GAME_STARTED MESSAGE RECEIVED!', {
+                            gameId: event.payload.gameId,
+                            cardNumber: event.payload.cardNumber,
+                            hasCard: !!event.payload.card,
+                            playersCount: event.payload.playersCount
+                        });
+                    }
+
                     setLastEvent(event);
 
                     switch (event.type) {
@@ -141,6 +152,7 @@ export function WebSocketProvider({ children }) {
                             break;
 
                         case 'game_started':
+                            console.log('Processing game_started message:', event.payload);
                             setGameState(prev => ({
                                 ...prev,
                                 phase: 'running',
@@ -152,6 +164,7 @@ export function WebSocketProvider({ children }) {
                                 yourCardNumber: event.payload.cardNumber,
                                 isWatchMode: false
                             }));
+                            console.log('Game state updated after game_started');
                             break;
 
                         case 'number_called':

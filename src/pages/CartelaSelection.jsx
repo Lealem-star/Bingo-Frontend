@@ -142,7 +142,7 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
 
         // If game is running and we have a selected card, navigate to game layout
         if (gameState.phase === 'running' && gameState.gameId && (selectedCardNumber || gameState.yourCardNumber)) {
-            console.log('Game started with our cartella, navigating to game layout', {
+            console.log('🎮 NAVIGATION TRIGGERED - Game started with our cartella, navigating to game layout', {
                 gameId: gameState.gameId,
                 selectedCardNumber,
                 yourCardNumber: gameState.yourCardNumber,
@@ -165,6 +165,19 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
             // Don't navigate yet, wait for 'running' phase
         }
     }, [gameState.phase, gameState.gameId, gameState.yourCardNumber, gameState.yourCard, selectedCardNumber, onCartelaSelected]);
+
+    // Fallback: If we have a selected card and game is running but no navigation happened, force navigation
+    useEffect(() => {
+        if (selectedCardNumber && gameState.phase === 'running' && gameState.gameId) {
+            const timer = setTimeout(() => {
+                console.log('Fallback navigation triggered - game is running with selected card');
+                onGameIdUpdate?.(gameState.gameId);
+                onCartelaSelected?.(selectedCardNumber);
+            }, 2000); // Wait 2 seconds for normal navigation
+
+            return () => clearTimeout(timer);
+        }
+    }, [selectedCardNumber, gameState.phase, gameState.gameId, onGameIdUpdate, onCartelaSelected]);
 
     // Handle card selection - automatically confirm without separate confirmation step
     const handleCardSelect = async (cardNumber) => {
