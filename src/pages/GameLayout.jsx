@@ -429,12 +429,8 @@ export default function GameLayout({
                     {/* Right Side - Enhanced Two Cards Stacked */}
                     <div className="space-y-3">
                         {/* Right Top Card - Recent Numbers */}
-                        <div className="relative rounded-2xl p-4 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-2xl shadow-pink-500/20 backdrop-blur-md overflow-hidden border border-white/10">
-                            <div className="flex items-center justify-between mb-3 px-1">
-                                <span className="text-white/80 text-sm font-medium">Recent Numbers</span>
-                                <button className="text-white text-lg w-8 h-8 grid place-items-center rounded-full transition-all duration-200 bg-white/10">🔊</button>
-                            </div>
-                            <div className="grid grid-cols-4 gap-2">
+                        <div className="relative rounded-2xl p-3 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-2xl shadow-pink-500/20 backdrop-blur-md overflow-hidden border border-white/10">
+                            <div className="flex items-center gap-2">
                                 {(() => {
                                     const recent = [...calledNumbers.slice(-3), currentNumber]
                                         .filter((n) => typeof n === 'number');
@@ -455,9 +451,10 @@ export default function GameLayout({
                                         );
                                     });
                                 })()}
-                                {(calledNumbers.length === 0 && !currentNumber) && (
-                                    <div className="col-span-4 text-center text-white/60 text-sm">No numbers yet</div>
+                                {(!(calledNumbers.length > 0 || currentNumber)) && (
+                                    <div className="text-white/60 text-sm">No numbers yet</div>
                                 )}
+                                <button className="ml-auto text-white text-lg w-8 h-8 grid place-items-center rounded-full transition-all duration-200 bg-white/10">🔊</button>
                             </div>
                         </div>
 
