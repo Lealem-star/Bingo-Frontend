@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import BottomNav from '../components/BottomNav';
+import CartellaCard from '../components/CartellaCard';
 import { apiFetch } from '../lib/api/client';
 import { useAuth } from '../lib/auth/AuthProvider';
 import { useToast } from '../contexts/ToastContext';
@@ -261,6 +262,10 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
 
     console.log('CartelaSelection render - loading:', loading, 'error:', error, 'cards:', cards.length);
 
+    // Derive currently selected card (by user or from websocket)
+    const effectiveSelectedNumber = selectedCardNumber || gameState.yourCardNumber || gameState.yourSelection || null;
+    const effectiveSelectedCard = effectiveSelectedNumber ? cards[effectiveSelectedNumber - 1] : null;
+
     if (loading) {
         console.log('Showing loading screen');
         return (
@@ -496,39 +501,38 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
                                 onClick={() => !isTaken && handleCardSelect(cartelaNumber)}
                                 disabled={isTaken || gameState.phase === 'running'}
                                 className={`cartela-number-btn ${isTaken
-                                    ? takenByMe
+                                    ? (takenByMe
                                         ? 'bg-green-600 text-white cursor-default'
-                                        : 'bg-red-600 text-white cursor-not-allowed opacity-60'
-                                    : isSelected
+                                        : 'bg-red-600 text-white cursor-not-allowed opacity-60')
+                                    : (isSelected
                                         ? 'bg-blue-600 text-white'
-                                        : 'hover:bg-blue-500'
+                                        : 'hover:bg-blue-500')
                                     }`}
-                                title={
-                                    isTaken
-                                        ? takenByMe
-                                            ? 'Your selected cartella'
-                                            : 'Taken by another player'
-                                        : `Select cartella #${cartelaNumber}`
-                                }
+                                title={`Cartella #${cartelaNumber}`}
                             >
                                 {cartelaNumber}
-                                {isTaken && !takenByMe && <span className="block text-xs">TAKEN</span>}
-                                {takenByMe && <span className="block text-xs">YOURS</span>}
                             </button>
                         );
                     })}
                 </div>
 
 
-                {/* Recent Selections Display */}
-                {gameState.playersCount > 0 && (
+                {/* Selected Cartella Preview (only the user's selected card) */}
+                {effectiveSelectedNumber && effectiveSelectedCard && (
                     <div className="mt-6">
-                        <h3 className="text-lg font-semibold text-white mb-3 text-center">Game Status</h3>
+                        <h3 className="text-lg font-semibold text-white mb-3 text-center">Your Selected Cartella</h3>
                         <div className="bg-gray-800 rounded-lg p-4">
-                            <div className="text-center text-sm">
-                                <span className="text-blue-400">{gameState.playersCount} player(s) joined</span>
-                                <br />
-                                <span className="text-gray-400">Prize Pool: ETB {gameState.prizePool || 0}</span>
+                            <div className="flex justify-center">
+                                <CartellaCard
+                                    id={effectiveSelectedNumber}
+                                    card={effectiveSelectedCard}
+                                    called={gameState.calledNumbers || []}
+                                    selectedNumber={effectiveSelectedNumber}
+                                    isPreview={true}
+                                />
+                            </div>
+                            <div className="text-center text-sm text-gray-300 mt-3">
+                                🎫 Cartella #{effectiveSelectedNumber}
                             </div>
                         </div>
                     </div>

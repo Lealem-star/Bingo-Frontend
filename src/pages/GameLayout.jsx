@@ -300,30 +300,30 @@ export default function GameLayout({
 
             <div className="max-w-md mx-auto px-3 py-3 relative z-10">
                 {/* Enhanced Top Information Bar */}
-                <div className="flex items-stretch gap-1 p-2 rounded-2xl bg-gradient-to-r from-purple-800/30 to-purple-900/30 ring-1 ring-white/20 shadow-2xl shadow-purple-900/20 backdrop-blur-md border border-white/10">
+                <div className="flex items-stretch gap-1 p-2 rounded-2xl bg-gradient-to-r from-purple-800/30 to-purple-900/30 ring-1 ring-white/20 shadow-2xl shadow-purple-900/20 backdrop-blur-md">
                     <div className="wallet-box flex-1 group">
                         <div className="wallet-label text-[10px] opacity-80">Game ID</div>
-                        <div className="wallet-value text-[10px] font-bold text-yellow-300 truncate">{currentGameId || 'LB000000'}</div>
+                        <div className="wallet-value text-[5px] font-bold text-yellow-300 truncate">{currentGameId || 'LB000000'}</div>
                     </div>
                     <div className="wallet-box flex-1 group">
                         <div className="wallet-label text-[10px] opacity-80">Players</div>
-                        <div className="wallet-value text-[10px] font-bold text-green-300">{currentPlayersCount}</div>
+                        <div className="wallet-value text-[5px] font-bold text-green-300">{currentPlayersCount}</div>
                     </div>
                     <div className="wallet-box flex-1 group">
                         <div className="wallet-label text-[10px] opacity-80">Bet</div>
-                        <div className="wallet-value text-[10px] font-bold text-blue-300">ETB {stake}</div>
+                        <div className="wallet-value text-[5px] font-bold text-blue-300">{stake}</div>
                     </div>
                     <div className="wallet-box flex-1 group">
                         <div className="wallet-label text-[10px] opacity-80">Prize</div>
-                        <div className="wallet-value text-[10px] font-bold text-orange-300">ETB {currentPrizePool}</div>
+                        <div className="wallet-value text-[5px] font-bold text-orange-300">{currentPrizePool}</div>
                     </div>
                     <div className="wallet-box flex-1 group">
                         <div className="wallet-label text-[10px] opacity-80">Called</div>
-                        <div className="wallet-value text-[10px] font-bold text-pink-300">{calledNumbers.length}/75</div>
+                        <div className="wallet-value text-[5px] font-bold text-pink-300">{calledNumbers.length}</div>
                     </div>
                     <div className="wallet-box flex-1 group">
                         <div className="wallet-label text-[10px] opacity-80">Status</div>
-                        <div className="wallet-value text-[10px] font-bold text-purple-300">
+                        <div className="wallet-value text-[5px] font-bold text-purple-300">
                             {connected ? '🟢' : '🔴'}
                         </div>
                     </div>
