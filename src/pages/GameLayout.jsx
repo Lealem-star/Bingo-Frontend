@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import CartellaCard from '../components/CartellaCard';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { useAuth } from '../lib/auth/AuthProvider';
+import { playNumberSound, preloadNumberSounds } from '../lib/audio/numberSounds';
 
 export default function GameLayout({
     stake,
@@ -39,6 +40,25 @@ export default function GameLayout({
         currentGameId,
         props: { selectedCartela, stake }
     });
+
+    // Sound control
+    const [isSoundOn, setIsSoundOn] = useState(true);
+
+    // Preload sounds on first user toggle on (or mount if desired)
+    useEffect(() => {
+        // Attempt a deferred preload to speed up first play; ignore failures on restricted devices
+        const id = setTimeout(() => {
+            try { preloadNumberSounds(); } catch { /* noop */ }
+        }, 1000);
+        return () => clearTimeout(id);
+    }, []);
+
+    // Play sound when a new number arrives and sound is enabled
+    useEffect(() => {
+        if (isSoundOn && typeof currentNumber === 'number') {
+            playNumberSound(currentNumber).catch(() => { });
+        }
+    }, [currentNumber, isSoundOn]);
 
     // Timeout mechanism for when gameId is not available
     useEffect(() => {
@@ -176,7 +196,11 @@ export default function GameLayout({
                         <div className="text-center">
                             <div className="text-white/90 text-sm mb-2">Current Number</div>
                             <div className="text-6xl font-bold text-white mb-2">
-                                {currentNumber || '--'}
+                                {(() => {
+                                    if (!currentNumber) return '--';
+                                    const letter = currentNumber <= 15 ? 'B' : currentNumber <= 30 ? 'I' : currentNumber <= 45 ? 'N' : currentNumber <= 60 ? 'G' : 'O';
+                                    return `${letter}-${currentNumber}`;
+                                })()}
                             </div>
                             <div className="text-white/70 text-sm">
                                 {calledNumbers.length} numbers called
@@ -431,30 +455,42 @@ export default function GameLayout({
                         {/* Right Top Card - Recent Numbers */}
                         <div className="relative rounded-2xl p-3 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-2xl shadow-pink-500/20 backdrop-blur-md overflow-hidden border border-white/10">
                             <div className="flex items-center gap-2">
-                                {(() => {
-                                    const recent = [...calledNumbers.slice(-3), currentNumber]
-                                        .filter((n) => typeof n === 'number');
-                                    return recent.slice(-4).map((n) => {
-                                        const color = n <= 15
-                                            ? 'bg-blue-600'
-                                            : n <= 30
-                                                ? 'bg-purple-600'
-                                                : n <= 45
-                                                    ? 'bg-green-600'
-                                                    : n <= 60
-                                                        ? 'bg-orange-600'
-                                                        : 'bg-red-600';
-                                        return (
-                                            <div key={`recent-${n}`} className={`text-white text-xs font-bold rounded-full px-2 py-1 text-center ${color}`}>
-                                                {n}
-                                            </div>
-                                        );
-                                    });
-                                })()}
-                                {(!(calledNumbers.length > 0 || currentNumber)) && (
-                                    <div className="text-white/60 text-sm">No numbers yet</div>
-                                )}
-                                <button className="ml-auto text-white text-lg w-8 h-8 grid place-items-center rounded-full transition-all duration-200 bg-white/10">🔊</button>
+                                <div className="flex items-center gap-1 flex-1 min-w-0 overflow-hidden flex-nowrap">
+                                    {(() => {
+                                        const recent = [...calledNumbers.slice(-3), currentNumber]
+                                            .filter((n) => typeof n === 'number');
+                                        const toShow = recent.slice(-4);
+                                        const toChip = (n) => {
+                                            const letter = n <= 15 ? 'B' : n <= 30 ? 'I' : n <= 45 ? 'N' : n <= 60 ? 'G' : 'O';
+                                            const color = n <= 15
+                                                ? 'bg-blue-600'
+                                                : n <= 30
+                                                    ? 'bg-purple-600'
+                                                    : n <= 45
+                                                        ? 'bg-green-600'
+                                                        : n <= 60
+                                                            ? 'bg-orange-600'
+                                                            : 'bg-red-600';
+                                            return (
+                                                <div key={`recent-${n}`} className={`text-white text-[10px] font-bold rounded-full px-2 py-0.5 text-center whitespace-nowrap ${color}`}>
+                                                    {`${letter}-${n}`}
+                                                </div>
+                                            );
+                                        };
+                                        return toShow.map(toChip);
+                                    })()}
+                                    {(!(calledNumbers.length > 0 || currentNumber)) && (
+                                        <div className="text-white/60 text-sm">No numbers yet</div>
+                                    )}
+                                </div>
+                                <button
+                                    onClick={() => setIsSoundOn(v => !v)}
+                                    className={`shrink-0 text-white text-lg w-8 h-8 grid place-items-center rounded-full transition-all duration-200 ${isSoundOn ? 'bg-white/10' : 'bg-white/5 opacity-70'}`}
+                                    aria-label={isSoundOn ? 'Mute' : 'Unmute'}
+                                    title={isSoundOn ? 'Mute' : 'Unmute'}
+                                >
+                                    {isSoundOn ? '🔊' : '🔇'}
+                                </button>
                             </div>
                         </div>
 
@@ -464,7 +500,12 @@ export default function GameLayout({
                                 <div className="mx-auto w-full flex items-center justify-center">
                                     {currentNumber ? (
                                         <div className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-white border-8 border-yellow-400 flex items-center justify-center shadow-2xl">
-                                            <div className="text-purple-900 font-extrabold text-3xl">{currentNumber}</div>
+                                            <div className="text-purple-900 font-extrabold text-2xl md:text-3xl">
+                                                {(() => {
+                                                    const letter = currentNumber <= 15 ? 'B' : currentNumber <= 30 ? 'I' : currentNumber <= 45 ? 'N' : currentNumber <= 60 ? 'G' : 'O';
+                                                    return `${letter}-${currentNumber}`;
+                                                })()}
+                                            </div>
                                         </div>
                                     ) : (
                                         <div className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-white/20 border-8 border-white/30 flex items-center justify-center">
