@@ -299,27 +299,27 @@ export default function GameLayout({
             </div>
 
             <div className="max-w-md mx-auto px-3 py-3 relative z-10">
-                {/* Enhanced Top Information Bar */}
-                <div className="flex items-stretch gap-0.5 p-1 rounded-2xl bg-gradient-to-r from-purple-800/30 to-purple-900/30 ring-1 ring-white/20 shadow-2xl shadow-purple-900/20 backdrop-blur-md">
-                    <div className="wallet-box flex-1 group">
-                        <div className="wallet-label text-[8px] opacity-80">Game ID</div>
-                        <div className="wallet-value text-[4px] font-bold text-yellow-300 truncate">{currentGameId || 'LB000000'}</div>
+                {/* Enhanced Top Information Bar (compact with custom CSS) */}
+                <div className="game-info-bar compact flex items-stretch rounded-2xl">
+                    <div className="wallet-box wallet-box--compact flex-1 group">
+                        <div className="wallet-label">Game ID</div>
+                        <div className="wallet-value font-bold text-yellow-300 truncate">{currentGameId || 'LB000000'}</div>
                     </div>
-                    <div className="wallet-box flex-1 group">
-                        <div className="wallet-label text-[8px] opacity-80">Players</div>
-                        <div className="wallet-value text-[4px] font-bold text-green-300">{currentPlayersCount}</div>
+                    <div className="wallet-box wallet-box--compact flex-1 group">
+                        <div className="wallet-label">Players</div>
+                        <div className="wallet-value font-bold text-green-300">{currentPlayersCount}</div>
                     </div>
-                    <div className="wallet-box flex-1 group">
-                        <div className="wallet-label text-[8px] opacity-80">Bet</div>
-                        <div className="wallet-value text-[4px] font-bold text-blue-300">{stake}</div>
+                    <div className="wallet-box wallet-box--compact flex-1 group">
+                        <div className="wallet-label">Bet</div>
+                        <div className="wallet-value font-bold text-blue-300">ETB {stake}</div>
                     </div>
-                    <div className="wallet-box flex-1 group">
-                        <div className="wallet-label text-[8px] opacity-80">Prize</div>
-                        <div className="wallet-value text-[4px] font-bold text-orange-300">{currentPrizePool}</div>
+                    <div className="wallet-box wallet-box--compact flex-1 group">
+                        <div className="wallet-label">Prize</div>
+                        <div className="wallet-value font-bold text-orange-300">ETB {currentPrizePool}</div>
                     </div>
-                    <div className="wallet-box flex-1 group">
-                        <div className="wallet-label text-[8px] opacity-80">Called</div>
-                        <div className="wallet-value text-[4px] font-bold text-pink-300">{calledNumbers.length}</div>
+                    <div className="wallet-box wallet-box--compact flex-1 group">
+                        <div className="wallet-label">Called</div>
+                        <div className="wallet-value font-bold text-pink-300">{calledNumbers.length}/75</div>
                     </div>
                 </div>
 

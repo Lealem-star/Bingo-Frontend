@@ -3487,6 +3487,28 @@ body {
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
+/* Compact variant for top info bar */
+.game-info-bar.compact {
+    padding: 6px;
+    border-radius: 12px;
+}
+
+.game-info-bar.compact .wallet-box--compact {
+    padding: 4px 6px;
+    min-width: 60px;
+    margin: 0 3px;
+}
+
+.game-info-bar.compact .wallet-box--compact .wallet-label {
+    font-size: 10px;
+    opacity: 0.8;
+}
+
+.game-info-bar.compact .wallet-box--compact .wallet-value {
+    font-size: 11px;
+    font-weight: 700;
+}
+
 .game-info-bar .wallet-box {
     transition: all 0.3s ease;
     border-radius: 0.75rem;
