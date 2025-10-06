@@ -300,7 +300,7 @@ export default function GameLayout({
 
             <div className="max-w-md mx-auto px-3 py-3 relative z-10">
                 {/* Enhanced Top Information Bar (compact with custom CSS) */}
-                <div className="game-info-bar compact flex items-stretch rounded-2xl">
+                <div className="game-info-bar compact flex items-stretch rounded-2xl flex-nowrap">
                     <div className="wallet-box wallet-box--compact flex-1 group">
                         <div className="wallet-label">Game ID</div>
                         <div className="wallet-value font-bold text-yellow-300 truncate">{currentGameId || 'LB000000'}</div>

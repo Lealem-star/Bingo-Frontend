@@ -3489,24 +3489,37 @@ body {
 
 /* Compact variant for top info bar */
 .game-info-bar.compact {
-    padding: 6px;
+    padding: 4px;
     border-radius: 12px;
 }
 
 .game-info-bar.compact .wallet-box--compact {
-    padding: 4px 6px;
-    min-width: 60px;
-    margin: 0 3px;
+    padding: 3px 4px;
+    min-width: 50px;
+    margin: 0 2px;
+    flex: 0 0 auto;
 }
 
 .game-info-bar.compact .wallet-box--compact .wallet-label {
-    font-size: 10px;
+    font-size: 9px;
     opacity: 0.8;
 }
 
 .game-info-bar.compact .wallet-box--compact .wallet-value {
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
+}
+
+/* Hide scrollbars for horizontal scroll containers */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
 }
 
 .game-info-bar .wallet-box {
