@@ -300,48 +300,32 @@ export default function GameLayout({
 
             <div className="max-w-md mx-auto px-3 py-3 relative z-10">
                 {/* Enhanced Top Information Bar */}
-                <div className="flex items-stretch gap-1 p-2 rounded-2xl bg-gradient-to-r from-purple-800/30 to-purple-900/30 ring-1 ring-white/20 shadow-2xl shadow-purple-900/20 backdrop-blur-md">
+                <div className="flex items-stretch gap-0.5 p-1 rounded-2xl bg-gradient-to-r from-purple-800/30 to-purple-900/30 ring-1 ring-white/20 shadow-2xl shadow-purple-900/20 backdrop-blur-md">
                     <div className="wallet-box flex-1 group">
-                        <div className="wallet-label text-[10px] opacity-80">Game ID</div>
-                        <div className="wallet-value text-[5px] font-bold text-yellow-300 truncate">{currentGameId || 'LB000000'}</div>
+                        <div className="wallet-label text-[8px] opacity-80">Game ID</div>
+                        <div className="wallet-value text-[4px] font-bold text-yellow-300 truncate">{currentGameId || 'LB000000'}</div>
                     </div>
                     <div className="wallet-box flex-1 group">
-                        <div className="wallet-label text-[10px] opacity-80">Players</div>
-                        <div className="wallet-value text-[5px] font-bold text-green-300">{currentPlayersCount}</div>
+                        <div className="wallet-label text-[8px] opacity-80">Players</div>
+                        <div className="wallet-value text-[4px] font-bold text-green-300">{currentPlayersCount}</div>
                     </div>
                     <div className="wallet-box flex-1 group">
-                        <div className="wallet-label text-[10px] opacity-80">Bet</div>
-                        <div className="wallet-value text-[5px] font-bold text-blue-300">{stake}</div>
+                        <div className="wallet-label text-[8px] opacity-80">Bet</div>
+                        <div className="wallet-value text-[4px] font-bold text-blue-300">{stake}</div>
                     </div>
                     <div className="wallet-box flex-1 group">
-                        <div className="wallet-label text-[10px] opacity-80">Prize</div>
-                        <div className="wallet-value text-[5px] font-bold text-orange-300">{currentPrizePool}</div>
+                        <div className="wallet-label text-[8px] opacity-80">Prize</div>
+                        <div className="wallet-value text-[4px] font-bold text-orange-300">{currentPrizePool}</div>
                     </div>
                     <div className="wallet-box flex-1 group">
-                        <div className="wallet-label text-[10px] opacity-80">Called</div>
-                        <div className="wallet-value text-[5px] font-bold text-pink-300">{calledNumbers.length}</div>
-                    </div>
-                    <div className="wallet-box flex-1 group">
-                        <div className="wallet-label text-[10px] opacity-80">Status</div>
-                        <div className="wallet-value text-[5px] font-bold text-purple-300">
-                            {connected ? '🟢' : '🔴'}
-                        </div>
+                        <div className="wallet-label text-[8px] opacity-80">Called</div>
+                        <div className="wallet-value text-[4px] font-bold text-pink-300">{calledNumbers.length}</div>
                     </div>
                 </div>
 
-                {/* Removed debug panel */}
 
-                {/* Current Number Display */}
-                {currentNumber && (
-                    <div className="mt-4 text-center">
-                        <div className="text-6xl font-bold text-yellow-300 animate-pulse">
-                            {currentNumber}
-                        </div>
-                        <div className="text-sm text-gray-300 mt-2">
-                            Last Called Number
-                        </div>
-                    </div>
-                )}
+
+
 
                 {/* Main Content Area - Enhanced 2 Column Layout */}
                 <div className="grid grid-cols-2 p-2 gap-3 mt-4">
@@ -446,12 +430,22 @@ export default function GameLayout({
                         {/* Right Top Card - Enhanced Game Status */}
                         <div className="relative rounded-2xl p-4 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-2xl shadow-pink-500/20 backdrop-blur-md overflow-hidden border border-white/10">
                             <div className="shimmer-overlay"></div>
+
                             {/* Reference Design Status Header */}
                             <div className="flex items-center justify-between mb-4 px-1">
                                 <div className="flex items-center gap-2">
                                     <span className="text-white/80 text-sm font-medium">Recent Numbers</span>
                                     <div className="flex items-center gap-1">
                                         {/* TODO: Implement recent numbers display */}
+
+                                        {/* Current Number Display */}
+                                        {currentNumber && (
+                                            <div className="mt-4 text-center">
+                                                <div className="text-6xl font-bold text-yellow-300 animate-pulse">
+                                                    {currentNumber}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                                 <button className="text-white text-lg w-8 h-8 grid place-items-center rounded-full transition-all duration-200 bg-white/10">
@@ -473,6 +467,8 @@ export default function GameLayout({
                                     )}
                                 </div>
                             </div>
+
+
                         </div>
 
                         {/* Right Bottom Card - Enhanced User's Cartella */}
