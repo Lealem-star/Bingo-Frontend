@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import CartellaCard from '../components/CartellaCard';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { useAuth } from '../lib/auth/AuthProvider';
 
@@ -427,48 +428,54 @@ export default function GameLayout({
 
                     {/* Right Side - Enhanced Two Cards Stacked */}
                     <div className="space-y-3">
-                        {/* Right Top Card - Enhanced Game Status */}
+                        {/* Right Top Card - Recent Numbers */}
                         <div className="relative rounded-2xl p-4 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-2xl shadow-pink-500/20 backdrop-blur-md overflow-hidden border border-white/10">
-                            <div className="shimmer-overlay"></div>
-
-                            {/* Reference Design Status Header */}
-                            <div className="flex items-center justify-between mb-4 px-1">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-white/80 text-sm font-medium">Recent Numbers</span>
-                                    <div className="flex items-center gap-1">
-                                        {/* TODO: Implement recent numbers display */}
-
-                                        {/* Current Number Display */}
-                                        {currentNumber && (
-                                            <div className="mt-4 text-center">
-                                                <div className="text-6xl font-bold text-yellow-300 animate-pulse">
-                                                    {currentNumber}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                                <button className="text-white text-lg w-8 h-8 grid place-items-center rounded-full transition-all duration-200 bg-white/10">
-                                    🔊
-                                </button>
+                            <div className="flex items-center justify-between mb-3 px-1">
+                                <span className="text-white/80 text-sm font-medium">Recent Numbers</span>
+                                <button className="text-white text-lg w-8 h-8 grid place-items-center rounded-full transition-all duration-200 bg-white/10">🔊</button>
                             </div>
+                            <div className="grid grid-cols-4 gap-2">
+                                {(() => {
+                                    const recent = [...calledNumbers.slice(-3), currentNumber]
+                                        .filter((n) => typeof n === 'number');
+                                    return recent.slice(-4).map((n) => {
+                                        const color = n <= 15
+                                            ? 'bg-blue-600'
+                                            : n <= 30
+                                                ? 'bg-purple-600'
+                                                : n <= 45
+                                                    ? 'bg-green-600'
+                                                    : n <= 60
+                                                        ? 'bg-orange-600'
+                                                        : 'bg-red-600';
+                                        return (
+                                            <div key={`recent-${n}`} className={`text-white text-xs font-bold rounded-full px-2 py-1 text-center ${color}`}>
+                                                {n}
+                                            </div>
+                                        );
+                                    });
+                                })()}
+                                {(calledNumbers.length === 0 && !currentNumber) && (
+                                    <div className="col-span-4 text-center text-white/60 text-sm">No numbers yet</div>
+                                )}
+                            </div>
+                        </div>
 
-                            {/* Reference Design Current Number Display */}
-                            <div className="text-center mb-2">
+                        {/* Right Middle Card - Current Number */}
+                        <div className="relative rounded-2xl p-4 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-2xl shadow-pink-500/20 backdrop-blur-md overflow-hidden border border-white/10">
+                            <div className="text-center">
                                 <div className="mx-auto w-full flex items-center justify-center">
                                     {currentNumber ? (
-                                        <div className="w-48 h-48 rounded-full bg-white border-8 border-yellow-400 flex items-center justify-center shadow-2xl">
+                                        <div className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-white border-8 border-yellow-400 flex items-center justify-center shadow-2xl">
                                             <div className="text-purple-900 font-extrabold text-3xl">{currentNumber}</div>
                                         </div>
                                     ) : (
-                                        <div className="w-48 h-48 rounded-full bg-white/20 border-8 border-white/30 flex items-center justify-center">
+                                        <div className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-white/20 border-8 border-white/30 flex items-center justify-center">
                                             <div className="text-white/60 text-lg font-medium">Waiting...</div>
                                         </div>
                                     )}
                                 </div>
                             </div>
-
-
                         </div>
 
                         {/* Right Bottom Card - Enhanced User's Cartella */}
@@ -519,14 +526,13 @@ export default function GameLayout({
                                             <div className="text-center text-white font-bold text-[10px] bg-gradient-to-b from-orange-500 to-orange-600 rounded-lg py-2 shadow-lg">O</div>
                                         </div>
 
-                                        {/* TODO: Implement cartella grid */}
-                                        <div className="grid grid-cols-5 gap-1">
-                                            {Array.from({ length: 25 }, (_, i) => (
-                                                <div key={i} className="w-full text-[9px] leading-none py-2 rounded-lg border bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200 border-white/20">
-                                                    {i === 12 ? '★' : '0'}
-                                                </div>
-                                            ))}
-                                        </div>
+                                        {/* Implemented cartella grid using CartellaCard */}
+                                        <CartellaCard
+                                            id={yourCardNumber || selectedCartela}
+                                            card={yourBingoCard}
+                                            called={calledNumbers}
+                                            isPreview={false}
+                                        />
                                     </div>
 
                                     {/* Enhanced Cartela Number Display */}
