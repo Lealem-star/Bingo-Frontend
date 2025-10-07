@@ -62,9 +62,9 @@ export default function GameLayout({
         }
     }, [currentNumber, isSoundOn]);
 
-    // Open winner modal when phase enters announce
+    // Open winner modal when phase enters announce (even if winners not attached)
     useEffect(() => {
-        if (gameState.phase === 'announce' && (gameState.winners?.length || 0) > 0) {
+        if (gameState.phase === 'announce') {
             setShowWinners(true);
         }
         if (gameState.phase === 'registration') {

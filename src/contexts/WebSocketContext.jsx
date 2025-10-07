@@ -219,7 +219,7 @@ export function WebSocketProvider({ children }) {
                             setGameState(prev => ({
                                 ...prev,
                                 phase: 'announce',
-                                winners: (event.payload && (event.payload.winners || [])) || [],
+                                winners: (event.payload && (event.payload.winners || event.payload.winner || [])) || prev.winners || [],
                                 calledNumbers: (event.payload && (event.payload.calledNumbers || event.payload.called)) || prev.calledNumbers,
                                 currentNumber: null
                             }));
