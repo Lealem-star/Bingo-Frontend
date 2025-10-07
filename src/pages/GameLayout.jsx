@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import CartellaCard from '../components/CartellaCard';
+import WinnerAnnounce from './WinnerAnnounce';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { useAuth } from '../lib/auth/AuthProvider';
 import { playNumberSound, preloadNumberSounds } from '../lib/audio/numberSounds';
@@ -18,7 +19,7 @@ export default function GameLayout({
         sessionId: sessionId ? 'Present' : 'Missing'
     });
 
-    const { connected, gameState, wsReadyState } = useWebSocket();
+    const { connected, gameState, claimBingo } = useWebSocket();
 
     // Use ONLY WebSocket data - no props fallbacks
     const currentPlayersCount = gameState.playersCount || 0;
@@ -43,6 +44,7 @@ export default function GameLayout({
 
     // Sound control
     const [isSoundOn, setIsSoundOn] = useState(true);
+    const [showWinners, setShowWinners] = useState(false);
 
     // Preload sounds on first user toggle on (or mount if desired)
     useEffect(() => {
@@ -59,6 +61,16 @@ export default function GameLayout({
             playNumberSound(currentNumber).catch(() => { });
         }
     }, [currentNumber, isSoundOn]);
+
+    // Open winner modal when phase enters announce
+    useEffect(() => {
+        if (gameState.phase === 'announce' && (gameState.winners?.length || 0) > 0) {
+            setShowWinners(true);
+        }
+        if (gameState.phase === 'registration') {
+            setShowWinners(false);
+        }
+    }, [gameState.phase, gameState.winners]);
 
     // Timeout mechanism for when gameId is not available
     useEffect(() => {
@@ -479,9 +491,6 @@ export default function GameLayout({
                                         };
                                         return toShow.map(toChip);
                                     })()}
-                                    {(!(calledNumbers.length > 0 || currentNumber)) && (
-                                        <div className="text-white/60 text-sm">No numbers yet</div>
-                                    )}
                                 </div>
                                 <button
                                     onClick={() => setIsSoundOn(v => !v)}
@@ -601,7 +610,7 @@ export default function GameLayout({
                         <span>Refresh</span>
                     </button>
                     <button
-                        onClick={() => { }}
+                        onClick={() => { claimBingo(); }}
                         disabled={isWatchMode}
                         className={`px-4 py-3 rounded-xl font-bold flex-1 text-sm transition-all duration-200 ${isWatchMode
                             ? 'bg-gradient-to-r from-gray-500 to-gray-600 text-gray-300 cursor-not-allowed border border-gray-400/30 opacity-50'
@@ -611,6 +620,19 @@ export default function GameLayout({
                         🎉 BINGO
                     </button>
                 </div>
+
+                {/* Winner Announcement Modal */}
+                <WinnerAnnounce
+                    open={showWinners}
+                    onClose={() => setShowWinners(false)}
+                    winners={(gameState.winners || []).map((w, i) => ({
+                        name: w.name || `Player ${i + 1}`,
+                        cardId: w.cartelaNumber || w.cardId || w.cardNumber || gameState.yourCardNumber,
+                        cardNumbers: w.card?.numbers || gameState.yourCard?.numbers,
+                        called: gameState.calledNumbers,
+                        prize: w.prize
+                    }))}
+                />
             </div>
         </div>
     );

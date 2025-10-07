@@ -214,6 +214,17 @@ export function WebSocketProvider({ children }) {
                             }));
                             break;
 
+                        case 'game_finished':
+                        case 'game_ended':
+                            setGameState(prev => ({
+                                ...prev,
+                                phase: 'announce',
+                                winners: (event.payload && (event.payload.winners || [])) || [],
+                                calledNumbers: (event.payload && (event.payload.calledNumbers || event.payload.called)) || prev.calledNumbers,
+                                currentNumber: null
+                            }));
+                            break;
+
                         case 'pong':
                             // Heartbeat response
                             break;
