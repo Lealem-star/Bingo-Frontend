@@ -68,7 +68,8 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
                     setWallet({
                         main: response.wallet.main || 0,
                         play: response.wallet.play || 0,
-                        coins: response.wallet.coins || 0
+                        coins: response.wallet.coins || 0,
+                        creditUsed: response.wallet.creditUsed || 0
                     });
                 }
             } catch (err) {
@@ -79,7 +80,8 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
                     setWallet({
                         main: walletResponse.main || 0,
                         play: walletResponse.play || 0,
-                        coins: walletResponse.coins || 0
+                        coins: walletResponse.coins || 0,
+                        creditUsed: walletResponse.creditUsed || 0
                     });
                 } catch (walletErr) {
                     console.error('Error fetching wallet fallback:', walletErr);
@@ -198,10 +200,12 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
 
     // Handle card selection - automatically confirm without separate confirmation step
     const handleCardSelect = async (cardNumber) => {
-        // Check if player has sufficient balance first
-        if (wallet.play < stake) {
-            showError('Insufficient wallet balance. Please top up your wallet.');
-            return;
+        // Check if player has sufficient balance first; server may offer credit if both are zero
+        const totalBalance = (wallet.main || 0) + (wallet.play || 0);
+        if (totalBalance < stake) {
+            // Let the server decide if credit can be applied (once per game)
+            // We still allow selection, but show an info message
+            showSuccess('Attempting to use credit if eligible...');
         }
 
         // Check if card is already taken
@@ -282,13 +286,25 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
                             <div className="wallet-box">
                                 <div className="wallet-label">Main Wallet</div>
                                 <div className="wallet-value text-blue-400">
-                                    {walletLoading ? '...' : wallet.main?.toLocaleString() || 0}
+                                    {walletLoading ? '...' : (wallet.main || 0).toLocaleString()}
                                 </div>
                             </div>
                             <div className="wallet-box">
                                 <div className="wallet-label">Play Wallet</div>
                                 <div className="wallet-value text-green-400">
-                                    {walletLoading ? '...' : wallet.play?.toLocaleString() || 0}
+                                    {walletLoading ? '...' : (wallet.play || 0).toLocaleString()}
+                                </div>
+                            </div>
+                            <div className="wallet-box">
+                                <div className="wallet-label">Credit Used</div>
+                                <div className="wallet-value text-orange-400">
+                                    {walletLoading ? '...' : (wallet.creditUsed || 0).toLocaleString()} ETB
+                                </div>
+                            </div>
+                            <div className="wallet-box">
+                                <div className="wallet-label">Credit Used</div>
+                                <div className="wallet-value text-orange-400">
+                                    {walletLoading ? '...' : (wallet.creditUsed || 0).toLocaleString()}
                                 </div>
                             </div>
                             <div className="wallet-box">

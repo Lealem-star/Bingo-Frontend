@@ -114,6 +114,25 @@ export default function Profile({ onNavigate }) {
                                 <div className="profile-card-subtitle">Game funds</div>
                             </div>
 
+                            {/* Credit */}
+                            <div className="profile-card">
+                                <div className="profile-card-title">
+                                    <span className="profile-card-icon">📄</span>
+                                    <span className="profile-card-label">Credit</span>
+                                </div>
+                                <div className="profile-card-value profile-card-value-blue">
+                                    {profileData.wallet.creditAvailable?.toLocaleString() || 0}
+                                </div>
+                                <div className="profile-card-subtitle">
+                                    Available Credit
+                                    {((profileData.wallet.creditUsed || 0) > 0) && (
+                                        <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-orange-100 text-orange-700 border border-orange-300">
+                                            Used: {profileData.wallet.creditUsed}
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+
                             {/* Total Coins */}
                             <div className="profile-card">
                                 <div className="profile-card-title">

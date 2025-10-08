@@ -21,7 +21,8 @@ export function WebSocketProvider({ children }) {
         countdown: 0,
         registrationEndTime: null,
         isWatchMode: false,
-        winners: []
+        winners: [],
+        walletUpdate: null
     });
     const [lastEvent, setLastEvent] = useState(null);
     const [currentStake, setCurrentStake] = useState(null);
@@ -222,6 +223,24 @@ export function WebSocketProvider({ children }) {
                                 winners: (event.payload && (event.payload.winners || event.payload.winner || [])) || prev.winners || [],
                                 calledNumbers: (event.payload && (event.payload.calledNumbers || event.payload.called)) || prev.calledNumbers,
                                 currentNumber: null
+                            }));
+                            break;
+
+                        case 'wallet_update':
+                            // Update wallet state when balance changes
+                            setGameState(prev => ({
+                                ...prev,
+                                walletUpdate: {
+                                    main: event.payload.main,
+                                    play: event.payload.play,
+                                    coins: event.payload.coins,
+                                    source: event.payload.source
+                                }
+                            }));
+
+                            // Emit custom event for other components to listen
+                            window.dispatchEvent(new CustomEvent('walletUpdate', {
+                                detail: event
                             }));
                             break;
 

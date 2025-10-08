@@ -25,6 +25,39 @@ export default function Wallet({ onNavigate }) {
     // History loading state
     const [historyLoading, setHistoryLoading] = useState(false);
 
+    // Listen for wallet updates from WebSocket
+    useEffect(() => {
+        const handleWalletUpdate = (event) => {
+            if (event.detail && event.detail.type === 'wallet_update') {
+                const { main, play, coins, source } = event.detail.payload;
+                setWallet(prev => ({
+                    ...prev,
+                    main: main || prev.main,
+                    play: play || prev.play,
+                    coins: coins || prev.coins
+                }));
+
+                // Show notification based on source
+                if (source === 'win') {
+                    showSuccess('Congratulations! You won the game!');
+                } else if (source === 'completion') {
+                    showSuccess('Game completed! You received 10 coins!');
+                } else if (source === 'main' || source === 'play') {
+                    showSuccess(`Stake deducted from ${source} wallet`);
+                }
+            }
+        };
+
+        window.addEventListener('walletUpdate', handleWalletUpdate);
+        return () => window.removeEventListener('walletUpdate', handleWalletUpdate);
+    }, []);
+
+    // Helper function to show success messages
+    const showSuccess = (message) => {
+        // You can implement a toast notification here
+        console.log('Success:', message);
+    };
+
     // Fetch wallet and profile data once
     useEffect(() => {
         if (authLoading || !sessionId) {
