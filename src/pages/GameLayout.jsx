@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import CartellaCard from '../components/CartellaCard';
 import WinnerAnnounce from './WinnerAnnounce';
+import BottomNav from '../components/BottomNav';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { useAuth } from '../lib/auth/AuthProvider';
 import { playNumberSound, preloadNumberSounds } from '../lib/audio/numberSounds';
@@ -335,28 +336,30 @@ export default function GameLayout({
                 <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-blue-500/20 to-purple-600/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
             </div>
 
-            <div className="max-w-md mx-auto px-3 py-3 relative z-10">
-                {/* Enhanced Top Information Bar (compact with custom CSS) */}
-                <div className="game-info-bar compact flex items-stretch rounded-2xl flex-nowrap">
-                    <div className="wallet-box wallet-box--compact flex-1 group">
-                        <div className="wallet-label">Game ID</div>
-                        <div className="wallet-value font-bold text-yellow-300 truncate">{currentGameId || 'LB000000'}</div>
-                    </div>
-                    <div className="wallet-box wallet-box--compact flex-1 group">
-                        <div className="wallet-label">Players</div>
-                        <div className="wallet-value font-bold text-green-300">{currentPlayersCount}</div>
-                    </div>
-                    <div className="wallet-box wallet-box--compact flex-1 group">
-                        <div className="wallet-label">Bet</div>
-                        <div className="wallet-value font-bold text-blue-300">ETB {stake}</div>
-                    </div>
-                    <div className="wallet-box wallet-box--compact flex-1 group">
-                        <div className="wallet-label">Prize</div>
-                        <div className="wallet-value font-bold text-orange-300">ETB {currentPrizePool}</div>
-                    </div>
-                    <div className="wallet-box wallet-box--compact flex-1 group">
-                        <div className="wallet-label">Called</div>
-                        <div className="wallet-value font-bold text-pink-300">{calledNumbers.length}/75</div>
+            <div className="max-w-sm mx-auto px-2 py-2 relative z-10 pb-20">
+                {/* Enhanced Top Information Bar (mobile-first compact) */}
+                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-2 mb-3">
+                    <div className="grid grid-cols-5 gap-1">
+                        <div className="text-center">
+                            <div className="text-white/70 text-[8px] font-medium">Game ID</div>
+                            <div className="text-yellow-300 text-[10px] font-bold truncate">{currentGameId || 'LB000000'}</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="text-white/70 text-[8px] font-medium">Players</div>
+                            <div className="text-green-300 text-[10px] font-bold">{currentPlayersCount}</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="text-white/70 text-[8px] font-medium">Bet</div>
+                            <div className="text-blue-300 text-[10px] font-bold">ETB {stake}</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="text-white/70 text-[8px] font-medium">Prize</div>
+                            <div className="text-orange-300 text-[10px] font-bold">ETB {currentPrizePool}</div>
+                        </div>
+                        <div className="text-center">
+                            <div className="text-white/70 text-[8px] font-medium">Called</div>
+                            <div className="text-pink-300 text-[10px] font-bold">{calledNumbers.length}/75</div>
+                        </div>
                     </div>
                 </div>
 
@@ -364,20 +367,23 @@ export default function GameLayout({
 
 
 
-                {/* Main Content Area - Enhanced 2 Column Layout */}
-                <div className="grid grid-cols-2 p-2 gap-3 mt-4">
-                    {/* Left Card - Enhanced BINGO Grid */}
-                    <div className="rounded-2xl p-4 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-2xl shadow-purple-900/30 backdrop-blur-md border border-white/10">
+                {/* Main Content Area - Mobile-first 2 Column Layout */}
+                <div className="grid grid-cols-2 gap-3 mt-3">
+                    {/* Left Card - Mobile BINGO Grid */}
+                    <div className="rounded-xl p-2 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-xl shadow-purple-900/30 backdrop-blur-md border border-white/10">
                         <div className="grid grid-cols-5 gap-1">
                             {/* B Column */}
                             <div className="space-y-0.5">
-                                <div className="cartela-letter bg-gradient-to-b from-blue-500 to-blue-600 text-white font-bold text-center py-2 rounded-lg shadow-lg">B</div>
+                                <div className="cartela-letter relative w-6 h-6 rounded-full bg-gradient-to-br from-red-500 to-red-600 text-white font-bold text-center flex items-center justify-center shadow-lg border border-white/30 mx-auto">
+                                    <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent to-white/30"></div>
+                                    <span className="relative z-10 text-[10px] drop-shadow-sm">B</span>
+                                </div>
                                 {Array.from({ length: 15 }, (_, i) => i + 1).map(n => {
                                     const isCalled = calledNumbers.includes(n);
                                     return (
                                         <button
                                             key={n}
-                                            className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCalled
+                                            className={`cartela-number-btn text-[8px] leading-none transition-all duration-200 ${isCalled
                                                 ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
                                                 : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
@@ -389,13 +395,16 @@ export default function GameLayout({
                             </div>
                             {/* I Column */}
                             <div className="space-y-0.5">
-                                <div className="cartela-letter bg-gradient-to-b from-purple-500 to-purple-600 text-white font-bold text-center py-2 rounded-lg shadow-lg">I</div>
+                                <div className="cartela-letter relative w-6 h-6 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-600 text-white font-bold text-center flex items-center justify-center shadow-lg border border-white/30 mx-auto">
+                                    <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent to-white/30"></div>
+                                    <span className="relative z-10 text-[10px] drop-shadow-sm">I</span>
+                                </div>
                                 {Array.from({ length: 15 }, (_, i) => i + 16).map(n => {
                                     const isCalled = calledNumbers.includes(n);
                                     return (
                                         <button
                                             key={n}
-                                            className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCalled
+                                            className={`cartela-number-btn text-[8px] leading-none transition-all duration-200 ${isCalled
                                                 ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
                                                 : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
@@ -407,13 +416,16 @@ export default function GameLayout({
                             </div>
                             {/* N Column */}
                             <div className="space-y-0.5">
-                                <div className="cartela-letter bg-gradient-to-b from-green-500 to-green-600 text-white font-bold text-center py-2 rounded-lg shadow-lg">N</div>
+                                <div className="cartela-letter relative w-6 h-6 rounded-full bg-gradient-to-br from-red-500 to-red-600 text-white font-bold text-center flex items-center justify-center shadow-lg border border-white/30 mx-auto">
+                                    <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent to-white/30"></div>
+                                    <span className="relative z-10 text-[10px] drop-shadow-sm">N</span>
+                                </div>
                                 {Array.from({ length: 15 }, (_, i) => i + 31).map(n => {
                                     const isCalled = calledNumbers.includes(n);
                                     return (
                                         <button
                                             key={n}
-                                            className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCalled
+                                            className={`cartela-number-btn text-[8px] leading-none transition-all duration-200 ${isCalled
                                                 ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
                                                 : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
@@ -425,13 +437,16 @@ export default function GameLayout({
                             </div>
                             {/* G Column */}
                             <div className="space-y-0.5">
-                                <div className="cartela-letter bg-gradient-to-b from-orange-500 to-orange-600 text-white font-bold text-center py-2 rounded-lg shadow-lg">G</div>
+                                <div className="cartela-letter relative w-6 h-6 rounded-full bg-gradient-to-br from-green-500 to-green-600 text-white font-bold text-center flex items-center justify-center shadow-lg border border-white/30 mx-auto">
+                                    <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent to-white/30"></div>
+                                    <span className="relative z-10 text-[10px] drop-shadow-sm">G</span>
+                                </div>
                                 {Array.from({ length: 15 }, (_, i) => i + 46).map(n => {
                                     const isCalled = calledNumbers.includes(n);
                                     return (
                                         <button
                                             key={n}
-                                            className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCalled
+                                            className={`cartela-number-btn text-[8px] leading-none transition-all duration-200 ${isCalled
                                                 ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
                                                 : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
@@ -443,13 +458,16 @@ export default function GameLayout({
                             </div>
                             {/* O Column */}
                             <div className="space-y-0.5">
-                                <div className="cartela-letter bg-gradient-to-b from-red-500 to-red-600 text-white font-bold text-center py-2 rounded-lg shadow-lg">O</div>
+                                <div className="cartela-letter relative w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold text-center flex items-center justify-center shadow-lg border border-white/30 mx-auto">
+                                    <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent to-white/30"></div>
+                                    <span className="relative z-10 text-[10px] drop-shadow-sm">O</span>
+                                </div>
                                 {Array.from({ length: 15 }, (_, i) => i + 61).map(n => {
                                     const isCalled = calledNumbers.includes(n);
                                     return (
                                         <button
                                             key={n}
-                                            className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCalled
+                                            className={`cartela-number-btn text-[8px] leading-none transition-all duration-200 ${isCalled
                                                 ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
                                                 : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
@@ -462,34 +480,42 @@ export default function GameLayout({
                         </div>
                     </div>
 
-                    {/* Right Side - Enhanced Two Cards Stacked */}
+                    {/* Right Side - Mobile Stacked Cards */}
                     <div className="space-y-3">
-                        {/* Right Top Card - Recent Numbers */}
-                        <div className="relative rounded-2xl p-3 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-2xl shadow-pink-500/20 backdrop-blur-md overflow-hidden border border-white/10">
-                            <div className="flex items-center gap-2">
-                                <div className="flex items-center gap-1 flex-1 min-w-0 overflow-hidden flex-nowrap">
+                        {/* Floating Bingo Balls - Recent Numbers */}
+                        <div className="relative rounded-xl p-3 bg-gradient-to-br from-slate-800/80 to-purple-900/60 ring-1 ring-white/20 shadow-lg shadow-purple-500/30 backdrop-blur-md overflow-hidden border border-white/20">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2 flex-1 min-w-0 overflow-hidden flex-nowrap">
                                     {(() => {
                                         const recent = [...calledNumbers.slice(-3), currentNumber]
                                             .filter((n) => typeof n === 'number');
                                         const toShow = recent.slice(-4);
-                                        const toChip = (n) => {
+                                        const toBall = (n, index) => {
                                             const letter = n <= 15 ? 'B' : n <= 30 ? 'I' : n <= 45 ? 'N' : n <= 60 ? 'G' : 'O';
                                             const color = n <= 15
-                                                ? 'bg-blue-600'
+                                                ? 'from-blue-500 to-blue-600'
                                                 : n <= 30
-                                                    ? 'bg-purple-600'
+                                                    ? 'from-purple-500 to-purple-600'
                                                     : n <= 45
-                                                        ? 'bg-green-600'
+                                                        ? 'from-green-500 to-green-600'
                                                         : n <= 60
-                                                            ? 'bg-orange-600'
-                                                            : 'bg-red-600';
+                                                            ? 'from-orange-500 to-orange-600'
+                                                            : 'from-red-500 to-red-600';
                                             return (
-                                                <div key={`recent-${n}`} className={`text-white text-[10px] font-bold rounded-full px-2 py-0.5 text-center whitespace-nowrap ${color}`}>
-                                                    {`${letter}-${n}`}
+                                                <div
+                                                    key={`recent-${n}`}
+                                                    className={`relative w-8 h-8 rounded-full bg-gradient-to-br ${color} shadow-lg border border-white/30 flex items-center justify-center text-white text-[8px] font-bold animate-bounce hover:scale-110 transition-transform duration-200`}
+                                                    style={{
+                                                        animationDelay: `${index * 0.1}s`,
+                                                        animationDuration: '2s'
+                                                    }}
+                                                >
+                                                    <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent to-white/30"></div>
+                                                    <span className="relative z-10 drop-shadow-sm">{letter}</span>
                                                 </div>
                                             );
                                         };
-                                        return toShow.map(toChip);
+                                        return toShow.map(toBall);
                                     })()}
                                 </div>
                                 <button
@@ -503,22 +529,34 @@ export default function GameLayout({
                             </div>
                         </div>
 
-                        {/* Right Middle Card - Current Number */}
-                        <div className="relative rounded-2xl p-4 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-2xl shadow-pink-500/20 backdrop-blur-md overflow-hidden border border-white/10">
+                        {/* Floating Current Number Ball */}
+                        <div className="relative rounded-xl p-4 bg-gradient-to-br from-amber-900/80 to-orange-900/60 ring-1 ring-yellow-400/30 shadow-lg shadow-yellow-500/40 backdrop-blur-md overflow-hidden border border-yellow-400/20">
                             <div className="text-center">
                                 <div className="mx-auto w-full flex items-center justify-center">
                                     {currentNumber ? (
-                                        <div className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-white border-8 border-yellow-400 flex items-center justify-center shadow-2xl">
-                                            <div className="text-purple-900 font-extrabold text-2xl md:text-3xl">
-                                                {(() => {
-                                                    const letter = currentNumber <= 15 ? 'B' : currentNumber <= 30 ? 'I' : currentNumber <= 45 ? 'N' : currentNumber <= 60 ? 'G' : 'O';
-                                                    return `${letter}-${currentNumber}`;
-                                                })()}
+                                        <div className="relative">
+                                            {/* Main Ball */}
+                                            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-yellow-300 to-orange-600 shadow-xl border-2 border-white/40 flex items-center justify-center animate-pulse hover:scale-105 transition-transform duration-300">
+                                                {/* Ball highlight */}
+                                                <div className="absolute inset-2 rounded-full bg-gradient-to-t from-transparent to-white/40"></div>
+                                                {/* Ball number */}
+                                                <div className="relative z-10 text-purple-900 font-extrabold text-lg text-center drop-shadow-lg">
+                                                    {(() => {
+                                                        const letter = currentNumber <= 15 ? 'B' : currentNumber <= 30 ? 'I' : currentNumber <= 45 ? 'N' : currentNumber <= 60 ? 'G' : 'O';
+                                                        return `${letter}-${currentNumber}`;
+                                                    })()}
+                                                </div>
                                             </div>
+                                            {/* Floating glow effect */}
+                                            <div className="absolute inset-0 rounded-full bg-yellow-400/30 animate-ping"></div>
+                                            <div className="absolute inset-0 rounded-full bg-yellow-300/20 animate-pulse"></div>
                                         </div>
                                     ) : (
-                                        <div className="w-40 h-40 md:w-48 md:h-48 rounded-full bg-white/20 border-8 border-white/30 flex items-center justify-center">
-                                            <div className="text-white/60 text-lg font-medium">Waiting...</div>
+                                        <div className="relative">
+                                            <div className="w-24 h-24 rounded-full bg-gradient-to-br from-gray-400/60 to-gray-600/70 shadow-lg border-2 border-white/30 flex items-center justify-center">
+                                                <div className="absolute inset-2 rounded-full bg-gradient-to-t from-transparent to-white/30"></div>
+                                                <div className="relative z-10 text-white/70 text-sm font-medium drop-shadow-sm">Waiting...</div>
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -595,29 +633,50 @@ export default function GameLayout({
                 </div>
 
                 {/* Enhanced Bottom Action Buttons */}
-                <div className="flex justify-between p-3 mt-4 gap-3">
+                <div className="flex justify-between p-2 mt-4 gap-2">
+                    {/* Leave Button */}
                     <button
                         onClick={() => onNavigate?.('game')}
-                        className="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-4 py-3 rounded-xl font-bold flex-1 text-sm hover:from-orange-600 hover:to-orange-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 border border-orange-400/30"
+                        className="group relative flex-1 bg-gradient-to-br from-slate-600 to-slate-700 text-white px-3 py-2 rounded-xl font-bold text-xs hover:from-slate-500 hover:to-slate-600 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 border border-slate-400/30 overflow-hidden"
                     >
-                        Leave
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                        <div className="relative flex items-center justify-center gap-1">
+                            <span className="text-sm">🚪</span>
+                            <span>Leave</span>
+                        </div>
                     </button>
+
+                    {/* Refresh Button */}
                     <button
                         onClick={() => window.location.reload()}
-                        className="bg-gradient-to-r from-red-600 to-red-700 text-white px-4 py-3 rounded-xl font-bold flex-1 flex items-center justify-center gap-2 text-sm hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 border border-red-500/30"
+                        className="group relative flex-1 bg-gradient-to-br from-blue-500 to-blue-600 text-white px-3 py-2 rounded-xl font-bold text-xs hover:from-blue-400 hover:to-blue-500 transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 border border-blue-400/30 overflow-hidden"
                     >
-                        <span className="animate-spin">↻</span>
-                        <span>Refresh</span>
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                        <div className="relative flex items-center justify-center gap-1">
+                            <span className="text-sm group-hover:rotate-180 transition-transform duration-500">🔄</span>
+                            <span>Refresh</span>
+                        </div>
                     </button>
+
+                    {/* BINGO Button */}
                     <button
                         onClick={() => { claimBingo(); }}
                         disabled={isWatchMode}
-                        className={`px-4 py-3 rounded-xl font-bold flex-1 text-sm transition-all duration-200 ${isWatchMode
-                            ? 'bg-gradient-to-r from-gray-500 to-gray-600 text-gray-300 cursor-not-allowed border border-gray-400/30 opacity-50'
-                            : 'bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white hover:from-yellow-500 hover:via-orange-600 hover:to-red-600 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 border border-yellow-400/30'
+                        className={`group relative flex-1 px-3 py-2 rounded-xl font-bold text-xs transition-all duration-300 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 overflow-hidden ${isWatchMode
+                            ? 'bg-gradient-to-br from-gray-500 to-gray-600 text-gray-300 cursor-not-allowed border border-gray-400/30 opacity-50'
+                            : 'bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 text-white hover:from-yellow-300 hover:via-orange-400 hover:to-red-400 border border-yellow-400/30'
                             }`}
                     >
-                        🎉 BINGO
+                        {!isWatchMode && (
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+                        )}
+                        <div className="relative flex items-center justify-center gap-1">
+                            <span className="text-sm group-hover:animate-bounce">🎉</span>
+                            <span className="font-extrabold">BINGO!</span>
+                        </div>
+                        {!isWatchMode && (
+                            <div className="absolute inset-0 bg-gradient-to-t from-transparent to-white/20 rounded-xl"></div>
+                        )}
                     </button>
                 </div>
 
@@ -634,6 +693,9 @@ export default function GameLayout({
                     }))}
                 />
             </div>
+
+            {/* Bottom Navigation */}
+            <BottomNav current="game" onNavigate={onNavigate} />
         </div>
     );
 }

@@ -85,25 +85,47 @@ export default function Game({ onNavigate, onStakeSelected, selectedStake }) {
 
                     {/* Admin Announcement - Always visible under stake card */}
                     {adminPost && (
-                        <div className="mx-auto max-w-md w-full px-2">
-                            <div className="rounded-2xl overflow-hidden ring-1 ring-white/10 bg-white/5 shadow-lg">
+                        <div className="mx-auto max-w-md w-full px-2 my-6">
+                            <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-br from-slate-900/60 to-purple-900/40 backdrop-blur-md shadow-2xl ring-1 ring-white/10">
+                                {/* subtle overlay */}
+                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
+
+                                {/* badge */}
+                                <div className="absolute top-2 left-2 z-10">
+                                    <span className="px-2 py-1 text-[10px] font-semibold rounded-full bg-white/10 text-white ring-1 ring-white/20 backdrop-blur-sm">
+                                        {adminPost.kind === 'image' ? 'Announcement' : 'Announcement • Video'}
+                                    </span>
+                                </div>
+
                                 {adminPost.kind === 'image' ? (
                                     <img
                                         src={adminPost.url}
                                         alt={adminPost.caption || 'Announcement'}
-                                        className="w-full h-32 sm:h-40 md:h-48 object-cover"
+                                        className="w-full h-44 sm:h-56 md:h-64 object-cover"
+                                        onError={(e) => {
+                                            e.target.src = lbLogo;
+                                            e.target.alt = 'Love Bingo Logo';
+                                        }}
                                     />
                                 ) : (
                                     <video
                                         src={adminPost.url}
-                                        className="w-full h-32 sm:h-40 md:h-48 object-cover"
+                                        className="w-full h-44 sm:h-56 md:h-64 object-cover"
                                         controls
                                         muted
                                         playsInline
+                                        onError={(e) => {
+                                            e.target.style.display = 'none';
+                                            const fallbackImg = document.createElement('img');
+                                            fallbackImg.src = lbLogo;
+                                            fallbackImg.alt = 'Love Bingo Logo';
+                                            fallbackImg.className = 'w-full h-44 sm:h-56 md:h-64 object-cover';
+                                            e.target.parentNode.insertBefore(fallbackImg, e.target);
+                                        }}
                                     />
                                 )}
                                 {adminPost.caption ? (
-                                    <div className="p-2 sm:p-3 text-white text-xs sm:text-sm bg-black/30">
+                                    <div className="p-3 sm:p-4 text-white text-sm leading-snug bg-black/40 border-t border-white/10">
                                         {adminPost.caption}
                                     </div>
                                 ) : null}

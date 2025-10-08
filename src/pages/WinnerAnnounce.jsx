@@ -37,8 +37,8 @@ export default function WinnerAnnounce({
     const pattern = findWinningPattern(main.cardNumbers, main.called);
 
     return (
-        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/60 p-3">
-            <div className="w-full max-w-sm rounded-2xl bg-slate-900/80 backdrop-blur-md border border-white/10 shadow-2xl p-4 text-white relative">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3">
+            <div className="w-full max-w-sm rounded-2xl bg-slate-900/80 backdrop-blur-md border border-white/10 shadow-2xl p-4 text-white relative transform transition-transform duration-200 scale-100">
                 <button onClick={onClose} className="absolute right-3 top-3 text-white/70">✕</button>
 
                 <div className="flex flex-col items-center gap-2 mb-3">
