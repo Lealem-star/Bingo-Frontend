@@ -609,15 +609,15 @@ export default function GameLayout({
                                 /* Enhanced Normal Cartella Mode */
                                 <>
                                     {/* Enhanced User's Cartella - 5x5 Grid */}
-                                    <div className="rounded-xl p-3 bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-white/10">
+                                    <div className="rounded-xl p-3 mt-8 bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-white/10">
                                         {/* Enhanced BINGO Header */}
-                                        <div className="grid grid-cols-5 gap-1 mb-2">
+                                        {/* <div className="grid grid-cols-5 gap-1 mb-2">
                                             <div className="text-center text-white font-bold text-[10px] bg-gradient-to-b from-blue-500 to-blue-600 rounded-lg py-2 shadow-lg">B</div>
                                             <div className="text-center text-white font-bold text-[10px] bg-gradient-to-b from-purple-500 to-purple-600 rounded-lg py-2 shadow-lg">I</div>
                                             <div className="text-center text-white font-bold text-[10px] bg-gradient-to-b from-green-500 to-green-600 rounded-lg py-2 shadow-lg">N</div>
                                             <div className="text-center text-white font-bold text-[10px] bg-gradient-to-b from-pink-500 to-pink-600 rounded-lg py-2 shadow-lg">G</div>
                                             <div className="text-center text-white font-bold text-[10px] bg-gradient-to-b from-orange-500 to-orange-600 rounded-lg py-2 shadow-lg">O</div>
-                                        </div>
+                                        </div> */}
 
                                         {/* Implemented cartella grid using CartellaCard */}
                                         <CartellaCard
@@ -629,11 +629,12 @@ export default function GameLayout({
                                     </div>
 
                                     {/* Enhanced Cartela Number Display */}
-                                    <div className="text-center mt-3">
+                                    {/* <div className="text-center mt-3">
                                         <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white text-sm font-bold px-4 py-2 rounded-full inline-block shadow-lg border border-amber-400/30">
                                             🎫 Cartela #{yourCardNumber || selectedCartela || 47}
                                         </div>
-                                    </div>
+                                    </div> */}
+
                                 </>
                             )}
                         </div>
