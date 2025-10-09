@@ -340,9 +340,6 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
                             </div>
                         </div>
 
-                        {/* Loading text with fade animation */}
-                        <div className="text-lg text-white mb-2 animate-pulse">Loading cards...</div>
-                        <div className="text-sm text-gray-300 animate-pulse">Fetching from server</div>
 
                         {/* Animated dots */}
                         <div className="flex justify-center mt-3 space-x-1">
