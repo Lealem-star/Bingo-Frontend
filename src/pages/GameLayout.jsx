@@ -334,7 +334,7 @@ export default function GameLayout({
 
             <div className="max-w-md mx-auto px-3 py-3 relative z-10">
                 {/* Enhanced Top Information Bar (compact with custom CSS) */}
-                <div className="game-info-bar compact flex items-stretch rounded-2xl flex-nowrap">
+                <div className="game-info-bar compact flex items-stretch rounded-2xl flex-nowrap mb-6">
                     <div className="wallet-box wallet-box--compact flex-1 group">
                         <div className="wallet-label">Game ID</div>
                         <div className="wallet-value font-bold text-yellow-300 truncate">{currentGameId || 'LB000000'}</div>
@@ -362,7 +362,7 @@ export default function GameLayout({
 
 
                 {/* Main Content Area - Enhanced 2 Column Layout */}
-                <div className="grid grid-cols-2 p-2 gap-6 mt-6">
+                <div className="grid grid-cols-2 p-2 gap-6 mt-6 mb-6 mr-4">
                     {/* Left Card - Enhanced BINGO Grid */}
                     <div className="rounded-2xl p-4 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-2xl shadow-purple-900/30 backdrop-blur-md border border-white/10">
                         <div className="grid grid-cols-5 gap-1">
@@ -490,16 +490,21 @@ export default function GameLayout({
                     </div>
 
                     {/* Right Side - Enhanced Two Cards Stacked */}
-                    <div className="space-y-6">
+                    <div className="space-y-6 ml-4">
                         {/* Floating Bingo Balls - Recent Numbers */}
-                        <div className="relative rounded-3xl p-6 bg-gradient-to-br from-slate-800/80 to-purple-900/60 ring-2 ring-white/20 shadow-2xl shadow-purple-500/30 backdrop-blur-xl overflow-hidden border border-white/20">
+                        <div className="relative rounded-3xl p-4 bg-gradient-to-br from-slate-900/70 via-slate-800/60 to-purple-900/60 ring-2 ring-white/20 shadow-2xl shadow-purple-500/30 backdrop-blur-xl overflow-hidden border border-white/20">
+                            {/* Decorative background overlays */}
+                            <div className="pointer-events-none absolute -top-10 -left-10 w-40 h-40 rounded-full bg-purple-500/10 blur-3xl"></div>
+                            <div className="pointer-events-none absolute -bottom-12 -right-12 w-48 h-48 rounded-full bg-blue-500/10 blur-3xl"></div>
+                            {/* Left fade for tube entrance */}
+                            <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-slate-950/70 to-transparent"></div>
                             <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-4 flex-1 min-w-0 overflow-hidden flex-nowrap">
+                                <div className="flex items-center gap-3 flex-1 justify-start min-w-0 overflow-hidden flex-nowrap">
                                     {(() => {
                                         const recent = [...calledNumbers.slice(-3), currentNumber]
                                             .filter((n) => typeof n === 'number');
                                         const toShow = recent.slice(-4);
-                                        const toBall = (n, index) => {
+                                        const toBadge = (n) => {
                                             const letter = n <= 15 ? 'B' : n <= 30 ? 'I' : n <= 45 ? 'N' : n <= 60 ? 'G' : 'O';
                                             const color = n <= 15
                                                 ? 'from-blue-500 to-blue-600'
@@ -513,58 +518,57 @@ export default function GameLayout({
                                             return (
                                                 <div
                                                     key={`recent-${n}`}
-                                                    className={`relative w-10 h-10 rounded-full bg-gradient-to-br ${color} shadow-xl border-2 border-white/30 flex items-center justify-center text-white text-[10px] font-bold animate-bounce hover:scale-110 transition-transform duration-200`}
-                                                    style={{
-                                                        animationDelay: `${index * 0.1}s`,
-                                                        animationDuration: '2s'
-                                                    }}
+                                                    className={`inline-flex items-center h-7 px-2 rounded-full bg-gradient-to-br ${color} text-white text-[10px] font-bold shadow-md border border-white/30`}
                                                 >
-                                                    <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent to-white/30"></div>
-                                                    <span className="relative z-10 drop-shadow-sm">{letter}</span>
+                                                    <span className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.4)]">{`${letter}-${n}`}</span>
                                                 </div>
                                             );
                                         };
-                                        return toShow.map(toBall);
+                                        return toShow.map(toBadge);
                                     })()}
                                 </div>
                                 <button
                                     onClick={() => setIsSoundOn(v => !v)}
-                                    className={`shrink-0 text-white text-lg w-8 h-8 grid place-items-center rounded-full transition-all duration-200 ${isSoundOn ? 'bg-white/10' : 'bg-white/5 opacity-70'}`}
+                                    className={`shrink-0 text-white w-8 h-8 grid place-items-center rounded-full transition-all duration-200 ${isSoundOn ? 'bg-white/10' : 'bg-white/5 opacity-70'}`}
                                     aria-label={isSoundOn ? 'Mute' : 'Unmute'}
                                     title={isSoundOn ? 'Mute' : 'Unmute'}
                                 >
-                                    {isSoundOn ? '🔊' : '🔇'}
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5">
+                                        {isSoundOn ? (
+                                            <path d="M11 5l-4 4H4v6h3l4 4V5zm6.54 1.46a8 8 0 010 11.31M15.36 8.64a4.5 4.5 0 010 6.36" strokeLinecap="round" strokeLinejoin="round" />
+                                        ) : (
+                                            <>
+                                                <path d="M11 5l-4 4H4v6h3l4 4V5" strokeLinecap="round" strokeLinejoin="round" />
+                                                <path d="M18 9l-6 6M12 9l6 6" strokeLinecap="round" strokeLinejoin="round" />
+                                            </>
+                                        )}
+                                    </svg>
                                 </button>
                             </div>
                         </div>
 
                         {/* Floating Current Number Ball */}
-                        <div className="relative rounded-3xl p-8 bg-gradient-to-br from-amber-900/80 to-orange-900/60 ring-2 ring-yellow-400/30 shadow-2xl shadow-yellow-500/40 backdrop-blur-xl overflow-hidden border border-yellow-400/20">
+                        <div className="relative rounded-3xl p-6 bg-gradient-to-br from-slate-900/70 via-slate-800/60 to-purple-900/60 ring-2 ring-white/20 shadow-2xl shadow-purple-500/30 backdrop-blur-xl overflow-hidden border border-white/20">
+                            {/* Decorative background overlays */}
+                            <div className="pointer-events-none absolute -top-16 left-1/3 w-56 h-56 rounded-full bg-yellow-400/10 blur-3xl"></div>
+                            <div className="pointer-events-none absolute -bottom-20 right-1/4 w-64 h-64 rounded-full bg-orange-500/10 blur-3xl"></div>
                             <div className="text-center">
                                 <div className="mx-auto w-full flex items-center justify-center">
                                     {currentNumber ? (
                                         <div className="relative">
-                                            {/* Main Ball */}
-                                            <div className="w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-br from-yellow-300 to-orange-600 shadow-2xl border-4 border-white/40 flex items-center justify-center animate-pulse hover:scale-105 transition-transform duration-300">
-                                                {/* Ball highlight */}
-                                                <div className="absolute inset-3 rounded-full bg-gradient-to-t from-transparent to-white/40"></div>
-                                                {/* Ball number */}
-                                                <div className="relative z-10 text-purple-900 font-extrabold text-2xl md:text-3xl text-center drop-shadow-lg">
+                                            <div className="w-36 h-36 md:w-44 md:h-44 rounded-full bg-white border-[10px] border-yellow-400 shadow-2xl flex items-center justify-center">
+                                                <div className="relative z-10 text-purple-700 font-extrabold text-2xl md:text-3xl text-center">
                                                     {(() => {
                                                         const letter = currentNumber <= 15 ? 'B' : currentNumber <= 30 ? 'I' : currentNumber <= 45 ? 'N' : currentNumber <= 60 ? 'G' : 'O';
                                                         return `${letter}-${currentNumber}`;
                                                     })()}
                                                 </div>
                                             </div>
-                                            {/* Floating glow effect */}
-                                            <div className="absolute inset-0 rounded-full bg-yellow-400/30 animate-ping"></div>
-                                            <div className="absolute inset-0 rounded-full bg-yellow-300/20 animate-pulse"></div>
                                         </div>
                                     ) : (
                                         <div className="relative">
-                                            <div className="w-36 h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-br from-gray-400/60 to-gray-600/70 shadow-xl border-4 border-white/30 flex items-center justify-center">
-                                                <div className="absolute inset-3 rounded-full bg-gradient-to-t from-transparent to-white/30"></div>
-                                                <div className="relative z-10 text-white/70 text-xl font-medium drop-shadow-sm">Waiting...</div>
+                                            <div className="w-36 h-36 md:w-44 md:h-44 rounded-full bg-white/70 border-[10px] border-gray-300 shadow-xl flex items-center justify-center">
+                                                <div className="relative z-10 text-gray-700 text-xl font-semibold">Waiting...</div>
                                             </div>
                                         </div>
                                     )}
