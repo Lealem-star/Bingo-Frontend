@@ -13,34 +13,8 @@ export default function Scores({ onNavigate }) {
     });
     const [loading, setLoading] = useState(true);
     const [topFilter, setTopFilter] = useState('newyear'); // newyear | alltime | monthly | weekly | daily
-
-    const leaderboards = {
-        newyear: [
-            { name: 'Kiya', played: 1293, wins: 102 },
-            { name: 'djx@etc', played: 774, wins: 97 },
-            { name: 'Sara', played: 650, wins: 80 }
-        ],
-        alltime: [
-            { name: 'Alpha', played: 2301, wins: 320 },
-            { name: 'Beta', played: 2019, wins: 298 },
-            { name: 'Gamma', played: 1890, wins: 276 }
-        ],
-        monthly: [
-            { name: 'Miki', played: 120, wins: 28 },
-            { name: 'Lulu', played: 110, wins: 25 },
-            { name: 'Noah', played: 95, wins: 22 }
-        ],
-        weekly: [
-            { name: 'Ken', played: 38, wins: 9 },
-            { name: 'Abel', played: 34, wins: 8 },
-            { name: 'Ruth', played: 30, wins: 7 }
-        ],
-        daily: [
-            { name: 'Mina', played: 9, wins: 3 },
-            { name: 'Yon', played: 8, wins: 2 },
-            { name: 'Geez', played: 7, wins: 2 }
-        ]
-    };
+    const [leaderboardRows, setLeaderboardRows] = useState([]);
+    const [leadersLoading, setLeadersLoading] = useState(false);
 
     useEffect(() => {
         if (!sessionId) {
@@ -74,6 +48,56 @@ export default function Scores({ onNavigate }) {
         fetchUserStats();
     }, [sessionId]);
 
+    // Fetch leaderboard data for selected period
+    useEffect(() => {
+        const fetchLeaderboard = async () => {
+            try {
+                setLeadersLoading(true);
+                // Try a couple of likely endpoints; normalize response shape
+                const tryEndpoints = async () => {
+                    const endpoints = [
+                        `/api/leaderboard?period=${topFilter}`,
+                        `/leaderboard?period=${topFilter}`,
+                        `/stats/leaderboard?period=${topFilter}`,
+                        `/leaderboard/${topFilter}`
+                    ];
+                    for (const path of endpoints) {
+                        try {
+                            const res = await apiFetch(path, { sessionId });
+                            return res;
+                        } catch (e) {
+                            // continue to next
+                        }
+                    }
+                    return null;
+                };
+
+                const data = await tryEndpoints();
+                // Expected shapes supported:
+                // 1) { leaders: [{ name, wins, played }, ...] }
+                // 2) [{ name, wins, played }, ...]
+                const rows = Array.isArray(data)
+                    ? data
+                    : Array.isArray(data?.leaders)
+                        ? data.leaders
+                        : [];
+
+                // Fallback: keep previous rows if API empty to avoid flash
+                setLeaderboardRows(rows.map((r) => ({
+                    name: r.name || r.username || r.player || 'Player',
+                    wins: Number(r.wins ?? r.totalWins ?? 0),
+                    played: Number(r.played ?? r.gamesPlayed ?? r.totalGames ?? 0)
+                })));
+            } catch (e) {
+                console.error('Failed to fetch leaderboard:', e);
+                setLeaderboardRows([]);
+            } finally {
+                setLeadersLoading(false);
+            }
+        };
+        fetchLeaderboard();
+    }, [topFilter, sessionId]);
+
     return (
         <div className="scores-page">
             <main className="scores-main">
@@ -84,7 +108,13 @@ export default function Scores({ onNavigate }) {
                 ) : (
                     <>
                         {/* Leaderboard header */}
-                        <section className="scores-section">
+                        <section
+                            className="scores-section cursor-pointer"
+                            onClick={() => onNavigate?.('history')}
+                            role="button"
+                            aria-label="Open history"
+                            title="Open history"
+                        >
                             <h2 className="scores-title">Leaderboard</h2>
                             <div className="scores-user-card">
                                 <div className="scores-user-info">
@@ -111,8 +141,12 @@ export default function Scores({ onNavigate }) {
                                 <button onClick={() => setTopFilter('daily')} className={`scores-seg ${topFilter === 'daily' ? 'active' : ''}`}>Daily</button>
                             </div>
                             <div className="scores-leaderboard">
-                                {(leaderboards[topFilter] || []).map((p, i) => (
-                                    <div key={p.name} className="scores-leaderboard-item">
+                                {leadersLoading ? (
+                                    <div className="scores-leaderboard-loading">Loading...</div>
+                                ) : leaderboardRows.length === 0 ? (
+                                    <div className="scores-leaderboard-empty">No leaderboard data</div>
+                                ) : leaderboardRows.map((p, i) => (
+                                    <div key={`${p.name}-${i}`} className="scores-leaderboard-item">
                                         <div className="scores-leaderboard-content">
                                             <div className="scores-leaderboard-rank">{i + 1}</div>
                                             <div className="scores-leaderboard-details">
