@@ -295,12 +295,12 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
                                     {walletLoading ? '...' : (wallet.play || 0).toLocaleString()}
                                 </div>
                             </div>
-                            <div className="wallet-box">
+                            {/* <div className="wallet-box">
                                 <div className="wallet-label">Credit Used</div>
                                 <div className="wallet-value text-orange-400">
                                     {walletLoading ? '...' : (wallet.creditUsed || 0).toLocaleString()} ETB
                                 </div>
-                            </div>
+                            </div> */}
                             <div className="wallet-box">
                                 <div className="wallet-label">Credit Used</div>
                                 <div className="wallet-value text-orange-400">
