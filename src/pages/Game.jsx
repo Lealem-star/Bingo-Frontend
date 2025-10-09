@@ -83,52 +83,80 @@ export default function Game({ onNavigate, onStakeSelected, selectedStake }) {
                         </div>
                     </div>
 
-                    {/* Admin Announcement - Always visible under stake card */}
+                    {/* Admin Announcement - TV Screen Style */}
                     {adminPost && (
-                        <div className="mx-auto max-w-md w-full px-2 my-6">
-                            <div className="relative rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-br from-slate-900/60 to-purple-900/40 backdrop-blur-md shadow-2xl ring-1 ring-white/10">
-                                {/* subtle overlay */}
-                                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-transparent" />
+                        <div className="mx-auto max-w-md w-full px-2 mt-8 mb-6">
+                            {/* TV Screen Container */}
+                            <div className="relative">
+                                {/* TV Frame */}
+                                <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-3 shadow-2xl">
+                                    {/* TV Screen */}
+                                    <div className="relative bg-black rounded-xl overflow-hidden border-4 border-gray-700 shadow-inner">
+                                        {/* Screen Glow Effect */}
+                                        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 pointer-events-none" />
 
-                                {/* badge */}
-                                <div className="absolute top-2 left-2 z-10">
-                                    <span className="px-2 py-1 text-[10px] font-semibold rounded-full bg-white/10 text-white ring-1 ring-white/20 backdrop-blur-sm">
-                                        {adminPost.kind === 'image' ? 'Announcement' : 'Announcement • Video'}
-                                    </span>
-                                </div>
+                                        {/* Screen Content */}
+                                        <div className="relative">
+                                            {/* Channel Badge */}
+                                            <div className="absolute top-3 left-3 z-20">
+                                                <div className="flex items-center gap-2">
+                                                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                                                    <span className="px-3 py-1 text-xs font-bold rounded-full bg-black/80 text-white border border-gray-600 backdrop-blur-sm">
+                                                        {adminPost.kind === 'image' ? '📺 LIVE' : '📺 VIDEO'}
+                                                    </span>
+                                                </div>
+                                            </div>
 
-                                {adminPost.kind === 'image' ? (
-                                    <img
-                                        src={adminPost.url}
-                                        alt={adminPost.caption || 'Announcement'}
-                                        className="w-full h-44 sm:h-56 md:h-64 object-cover"
-                                        onError={(e) => {
-                                            e.target.src = lbLogo;
-                                            e.target.alt = 'Love Bingo Logo';
-                                        }}
-                                    />
-                                ) : (
-                                    <video
-                                        src={adminPost.url}
-                                        className="w-full h-44 sm:h-56 md:h-64 object-cover"
-                                        controls
-                                        muted
-                                        playsInline
-                                        onError={(e) => {
-                                            e.target.style.display = 'none';
-                                            const fallbackImg = document.createElement('img');
-                                            fallbackImg.src = lbLogo;
-                                            fallbackImg.alt = 'Love Bingo Logo';
-                                            fallbackImg.className = 'w-full h-44 sm:h-56 md:h-64 object-cover';
-                                            e.target.parentNode.insertBefore(fallbackImg, e.target);
-                                        }}
-                                    />
-                                )}
-                                {adminPost.caption ? (
-                                    <div className="p-3 sm:p-4 text-white text-sm leading-snug bg-black/40 border-t border-white/10">
-                                        {adminPost.caption}
+                                            {/* Content */}
+                                            {adminPost.kind === 'image' ? (
+                                                <img
+                                                    src={adminPost.url}
+                                                    alt={adminPost.caption || 'Announcement'}
+                                                    className="w-full h-48 sm:h-56 md:h-64 object-cover"
+                                                    onError={(e) => {
+                                                        e.target.src = lbLogo;
+                                                        e.target.alt = 'Love Bingo Logo';
+                                                    }}
+                                                />
+                                            ) : (
+                                                <video
+                                                    src={adminPost.url}
+                                                    className="w-full h-48 sm:h-56 md:h-64 object-cover"
+                                                    controls
+                                                    muted
+                                                    playsInline
+                                                    onError={(e) => {
+                                                        e.target.style.display = 'none';
+                                                        const fallbackImg = document.createElement('img');
+                                                        fallbackImg.src = lbLogo;
+                                                        fallbackImg.alt = 'Love Bingo Logo';
+                                                        fallbackImg.className = 'w-full h-48 sm:h-56 md:h-64 object-cover';
+                                                        e.target.parentNode.insertBefore(fallbackImg, e.target);
+                                                    }}
+                                                />
+                                            )}
+
+                                            {/* Screen Scan Lines Effect */}
+                                            <div className="absolute inset-0 pointer-events-none">
+                                                <div className="h-full bg-gradient-to-b from-transparent via-white/2 to-transparent animate-pulse"></div>
+                                            </div>
+                                        </div>
+
+                                        {/* Caption Area */}
+                                        {adminPost.caption && (
+                                            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 via-black/70 to-transparent p-4">
+                                                <div className="text-white text-sm leading-relaxed font-medium">
+                                                    {adminPost.caption}
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
-                                ) : null}
+
+                                    {/* TV Stand */}
+                                    <div className="flex justify-center mt-2">
+                                        <div className="w-16 h-2 bg-gradient-to-r from-gray-600 to-gray-700 rounded-full"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     )}

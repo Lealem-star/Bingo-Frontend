@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import CartellaCard from '../components/CartellaCard';
-import WinnerAnnounce from './WinnerAnnounce';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { useAuth } from '../lib/auth/AuthProvider';
 import { playNumberSound, preloadNumberSounds } from '../lib/audio/numberSounds';
@@ -44,7 +43,6 @@ export default function GameLayout({
 
     // Sound control
     const [isSoundOn, setIsSoundOn] = useState(true);
-    const [showWinners, setShowWinners] = useState(false);
 
     // Preload sounds on first user toggle on (or mount if desired)
     useEffect(() => {
@@ -62,15 +60,13 @@ export default function GameLayout({
         }
     }, [currentNumber, isSoundOn]);
 
-    // Open winner modal when phase enters announce (even if winners not attached)
+    // Navigate to winner page when phase enters announce (for both players and watch mode)
     useEffect(() => {
         if (gameState.phase === 'announce') {
-            setShowWinners(true);
+            // Navigate to winner page for all users (players and watch mode)
+            onNavigate?.('winner');
         }
-        if (gameState.phase === 'registration') {
-            setShowWinners(false);
-        }
-    }, [gameState.phase, gameState.winners]);
+    }, [gameState.phase, onNavigate]);
 
     // Timeout mechanism for when gameId is not available
     useEffect(() => {
@@ -377,12 +373,15 @@ export default function GameLayout({
                                 </div>
                                 {Array.from({ length: 15 }, (_, i) => i + 1).map(n => {
                                     const isCalled = calledNumbers.includes(n);
+                                    const isCurrentNumber = currentNumber === n;
                                     return (
                                         <button
                                             key={n}
-                                            className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCalled
-                                                ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
-                                                : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
+                                            className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCurrentNumber
+                                                ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse ring-2 ring-yellow-400'
+                                                : isCalled
+                                                    ? 'bg-gradient-to-b from-red-500 to-red-600 text-white'
+                                                    : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
                                         >
                                             {n}
@@ -398,12 +397,15 @@ export default function GameLayout({
                                 </div>
                                 {Array.from({ length: 15 }, (_, i) => i + 16).map(n => {
                                     const isCalled = calledNumbers.includes(n);
+                                    const isCurrentNumber = currentNumber === n;
                                     return (
                                         <button
                                             key={n}
-                                            className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCalled
-                                                ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
-                                                : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
+                                            className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCurrentNumber
+                                                ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse ring-2 ring-yellow-400'
+                                                : isCalled
+                                                    ? 'bg-gradient-to-b from-red-500 to-red-600 text-white'
+                                                    : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
                                         >
                                             {n}
@@ -413,18 +415,21 @@ export default function GameLayout({
                             </div>
                             {/* N Column */}
                             <div className="space-y-0.5">
-                                <div className="cartela-letter relative w-8 h-8 rounded-full bg-gradient-to-br from-red-500 to-red-600 text-white font-bold text-center flex items-center justify-center shadow-xl border-2 border-white/30 mx-auto">
+                                <div className="cartela-letter relative w-8 h-8 rounded-full bg-gradient-to-br from-pink-500 to-pink-600 text-white font-bold text-center flex items-center justify-center shadow-xl border-2 border-white/30 mx-auto">
                                     <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent to-white/30"></div>
                                     <span className="relative z-10 text-sm drop-shadow-sm">N</span>
                                 </div>
                                 {Array.from({ length: 15 }, (_, i) => i + 31).map(n => {
                                     const isCalled = calledNumbers.includes(n);
+                                    const isCurrentNumber = currentNumber === n;
                                     return (
                                         <button
                                             key={n}
-                                            className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCalled
-                                                ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
-                                                : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
+                                            className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCurrentNumber
+                                                ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse ring-2 ring-yellow-400'
+                                                : isCalled
+                                                    ? 'bg-gradient-to-b from-red-500 to-red-600 text-white'
+                                                    : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
                                         >
                                             {n}
@@ -440,12 +445,15 @@ export default function GameLayout({
                                 </div>
                                 {Array.from({ length: 15 }, (_, i) => i + 46).map(n => {
                                     const isCalled = calledNumbers.includes(n);
+                                    const isCurrentNumber = currentNumber === n;
                                     return (
                                         <button
                                             key={n}
-                                            className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCalled
-                                                ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
-                                                : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
+                                            className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCurrentNumber
+                                                ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse ring-2 ring-yellow-400'
+                                                : isCalled
+                                                    ? 'bg-gradient-to-b from-red-500 to-red-600 text-white'
+                                                    : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
                                         >
                                             {n}
@@ -461,12 +469,15 @@ export default function GameLayout({
                                 </div>
                                 {Array.from({ length: 15 }, (_, i) => i + 61).map(n => {
                                     const isCalled = calledNumbers.includes(n);
+                                    const isCurrentNumber = currentNumber === n;
                                     return (
                                         <button
                                             key={n}
-                                            className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCalled
-                                                ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse'
-                                                : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
+                                            className={`cartela-number-btn text-[10px] leading-none transition-all duration-200 ${isCurrentNumber
+                                                ? 'bg-gradient-to-b from-green-500 to-green-600 text-white animate-pulse ring-2 ring-yellow-400'
+                                                : isCalled
+                                                    ? 'bg-gradient-to-b from-red-500 to-red-600 text-white'
+                                                    : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
                                         >
                                             {n}
@@ -574,15 +585,15 @@ export default function GameLayout({
                                         <div className="text-white/90 text-sm leading-relaxed">
                                             {gameState.phase === 'running' ? (
                                                 <>
-                                                    <div className="mb-2">ይህ የዛሬ የጨዋታ ማጠናቀቅ ተጀመረ።</div>
-                                                    <div className="mb-2">አዲስ የጨዋታ ማጠናቀቅ እዚህ ይጀምራል።</div>
-                                                    <div className="mb-2">ተጠብቅ።</div>
+                                                    <div className="mb-2">ጭዋታው ተጀምሯል።</div>
+                                                    <div className="mb-2">ቀጣይ ጭዋታ እስኪጀምር እዚህ ይቆዩ።</div>
+                                                    <div className="mb-2">መልካም ተዝናኖት መልካም ዕድል።</div>
                                                 </>
                                             ) : gameState.phase === 'announce' ? (
                                                 <>
-                                                    <div className="mb-2">የጨዋታ ማጠናቀቅ ተጠናቋል።</div>
-                                                    <div className="mb-2">አዲስ የጨዋታ ማጠናቀቅ እዚህ ይጀምራል።</div>
-                                                    <div className="mb-2">ተጠብቅ።</div>
+                                                    <div className="mb-2">ጨዋታው ተጠናቋል።</div>
+                                                    <div className="mb-2">የአሸናፊ ማስታወቂያ ወደሚታይበት ያመራሉ።</div>
+                                                    <div className="mb-2">በቅርቡ ወደ ቀጣይ ጭዋታ ይቀላቀላሉ።</div>
                                                 </>
                                             ) : (
                                                 <>
@@ -677,18 +688,8 @@ export default function GameLayout({
                     </button>
                 </div>
 
-                {/* Winner Announcement Modal */}
-                <WinnerAnnounce
-                    open={showWinners}
-                    onClose={() => setShowWinners(false)}
-                    winners={(gameState.winners || []).map((w, i) => ({
-                        name: w.name || `Player ${i + 1}`,
-                        cardId: w.cartelaNumber || w.cardId || w.cardNumber || gameState.yourCardNumber,
-                        cardNumbers: w.card?.numbers || gameState.yourCard?.numbers,
-                        called: gameState.calledNumbers,
-                        prize: w.prize
-                    }))}
-                />
+
+
             </div>
         </div>
     );

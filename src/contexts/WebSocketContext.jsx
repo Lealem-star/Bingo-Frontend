@@ -141,20 +141,26 @@ export function WebSocketProvider({ children }) {
 
                     switch (event.type) {
                         case 'snapshot':
-                            setGameState(prev => ({
+                            setGameState(prev => {
+                                const phase = event.payload.phase || 'waiting';
+                                const registrationEndTime = event.payload.nextStartAt || event.payload.registrationEndTime;
+                                const remainingSeconds = registrationEndTime ? Math.max(0, Math.ceil((registrationEndTime - Date.now()) / 1000)) : 0;
+
+                                return {
                                 ...prev,
                                 ...event.payload,
-                                phase: event.payload.phase || 'waiting',
+                                    phase: phase,
                                 gameId: event.payload.gameId,
                                 playersCount: event.payload.playersCount || 0,
                                 prizePool: event.payload.prizePool || 0,
                                 calledNumbers: event.payload.calledNumbers || event.payload.called || [],
                                 takenCards: event.payload.takenCards || [],
                                 yourSelection: event.payload.yourSelection,
-                                countdown: event.payload.countdown || 0,
-                                registrationEndTime: event.payload.registrationEndTime,
+                                    countdown: phase === 'registration' ? remainingSeconds : (event.payload.countdown || 0),
+                                    registrationEndTime: registrationEndTime,
                                 isWatchMode: event.payload.isWatchMode || false
-                            }));
+                                };
+                            });
                             break;
 
                         case 'game_started':
@@ -325,6 +331,23 @@ export function WebSocketProvider({ children }) {
     const claimBingo = useCallback(() => {
         return send('bingo_claim', {});
     }, [send]);
+
+    // Countdown timer effect
+    useEffect(() => {
+        if (gameState.phase !== 'registration' || !gameState.registrationEndTime) return;
+
+        const interval = setInterval(() => {
+            setGameState(prev => {
+                if (prev.phase === 'registration' && prev.registrationEndTime) {
+                    const remaining = Math.max(0, Math.ceil((prev.registrationEndTime - Date.now()) / 1000));
+                    return { ...prev, countdown: remaining };
+                }
+                return prev;
+            });
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [gameState.phase, gameState.registrationEndTime]);
 
     // Debug connection state
     useEffect(() => {

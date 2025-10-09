@@ -6,6 +6,7 @@ import Wallet from './pages/Wallet';
 import Profile from './pages/Profile';
 import CartelaSelection from './pages/CartelaSelection.jsx';
 import GameLayout from './pages/GameLayout.jsx';
+import Winner from './pages/Winner.jsx';
 import { AuthProvider } from './lib/auth/AuthProvider.jsx';
 import { ToastProvider } from './contexts/ToastContext.jsx';
 import { WebSocketProvider } from './contexts/WebSocketContext.jsx';
@@ -104,6 +105,8 @@ function App() {
         return <Wallet onNavigate={handleNavigate} />;
       case 'profile':
         return <Profile onNavigate={handleNavigate} />;
+      case 'winner':
+        return <Winner onNavigate={handleNavigate} />;
       default:
         return <Game onNavigate={handleNavigate} onStakeSelected={handleStakeSelected} selectedStake={selectedStake} />;
     }

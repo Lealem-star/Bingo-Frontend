@@ -330,8 +330,26 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
                 </header>
                 <main className="p-4 flex items-center justify-center min-h-96">
                     <div className="text-center">
-                        <div className="text-lg text-white mb-2">Loading cards...</div>
-                        <div className="text-sm text-gray-300">Fetching from server</div>
+                        {/* Loading Animation */}
+                        <div className="relative mb-4">
+                            <div className="w-16 h-16 mx-auto">
+                                {/* Spinning circle */}
+                                <div className="w-16 h-16 border-4 border-purple-200/30 border-t-purple-500 rounded-full animate-spin"></div>
+                                {/* Inner pulsing dot */}
+                                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-purple-500 rounded-full animate-pulse"></div>
+                            </div>
+                        </div>
+
+                        {/* Loading text with fade animation */}
+                        <div className="text-lg text-white mb-2 animate-pulse">Loading cards...</div>
+                        <div className="text-sm text-gray-300 animate-pulse">Fetching from server</div>
+
+                        {/* Animated dots */}
+                        <div className="flex justify-center mt-3 space-x-1">
+                            <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
+                            <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
+                            <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
+                        </div>
                     </div>
                 </main>
                 <BottomNav current="game" onNavigate={onNavigate} />
