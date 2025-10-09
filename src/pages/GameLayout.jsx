@@ -3,6 +3,7 @@ import CartellaCard from '../components/CartellaCard';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { useAuth } from '../lib/auth/AuthProvider';
 import { playNumberSound, preloadNumberSounds } from '../lib/audio/numberSounds';
+import BottomNav from '../components/BottomNav';
 
 export default function GameLayout({
     stake,
@@ -689,7 +690,7 @@ export default function GameLayout({
                     </button>
                 </div>
 
-
+                <BottomNav current="game" onNavigate={onNavigate} />
 
             </div>
         </div>
