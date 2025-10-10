@@ -27,6 +27,21 @@ export default function CartelaSelection({ onNavigate, stake, onCartelaSelected,
         }
     }, [stake, sessionId]); // Remove connectToStake from dependencies to prevent re-connection loops
 
+    // Reset selected card when component mounts or when game phase is registration
+    useEffect(() => {
+        // Reset selected card when component first mounts
+        console.log('CartelaSelection - Component mounted, resetting selected card');
+        setSelectedCardNumber(null);
+    }, []); // Empty dependency array - runs only on mount
+
+    useEffect(() => {
+        // Reset selected card when we're in registration phase (new game starting)
+        if (gameState.phase === 'registration') {
+            console.log('CartelaSelection - Resetting selected card for new game registration');
+            setSelectedCardNumber(null);
+        }
+    }, [gameState.phase]);
+
     // Debug authentication
     useEffect(() => {
         console.log('CartelaSelection - Authentication Debug:', {
