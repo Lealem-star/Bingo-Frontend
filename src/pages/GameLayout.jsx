@@ -4,6 +4,7 @@ import { useWebSocket } from '../contexts/WebSocketContext';
 import { useAuth } from '../lib/auth/AuthProvider';
 import { playNumberSound, preloadNumberSounds } from '../lib/audio/numberSounds';
 import BottomNav from '../components/BottomNav';
+import '../styles/bingo-balls.css';
 
 export default function GameLayout({
     stake,
@@ -492,35 +493,30 @@ export default function GameLayout({
                     {/* Right Side - Enhanced Two Cards Stacked */}
                     <div className="space-y-6 ml-4">
                         {/* Floating Bingo Balls - Recent Numbers */}
-                        <div className="relative rounded-3xl p-4 bg-gradient-to-br from-slate-900/70 via-slate-800/60 to-purple-900/60 ring-2 ring-white/20 shadow-2xl shadow-purple-500/30 backdrop-blur-xl overflow-hidden border border-white/20">
-                            {/* Decorative background overlays */}
-                            <div className="pointer-events-none absolute -top-10 -left-10 w-40 h-40 rounded-full bg-purple-500/10 blur-3xl"></div>
-                            <div className="pointer-events-none absolute -bottom-12 -right-12 w-48 h-48 rounded-full bg-blue-500/10 blur-3xl"></div>
-                            {/* Left fade for tube entrance */}
-                            <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-slate-950/70 to-transparent"></div>
+                        <div className="recent-numbers-container">
                             <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3 flex-1 justify-start min-w-0 overflow-hidden flex-nowrap">
+                                <div className="flex items-center gap-2 flex-1 justify-start min-w-0 overflow-hidden flex-nowrap">
                                     {(() => {
                                         const recent = [...calledNumbers.slice(-3), currentNumber]
                                             .filter((n) => typeof n === 'number');
                                         const toShow = recent.slice(-4);
                                         const toBadge = (n) => {
                                             const letter = n <= 15 ? 'B' : n <= 30 ? 'I' : n <= 45 ? 'N' : n <= 60 ? 'G' : 'O';
-                                            const color = n <= 15
-                                                ? 'from-blue-500 to-blue-600'
+                                            const ballClass = n <= 15
+                                                ? 'ball-b'
                                                 : n <= 30
-                                                    ? 'from-purple-500 to-purple-600'
+                                                    ? 'ball-i'
                                                     : n <= 45
-                                                        ? 'from-green-500 to-green-600'
+                                                        ? 'ball-n'
                                                         : n <= 60
-                                                            ? 'from-orange-500 to-orange-600'
-                                                            : 'from-red-500 to-red-600';
+                                                            ? 'ball-g'
+                                                            : 'ball-o';
                                             return (
                                                 <div
                                                     key={`recent-${n}`}
-                                                    className={`inline-flex items-center h-7 px-2 rounded-full bg-gradient-to-br ${color} text-white text-[10px] font-bold shadow-md border border-white/30`}
+                                                    className={`recent-ball ${ballClass}`}
                                                 >
-                                                    <span className="drop-shadow-[0_1px_1px_rgba(0,0,0,0.4)]">{`${letter}-${n}`}</span>
+                                                    <span>{`${letter}-${n}`}</span>
                                                 </div>
                                             );
                                         };
@@ -529,7 +525,7 @@ export default function GameLayout({
                                 </div>
                                 <button
                                     onClick={() => setIsSoundOn(v => !v)}
-                                    className={`shrink-0 text-white w-8 h-8 grid place-items-center rounded-full transition-all duration-200 ${isSoundOn ? 'bg-white/10' : 'bg-white/5 opacity-70'}`}
+                                    className={`sound-button ${isSoundOn ? '' : 'muted'}`}
                                     aria-label={isSoundOn ? 'Mute' : 'Unmute'}
                                     title={isSoundOn ? 'Mute' : 'Unmute'}
                                 >
@@ -548,16 +544,13 @@ export default function GameLayout({
                         </div>
 
                         {/* Floating Current Number Ball */}
-                        <div className="relative rounded-3xl p-6 bg-gradient-to-br from-slate-900/70 via-slate-800/60 to-purple-900/60 ring-2 ring-white/20 shadow-2xl shadow-purple-500/30 backdrop-blur-xl overflow-hidden border border-white/20">
-                            {/* Decorative background overlays */}
-                            <div className="pointer-events-none absolute -top-16 left-1/3 w-56 h-56 rounded-full bg-yellow-400/10 blur-3xl"></div>
-                            <div className="pointer-events-none absolute -bottom-20 right-1/4 w-64 h-64 rounded-full bg-orange-500/10 blur-3xl"></div>
+                        <div className="current-number-container">
                             <div className="text-center">
                                 <div className="mx-auto w-full flex items-center justify-center">
                                     {currentNumber ? (
                                         <div className="relative">
-                                            <div className="w-36 h-36 md:w-44 md:h-44 rounded-full bg-white border-[10px] border-yellow-400 shadow-2xl flex items-center justify-center">
-                                                <div className="relative z-10 text-purple-700 font-extrabold text-2xl md:text-3xl text-center">
+                                            <div className="current-ball">
+                                                <div className="current-ball-text">
                                                     {(() => {
                                                         const letter = currentNumber <= 15 ? 'B' : currentNumber <= 30 ? 'I' : currentNumber <= 45 ? 'N' : currentNumber <= 60 ? 'G' : 'O';
                                                         return `${letter}-${currentNumber}`;
@@ -567,8 +560,8 @@ export default function GameLayout({
                                         </div>
                                     ) : (
                                         <div className="relative">
-                                            <div className="w-36 h-36 md:w-44 md:h-44 rounded-full bg-white/70 border-[10px] border-gray-300 shadow-xl flex items-center justify-center">
-                                                <div className="relative z-10 text-gray-700 text-xl font-semibold">Waiting...</div>
+                                            <div className="current-ball waiting">
+                                                <div className="current-ball-text">Waiting...</div>
                                             </div>
                                         </div>
                                     )}

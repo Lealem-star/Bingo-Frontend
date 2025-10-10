@@ -1,0 +1,143 @@
+/* Bingo Balls Styling - Normal CSS */
+
+/* Recent Numbers Container */
+.recent-numbers-container {
+    position: relative;
+    border-radius: 1rem;
+    padding: 1rem;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(51, 65, 85, 0.7), rgba(88, 28, 135, 0.7));
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(16px);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Recent Numbers Balls */
+.recent-ball {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: bold;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    margin-right: 0.5rem;
+}
+
+/* Recent Ball Colors */
+.recent-ball.ball-b {
+    background-color: #3b82f6;
+    /* blue-500 */
+}
+
+.recent-ball.ball-i {
+    background-color: #7c3aed;
+    /* purple-600 */
+}
+
+.recent-ball.ball-n {
+    background-color: #10b981;
+    /* green-500 */
+}
+
+.recent-ball.ball-g {
+    background-color: #f97316;
+    /* orange-500 */
+}
+
+.recent-ball.ball-o {
+    background-color: #f97316;
+    /* orange-500 */
+}
+
+/* Current Number Container */
+.current-number-container {
+    position: relative;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(51, 65, 85, 0.7), rgba(88, 28, 135, 0.7));
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(16px);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Current Number Ball */
+.current-ball {
+    width: 8rem;
+    height: 8rem;
+    border-radius: 50%;
+    background-color: white;
+    border: 8px solid #facc15;
+    /* yellow-400 */
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+
+.current-ball-text {
+    color: #581c87;
+    /* purple-700 */
+    font-weight: 800;
+    font-size: 1.25rem;
+    text-align: center;
+}
+
+/* Waiting State */
+.current-ball.waiting {
+    background-color: rgba(255, 255, 255, 0.7);
+    border-color: #d1d5db;
+    /* gray-300 */
+}
+
+.current-ball.waiting .current-ball-text {
+    color: #374151;
+    /* gray-700 */
+    font-weight: 600;
+    font-size: 1.125rem;
+}
+
+/* Sound Button */
+.sound-button {
+    flex-shrink: 0;
+    color: white;
+    width: 2rem;
+    height: 2rem;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sound-button.muted {
+    background-color: rgba(255, 255, 255, 0.05);
+    opacity: 0.7;
+}
+
+.sound-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .current-ball {
+        width: 7rem;
+        height: 7rem;
+    }
+
+    .current-ball-text {
+        font-size: 1.125rem;
+    }
+
+    .recent-ball {
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 0.625rem;
+    }
+}
