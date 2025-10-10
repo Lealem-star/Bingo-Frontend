@@ -5,6 +5,7 @@ import { useAuth } from '../lib/auth/AuthProvider';
 import { playNumberSound, preloadNumberSounds } from '../lib/audio/numberSounds';
 import BottomNav from '../components/BottomNav';
 import '../styles/bingo-balls.css';
+import '../styles/action-buttons.css';
 
 export default function GameLayout({
     stake,
@@ -20,7 +21,7 @@ export default function GameLayout({
         sessionId: sessionId ? 'Present' : 'Missing'
     });
 
-    const { connected, gameState, claimBingo } = useWebSocket();
+    const { connected, gameState, claimBingo, connectToStake } = useWebSocket();
 
     // Use ONLY WebSocket data - no props fallbacks
     const currentPlayersCount = gameState.playersCount || 0;
@@ -45,6 +46,14 @@ export default function GameLayout({
 
     // Sound control
     const [isSoundOn, setIsSoundOn] = useState(true);
+
+    // Connect to WebSocket when component mounts with stake
+    useEffect(() => {
+        if (stake && sessionId) {
+            console.log('GameLayout - Connecting to WebSocket for stake:', stake);
+            connectToStake(stake);
+        }
+    }, [stake, sessionId, connectToStake]);
 
     // Preload sounds on first user toggle on (or mount if desired)
     useEffect(() => {
@@ -335,7 +344,7 @@ export default function GameLayout({
 
             <div className="max-w-md mx-auto px-3 py-3 relative z-10">
                 {/* Enhanced Top Information Bar (compact with custom CSS) */}
-                <div className="game-info-bar compact flex items-stretch rounded-2xl flex-nowrap mb-6">
+                <div className="game-info-bar compact flex items-stretch rounded-2xl flex-nowrap mb-8">
                     <div className="wallet-box wallet-box--compact flex-1 group">
                         <div className="wallet-label">Game ID</div>
                         <div className="wallet-value font-bold text-yellow-300 truncate">{currentGameId || 'LB000000'}</div>
@@ -363,7 +372,7 @@ export default function GameLayout({
 
 
                 {/* Main Content Area - Enhanced 2 Column Layout */}
-                <div className="grid grid-cols-2 p-2 gap-6 mt-6 mb-6 mr-4">
+                <div className="grid grid-cols-2 p-2 gap-6 mt-8 mb-6 mr-4">
                     {/* Left Card - Enhanced BINGO Grid */}
                     <div className="rounded-2xl p-4 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-2xl shadow-purple-900/30 backdrop-blur-md border border-white/10">
                         <div className="grid grid-cols-5 gap-1">
@@ -640,28 +649,26 @@ export default function GameLayout({
                 </div>
 
                 {/* Enhanced Bottom Action Buttons */}
-                <div className="flex justify-between p-4 mt-6 gap-4">
+                <div className="action-buttons-container">
                     {/* Leave Button */}
                     <button
                         onClick={() => onNavigate?.('game')}
-                        className="group relative flex-1 bg-gradient-to-br from-slate-600 to-slate-700 text-white px-6 py-4 rounded-2xl font-bold text-sm hover:from-slate-500 hover:to-slate-600 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 border border-slate-400/30 overflow-hidden"
+                        className="action-button leave-button"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                        <div className="relative flex items-center justify-center gap-2">
-                            <span className="text-lg">🚪</span>
-                            <span>Leave Game</span>
+                        <div className="button-content">
+                            <span className="button-icon">🚪</span>
+                            <span className="button-text">Leave Game</span>
                         </div>
                     </button>
 
                     {/* Refresh Button */}
                     <button
                         onClick={() => window.location.reload()}
-                        className="group relative flex-1 bg-gradient-to-br from-blue-500 to-blue-600 text-white px-6 py-4 rounded-2xl font-bold text-sm hover:from-blue-400 hover:to-blue-500 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 border border-blue-400/30 overflow-hidden"
+                        className="action-button refresh-button"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                        <div className="relative flex items-center justify-center gap-2">
-                            <span className="text-lg group-hover:rotate-180 transition-transform duration-500">🔄</span>
-                            <span>Refresh</span>
+                        <div className="button-content">
+                            <span className="button-icon refresh-icon">🔄</span>
+                            <span className="button-text">Refresh</span>
                         </div>
                     </button>
 
@@ -669,20 +676,14 @@ export default function GameLayout({
                     <button
                         onClick={() => { claimBingo(); }}
                         disabled={isWatchMode}
-                        className={`group relative flex-1 px-6 py-4 rounded-2xl font-bold text-sm transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 overflow-hidden ${isWatchMode
-                            ? 'bg-gradient-to-br from-gray-500 to-gray-600 text-gray-300 cursor-not-allowed border border-gray-400/30 opacity-50'
-                            : 'bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 text-white hover:from-yellow-300 hover:via-orange-400 hover:to-red-400 border border-yellow-400/30'
-                            }`}
+                        className={`action-button bingo-button ${isWatchMode ? 'disabled' : ''}`}
                     >
-                        {!isWatchMode && (
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-                        )}
-                        <div className="relative flex items-center justify-center gap-2">
-                            <span className="text-lg group-hover:animate-bounce">🎉</span>
-                            <span className="font-extrabold">BINGO!</span>
+                        <div className="button-content">
+                            <span className="button-icon bingo-icon">🎉</span>
+                            <span className="button-text">BINGO!</span>
                         </div>
                         {!isWatchMode && (
-                            <div className="absolute inset-0 bg-gradient-to-t from-transparent to-white/20 rounded-2xl"></div>
+                            <div className="bingo-overlay"></div>
                         )}
                     </button>
                 </div>

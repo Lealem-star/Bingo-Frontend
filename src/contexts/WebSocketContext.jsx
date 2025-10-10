@@ -70,6 +70,25 @@ export function WebSocketProvider({ children }) {
             setConnected(false);
         }
 
+        // Reset game state when switching stakes
+        setGameState({
+            phase: 'waiting',
+            gameId: null,
+            playersCount: 0,
+            prizePool: 0,
+            calledNumbers: [],
+            currentNumber: null,
+            takenCards: [],
+            yourSelection: null,
+            yourCard: null,
+            yourCardNumber: null,
+            countdown: 0,
+            registrationEndTime: null,
+            isWatchMode: false,
+            winners: [],
+            walletUpdate: null
+        });
+
         setCurrentStake(stake);
         console.log('Connecting to WebSocket for stake:', stake);
 
@@ -147,18 +166,18 @@ export function WebSocketProvider({ children }) {
                                 const remainingSeconds = registrationEndTime ? Math.max(0, Math.ceil((registrationEndTime - Date.now()) / 1000)) : 0;
 
                                 return {
-                                ...prev,
-                                ...event.payload,
+                                    ...prev,
+                                    ...event.payload,
                                     phase: phase,
-                                gameId: event.payload.gameId,
-                                playersCount: event.payload.playersCount || 0,
-                                prizePool: event.payload.prizePool || 0,
-                                calledNumbers: event.payload.calledNumbers || event.payload.called || [],
-                                takenCards: event.payload.takenCards || [],
-                                yourSelection: event.payload.yourSelection,
+                                    gameId: event.payload.gameId,
+                                    playersCount: event.payload.playersCount || 0,
+                                    prizePool: event.payload.prizePool || 0,
+                                    calledNumbers: event.payload.calledNumbers || event.payload.called || [],
+                                    takenCards: event.payload.takenCards || [],
+                                    yourSelection: event.payload.yourSelection,
                                     countdown: phase === 'registration' ? remainingSeconds : (event.payload.countdown || 0),
                                     registrationEndTime: registrationEndTime,
-                                isWatchMode: event.payload.isWatchMode || false
+                                    isWatchMode: event.payload.isWatchMode || false
                                 };
                             });
                             break;
