@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useWebSocket } from '../contexts/WebSocketContext';
 import { useAuth } from '../lib/auth/AuthProvider';
+import CartellaCard from '../components/CartellaCard';
 
 export default function Winner({ onNavigate }) {
     const { gameState } = useWebSocket();
@@ -86,43 +87,39 @@ export default function Winner({ onNavigate }) {
                     </div>
                 )}
 
-                <div className="rounded-xl bg-white/5 border border-white/10 p-4">
-                    <div className="text-sm mb-3 flex items-center gap-2">
+                <div className="rounded-xl bg-white/5 border border-white/10 p-6">
+                    <div className="text-sm mb-4 flex items-center gap-2">
                         <span>🏆</span>
                         <span>Winning Cartela : </span>
-                        <span className="font-bold">{main.cartelaNumber || main.cardId || '-'}</span>
+                        <span className="font-bold text-yellow-300">{main.cartelaNumber || main.cardId || '-'}</span>
                     </div>
 
                     {typeof main.prize === 'number' && (
-                        <div className="text-sm mb-3 flex items-center gap-2 text-amber-300">
+                        <div className="text-sm mb-4 flex items-center gap-2 text-amber-300">
                             <span>💰</span>
                             <span>Prize per winner:</span>
                             <span className="font-bold">{main.prize}</span>
                         </div>
                     )}
 
-                    <div className="grid grid-cols-5 gap-1 mb-3">
-                        {['B', 'I', 'N', 'G', 'O'].map((h) => (
-                            <div key={h} className={`text-center text-xs font-bold rounded-md py-2 ${h === 'B' ? 'bg-blue-500' : h === 'I' ? 'bg-purple-500' : h === 'N' ? 'bg-pink-500' : h === 'G' ? 'bg-green-500' : 'bg-orange-500'
-                                }`}>{h}</div>
-                        ))}
-                        {(main.cardNumbers || Array.from({ length: 25 }, (_, i) => i === 12 ? 0 : i + 1)).map((n, idx) => {
-                            const row = Math.floor(idx / 5);
-                            const col = idx % 5;
-                            const isCenter = row === 2 && col === 2;
-                            const isHit = (main.called || []).includes(n);
-                            const isWinningCell = Array.isArray(pattern) && pattern.includes(idx);
-                            if (isCenter) {
-                                return <div key={idx} className={`bg-green-500 rounded-md text-center py-2 text-yellow-300 ${isWinningCell ? 'ring-2 ring-yellow-400' : ''}`}>★</div>;
-                            }
-                            return (
-                                <div key={idx} className={`text-center text-xs leading-none py-2 rounded-md border ${isHit ? 'bg-orange-500/90 border-orange-400 text-white' : 'bg-white text-slate-900 border-white/60'} ${isWinningCell ? 'ring-2 ring-yellow-400' : ''}`}>{n}</div>
-                            );
-                        })}
+                    {/* Beautiful Cartella Card */}
+                    <div className="flex justify-center mb-6">
+                        <CartellaCard 
+                            id={main.cartelaNumber || main.cardId || 'Winner'}
+                            card={main.cardNumbers ? [
+                                main.cardNumbers.slice(0, 5),
+                                main.cardNumbers.slice(5, 10),
+                                main.cardNumbers.slice(10, 15),
+                                main.cardNumbers.slice(15, 20),
+                                main.cardNumbers.slice(20, 25)
+                            ] : null}
+                            called={main.called || []}
+                            isPreview={false}
+                        />
                     </div>
 
                     <div className="w-full h-8 rounded-md bg-amber-700/70 text-amber-200 text-xs flex items-center justify-center">
-                        Redirecting to next game...
+                        አዲስ ጭዋታ ለመጀመር.....
                     </div>
                     <div className="w-full h-8 rounded-md bg-slate-800/80 text-slate-200 text-xs flex items-center justify-center mt-2">
                         Auto-starting next game in {countdown}s
