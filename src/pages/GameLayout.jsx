@@ -523,7 +523,7 @@ export default function GameLayout({
                         {/* Floating Bingo Balls - Recent Numbers */}
                         <div className="recent-numbers-container">
                             <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 flex-1 justify-start min-w-0 overflow-hidden flex-nowrap">
+                                <div className="flex items-center gap-2 flex-1 justify-start min-w-0 overflow-hidden flex-nowrap" style={{ maxWidth: 'calc(100% - 3rem)' }}>
                                     {(() => {
                                         // Get all called numbers including current number
                                         const allNumbers = [...calledNumbers];
@@ -531,9 +531,9 @@ export default function GameLayout({
                                             allNumbers.push(currentNumber);
                                         }
 
-                                        // Get the last 4 numbers (most recent)
+                                        // Get the last 4 numbers (most recent) - limit to exactly 4
                                         const toShow = allNumbers.slice(-4);
-                                        const toBadge = (n) => {
+                                        const toBadge = (n, index) => {
                                             const letter = n <= 15 ? 'B' : n <= 30 ? 'I' : n <= 45 ? 'N' : n <= 60 ? 'G' : 'O';
                                             const ballClass = n <= 15
                                                 ? 'ball-b'
@@ -546,8 +546,13 @@ export default function GameLayout({
                                                             : 'ball-o';
                                             return (
                                                 <div
-                                                    key={`recent-${n}`}
+                                                    key={`recent-${n}-${index}`}
                                                     className={`recent-ball ${ballClass}`}
+                                                    style={{
+                                                        flexShrink: 0,
+                                                        minWidth: '3rem',
+                                                        maxWidth: '3rem'
+                                                    }}
                                                 >
                                                     <span>{`${letter}-${n}`}</span>
                                                 </div>
