@@ -58,8 +58,8 @@ function App() {
     console.log('Navigating from', currentPage, 'to', page, 'with stake:', selectedStake, 'cartela:', selectedCartela);
 
     if (page === 'game') {
-      // Reset to initial game screen when coming back from selection or live game
-      if (currentPage === 'cartela-selection' || currentPage === 'game-layout') {
+      // Reset to initial game screen when coming back from selection, live game, or scores
+      if (currentPage === 'cartela-selection' || currentPage === 'game-layout' || currentPage === 'scores') {
         setSelectedStake(null);
         setSelectedCartela(null);
         setCurrentGameId(null);
