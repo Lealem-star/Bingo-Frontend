@@ -67,8 +67,8 @@
 
 /* Current Number Ball */
 .current-ball {
-    width: 8rem;
-    height: 8rem;
+    width: 4rem;
+    height: 4rem;
     border-radius: 50%;
     background-color: white;
     border: 8px solid #facc15;
