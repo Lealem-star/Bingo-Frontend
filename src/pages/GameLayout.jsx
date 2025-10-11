@@ -370,16 +370,16 @@ export default function GameLayout({
 
 
                 {/* Main Content Area - Enhanced 2 Column Layout */}
-                <div className="main-content-area" style={{ 
-                    display: 'grid', 
-                    gridTemplateColumns: '1fr 1fr', 
-                    gap: '2rem', 
-                    padding: '0.5rem', 
-                    marginTop: '2rem', 
-                    marginBottom: '1rem', 
+                <div className="main-content-area" style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    gap: '2rem',
+                    padding: '0.5rem',
+                    marginTop: '2rem',
+                    marginBottom: '1rem',
                     marginRight: '1rem',
-                    height: 'calc(100vh - 200px)', 
-                    maxHeight: '600px' 
+                    height: 'calc(100vh - 200px)',
+                    maxHeight: '600px'
                 }}>
                     {/* Left Card - Enhanced BINGO Grid */}
                     <div className="rounded-2xl p-3 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-2xl shadow-purple-900/30 backdrop-blur-md border border-white/10" style={{ height: '100%', overflow: 'hidden' }}>
@@ -513,9 +513,9 @@ export default function GameLayout({
                     </div>
 
                     {/* Right Side - Enhanced Two Cards Stacked */}
-                    <div className="right-side-container" style={{ 
-                        height: '100%', 
-                        display: 'flex', 
+                    <div className="right-side-container" style={{
+                        height: '100%',
+                        display: 'flex',
                         flexDirection: 'column',
                         gap: '0.5rem',
                         marginLeft: '0.5rem'
@@ -525,9 +525,14 @@ export default function GameLayout({
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 flex-1 justify-start min-w-0 overflow-hidden flex-nowrap">
                                     {(() => {
-                                        const recent = [...calledNumbers.slice(-3), currentNumber]
-                                            .filter((n) => typeof n === 'number');
-                                        const toShow = recent.slice(-4);
+                                        // Get all called numbers including current number
+                                        const allNumbers = [...calledNumbers];
+                                        if (currentNumber && typeof currentNumber === 'number') {
+                                            allNumbers.push(currentNumber);
+                                        }
+                                        
+                                        // Get the last 4 numbers (most recent)
+                                        const toShow = allNumbers.slice(-4);
                                         const toBadge = (n) => {
                                             const letter = n <= 15 ? 'B' : n <= 30 ? 'I' : n <= 45 ? 'N' : n <= 60 ? 'G' : 'O';
                                             const ballClass = n <= 15
