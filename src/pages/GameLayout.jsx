@@ -530,7 +530,7 @@ export default function GameLayout({
                                         if (currentNumber && typeof currentNumber === 'number') {
                                             allNumbers.push(currentNumber);
                                         }
-                                        
+
                                         // Get the last 4 numbers (most recent)
                                         const toShow = allNumbers.slice(-4);
                                         const toBadge = (n) => {
@@ -594,7 +594,7 @@ export default function GameLayout({
                                     ) : (
                                         <div className="relative">
                                             <div className="current-ball waiting">
-                                                <div className="current-ball-text">Waiting...</div>
+                                                <div className="current-ball-text"></div>
                                             </div>
                                         </div>
                                     )}
