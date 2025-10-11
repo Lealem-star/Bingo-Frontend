@@ -373,17 +373,17 @@ export default function GameLayout({
                 <div className="main-content-area mobile-first-grid" style={{
                     display: 'grid',
                     gridTemplateColumns: '1fr 1fr',
-                    gap: '1rem',
-                    padding: '0.5rem',
+                    gap: '1.25rem',
+                    padding: '0.75rem',
                     marginTop: '1rem',
                     marginBottom: '1rem',
-                    marginRight: '0.5rem',
+                    marginRight: '0.25rem',
                     height: 'calc(100vh - 180px)',
                     maxHeight: '500px'
                 }}>
                     {/* Left Card - Enhanced BINGO Grid */}
-                    <div className="rounded-2xl p-3 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-2xl shadow-purple-900/30 backdrop-blur-md border border-white/10" style={{ height: '100%', overflow: 'hidden' }}>
-                        <div className="grid grid-cols-5 gap-0.5" style={{ height: '100%' }}>
+                    <div className="rounded-2xl p-4 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-2xl shadow-purple-900/30 backdrop-blur-md border border-white/10" style={{ height: '100%', overflow: 'hidden' }}>
+                        <div className="grid grid-cols-5 gap-1" style={{ height: '100%' }}>
                             {/* B Column */}
                             <div className="space-y-0" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                                 <div className="cartela-letter relative w-6 h-6 rounded-full bg-gradient-to-br from-red-500 to-red-600 text-white font-bold text-center flex items-center justify-center shadow-xl border-2 border-white/30 mx-auto" style={{ flexShrink: 0 }}>
@@ -402,7 +402,7 @@ export default function GameLayout({
                                                     ? 'bg-gradient-to-b from-red-500 to-red-600 text-white'
                                                     : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
-                                            style={{ flex: '1', minHeight: '18px', maxHeight: '22px' }}
+                                            style={{ flex: '1', minHeight: '20px', maxHeight: '24px' }}
                                         >
                                             {n}
                                         </button>
@@ -427,7 +427,7 @@ export default function GameLayout({
                                                     ? 'bg-gradient-to-b from-red-500 to-red-600 text-white'
                                                     : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
-                                            style={{ flex: '1', minHeight: '18px', maxHeight: '22px' }}
+                                            style={{ flex: '1', minHeight: '20px', maxHeight: '24px' }}
                                         >
                                             {n}
                                         </button>
@@ -452,7 +452,7 @@ export default function GameLayout({
                                                     ? 'bg-gradient-to-b from-red-500 to-red-600 text-white'
                                                     : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
-                                            style={{ flex: '1', minHeight: '18px', maxHeight: '22px' }}
+                                            style={{ flex: '1', minHeight: '20px', maxHeight: '24px' }}
                                         >
                                             {n}
                                         </button>
@@ -477,7 +477,7 @@ export default function GameLayout({
                                                     ? 'bg-gradient-to-b from-red-500 to-red-600 text-white'
                                                     : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
-                                            style={{ flex: '1', minHeight: '18px', maxHeight: '22px' }}
+                                            style={{ flex: '1', minHeight: '20px', maxHeight: '24px' }}
                                         >
                                             {n}
                                         </button>
@@ -502,7 +502,7 @@ export default function GameLayout({
                                                     ? 'bg-gradient-to-b from-red-500 to-red-600 text-white'
                                                     : 'bg-gradient-to-b from-slate-700/80 to-slate-800/80 text-slate-200'
                                                 }`}
-                                            style={{ flex: '1', minHeight: '18px', maxHeight: '22px' }}
+                                            style={{ flex: '1', minHeight: '20px', maxHeight: '24px' }}
                                         >
                                             {n}
                                         </button>
@@ -550,8 +550,8 @@ export default function GameLayout({
                                                     className={`recent-ball ${ballClass}`}
                                                     style={{
                                                         flexShrink: 0,
-                                                        minWidth: '2.5rem',
-                                                        maxWidth: '2.5rem'
+                                                        minWidth: '2rem',
+                                                        maxWidth: '2rem'
                                                     }}
                                                 >
                                                     <span>{`${letter}-${n}`}</span>
