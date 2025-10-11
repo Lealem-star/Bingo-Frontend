@@ -72,7 +72,7 @@ export default function Winner({ onNavigate }) {
                             )}
                         </>
                     ) : (
-                        <div className="text-lg text-white/90">🎉 {main.name || 'Winner'} WON! 🎉</div>
+                        <div className="text-lg text-white/90">🎉 {main.name || main.playerName || main.firstName || `Cartella #${main.cartelaNumber || main.cardId || 'Winner'}`} WON! 🎉</div>
                     )}
                 </div>
 
@@ -80,7 +80,9 @@ export default function Winner({ onNavigate }) {
                     <div className="flex flex-wrap gap-2 justify-center mb-6">
                         {winners.map((w, i) => (
                             <div key={i} className="px-3 py-2 rounded-full bg-white/10 border border-white/15 text-sm">
-                                <span className="font-semibold mr-2">{w.name || w.cartelaNumber || `Player ${i + 1}`}</span>
+                                <span className="font-semibold mr-2">
+                                    {w.name || w.playerName || w.firstName || `Cartella #${w.cartelaNumber || w.cardId || (i + 1)}`}
+                                </span>
                                 <span className="opacity-80">#{w.cartelaNumber || w.cardId}</span>
                             </div>
                         ))}
@@ -104,7 +106,7 @@ export default function Winner({ onNavigate }) {
 
                     {/* Beautiful Cartella Card */}
                     <div className="flex justify-center mb-6">
-                        <CartellaCard 
+                        <CartellaCard
                             id={main.cartelaNumber || main.cardId || 'Winner'}
                             card={main.cardNumbers ? [
                                 main.cardNumbers.slice(0, 5),
