@@ -373,9 +373,9 @@ export default function GameLayout({
                 <div className="main-content-area mobile-first-grid" style={{
                     display: 'grid',
                     gridTemplateColumns: '1fr 1fr',
-                    gap: '1.25rem',
+                    gap: '1rem',
                     padding: '0.75rem',
-                    marginTop: '1rem',
+                    marginTop: '0.75rem',
                     marginBottom: '1rem',
                     marginRight: '0.25rem',
                     height: 'calc(100vh - 180px)',
