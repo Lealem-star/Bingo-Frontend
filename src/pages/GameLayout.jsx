@@ -343,8 +343,8 @@ export default function GameLayout({
             </div>
 
             <div className="max-w-md mx-auto px-3 py-3 relative z-10">
-                {/* Enhanced Top Information Bar (compact with custom CSS) */}
-                <div className="game-info-bar compact flex items-stretch rounded-2xl flex-nowrap" style={{ marginBottom: '2rem' }}>
+                {/* Enhanced Top Information Bar (mobile-first compact design) */}
+                <div className="game-info-bar compact flex items-stretch rounded-2xl flex-nowrap mobile-info-bar" style={{ marginBottom: '1.5rem' }}>
                     <div className="wallet-box wallet-box--compact flex-1 group">
                         <div className="wallet-label">Game ID</div>
                         <div className="wallet-value font-bold text-yellow-300 truncate">{currentGameId || 'LB000000'}</div>
@@ -369,17 +369,17 @@ export default function GameLayout({
 
 
 
-                {/* Main Content Area - Enhanced 2 Column Layout */}
-                <div className="main-content-area" style={{
+                {/* Main Content Area - Mobile-First 2 Column Layout */}
+                <div className="main-content-area mobile-first-grid" style={{
                     display: 'grid',
                     gridTemplateColumns: '1fr 1fr',
-                    gap: '2rem',
+                    gap: '1rem',
                     padding: '0.5rem',
-                    marginTop: '2rem',
+                    marginTop: '1rem',
                     marginBottom: '1rem',
-                    marginRight: '1rem',
-                    height: 'calc(100vh - 200px)',
-                    maxHeight: '600px'
+                    marginRight: '0.5rem',
+                    height: 'calc(100vh - 180px)',
+                    maxHeight: '500px'
                 }}>
                     {/* Left Card - Enhanced BINGO Grid */}
                     <div className="rounded-2xl p-3 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-2xl shadow-purple-900/30 backdrop-blur-md border border-white/10" style={{ height: '100%', overflow: 'hidden' }}>
@@ -550,8 +550,8 @@ export default function GameLayout({
                                                     className={`recent-ball ${ballClass}`}
                                                     style={{
                                                         flexShrink: 0,
-                                                        minWidth: '3rem',
-                                                        maxWidth: '3rem'
+                                                        minWidth: '2.5rem',
+                                                        maxWidth: '2.5rem'
                                                     }}
                                                 >
                                                     <span>{`${letter}-${n}`}</span>
