@@ -344,7 +344,7 @@ export default function GameLayout({
 
             <div className="max-w-md mx-auto px-3 py-3 relative z-10">
                 {/* Enhanced Top Information Bar (compact with custom CSS) */}
-                <div className="game-info-bar compact flex items-stretch rounded-2xl flex-nowrap mb-8">
+                <div className="game-info-bar compact flex items-stretch rounded-2xl flex-nowrap" style={{ marginBottom: '2rem' }}>
                     <div className="wallet-box wallet-box--compact flex-1 group">
                         <div className="wallet-label">Game ID</div>
                         <div className="wallet-value font-bold text-yellow-300 truncate">{currentGameId || 'LB000000'}</div>
@@ -369,10 +369,18 @@ export default function GameLayout({
 
 
 
-
-
                 {/* Main Content Area - Enhanced 2 Column Layout */}
-                <div className="grid grid-cols-2 p-2 gap-8 mt-8 mb-4 mr-4" style={{ height: 'calc(100vh - 200px)', maxHeight: '600px' }}>
+                <div className="main-content-area" style={{ 
+                    display: 'grid', 
+                    gridTemplateColumns: '1fr 1fr', 
+                    gap: '2rem', 
+                    padding: '0.5rem', 
+                    marginTop: '2rem', 
+                    marginBottom: '1rem', 
+                    marginRight: '1rem',
+                    height: 'calc(100vh - 200px)', 
+                    maxHeight: '600px' 
+                }}>
                     {/* Left Card - Enhanced BINGO Grid */}
                     <div className="rounded-2xl p-3 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-2xl shadow-purple-900/30 backdrop-blur-md border border-white/10" style={{ height: '100%', overflow: 'hidden' }}>
                         <div className="grid grid-cols-5 gap-0.5" style={{ height: '100%' }}>
@@ -505,7 +513,13 @@ export default function GameLayout({
                     </div>
 
                     {/* Right Side - Enhanced Two Cards Stacked */}
-                    <div className="space-y-2 ml-2" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <div className="right-side-container" style={{ 
+                        height: '100%', 
+                        display: 'flex', 
+                        flexDirection: 'column',
+                        gap: '0.5rem',
+                        marginLeft: '0.5rem'
+                    }}>
                         {/* Floating Bingo Balls - Recent Numbers */}
                         <div className="recent-numbers-container">
                             <div className="flex items-center justify-between">
@@ -654,7 +668,7 @@ export default function GameLayout({
                 </div>
 
                 {/* Enhanced Bottom Action Buttons */}
-                <div className="action-buttons-container" style={{ marginTop: '8px' }}>
+                <div className="action-buttons-container" style={{ marginTop: '1rem' }}>
                     {/* Leave Button */}
                     <button
                         onClick={() => onNavigate?.('game')}
