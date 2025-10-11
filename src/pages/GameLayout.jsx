@@ -372,12 +372,12 @@ export default function GameLayout({
 
 
                 {/* Main Content Area - Enhanced 2 Column Layout */}
-                <div className="grid grid-cols-2 p-2 gap-8 mt-8 mb-4 mr-4" style={{ maxHeight: 'calc(100vh - 250px)', minHeight: '400px' }}>
+                <div className="grid grid-cols-2 p-2 gap-8 mt-8 mb-4 mr-4" style={{ height: 'calc(100vh - 200px)', maxHeight: '600px' }}>
                     {/* Left Card - Enhanced BINGO Grid */}
-                    <div className="rounded-2xl p-3 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-2xl shadow-purple-900/30 backdrop-blur-md border border-white/10">
-                        <div className="grid grid-cols-5 gap-0.5">
+                    <div className="rounded-2xl p-3 bg-gradient-to-br from-purple-900/70 to-slate-900/50 ring-1 ring-white/20 shadow-2xl shadow-purple-900/30 backdrop-blur-md border border-white/10" style={{ height: '100%', overflow: 'hidden' }}>
+                        <div className="grid grid-cols-5 gap-0.5" style={{ height: '100%' }}>
                             {/* B Column */}
-                            <div className="space-y-0">
+                            <div className="space-y-0" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                                 <div className="cartela-letter relative w-6 h-6 rounded-full bg-gradient-to-br from-red-500 to-red-600 text-white font-bold text-center flex items-center justify-center shadow-xl border-2 border-white/30 mx-auto" style={{ flexShrink: 0 }}>
                                     <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent to-white/30"></div>
                                     <span className="relative z-10 text-sm drop-shadow-sm">B</span>
@@ -402,7 +402,7 @@ export default function GameLayout({
                                 })}
                             </div>
                             {/* I Column */}
-                            <div className="space-y-0">
+                            <div className="space-y-0" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                                 <div className="cartela-letter relative w-6 h-6 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-600 text-white font-bold text-center flex items-center justify-center shadow-xl border-2 border-white/30 mx-auto" style={{ flexShrink: 0 }}>
                                     <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent to-white/30"></div>
                                     <span className="relative z-10 text-sm drop-shadow-sm">I</span>
@@ -427,7 +427,7 @@ export default function GameLayout({
                                 })}
                             </div>
                             {/* N Column */}
-                            <div className="space-y-0">
+                            <div className="space-y-0" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                                 <div className="cartela-letter relative w-6 h-6 rounded-full bg-gradient-to-br from-pink-500 to-pink-600 text-white font-bold text-center flex items-center justify-center shadow-xl border-2 border-white/30 mx-auto" style={{ flexShrink: 0 }}>
                                     <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent to-white/30"></div>
                                     <span className="relative z-10 text-sm drop-shadow-sm">N</span>
@@ -452,7 +452,7 @@ export default function GameLayout({
                                 })}
                             </div>
                             {/* G Column */}
-                            <div className="space-y-0">
+                            <div className="space-y-0" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                                 <div className="cartela-letter relative w-6 h-6 rounded-full bg-gradient-to-br from-green-500 to-green-600 text-white font-bold text-center flex items-center justify-center shadow-xl border-2 border-white/30 mx-auto" style={{ flexShrink: 0 }}>
                                     <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent to-white/30"></div>
                                     <span className="relative z-10 text-sm drop-shadow-sm">G</span>
@@ -477,7 +477,7 @@ export default function GameLayout({
                                 })}
                             </div>
                             {/* O Column */}
-                            <div className="space-y-0">
+                            <div className="space-y-0" style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
                                 <div className="cartela-letter relative w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 text-white font-bold text-center flex items-center justify-center shadow-xl border-2 border-white/30 mx-auto" style={{ flexShrink: 0 }}>
                                     <div className="absolute inset-0 rounded-full bg-gradient-to-t from-transparent to-white/30"></div>
                                     <span className="relative z-10 text-sm drop-shadow-sm">O</span>
@@ -505,7 +505,7 @@ export default function GameLayout({
                     </div>
 
                     {/* Right Side - Enhanced Two Cards Stacked */}
-                    <div className="space-y-4 ml-2">
+                    <div className="space-y-2 ml-2" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
                         {/* Floating Bingo Balls - Recent Numbers */}
                         <div className="recent-numbers-container">
                             <div className="flex items-center justify-between">
